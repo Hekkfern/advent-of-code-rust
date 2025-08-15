@@ -1,0 +1,41 @@
+name: Project Validations
+run-name: Project Validations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - name: Run cargo check
+        run: cargo check --workspace --all-targets --verbose
+      - name: Run cargo clippy
+        run: cargo clippy --workspace --all-targets --verbose -- -Dwarnings
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          fetch-depth: 1
+      - name: Build
+        run: cargo build --release --workspace --all-targets --verbose
+      - name: Run tests
+        run: cargo test --release --workspace --all-targets --verbose
