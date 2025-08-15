@@ -1,0 +1,11 @@
+[package]
+name = "aoc-geometry"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+num.workspace = true
+ndarray.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true

@@ -1,0 +1,12 @@
+[package]
+name = "aoc-assistant"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+clap.workspace = true
+leon.workspace = true
+reqwest.workspace = true
+htmd.workspace = true
+visdom.workspace = true
+aoc-utils = { path = "../../crates/aoc-utils" }

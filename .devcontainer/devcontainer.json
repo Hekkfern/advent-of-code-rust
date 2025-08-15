@@ -1,0 +1,17 @@
+{
+    "name": "AdventOfCode Rust Dev Environment",
+    "image": "mcr.microsoft.com/devcontainers/rust:latest",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+                "rust-lang.rust-analyzer"
+            ]
+        }
+    },
+    "hostRequirements": {
+        "cpus": 2
+    }
+}

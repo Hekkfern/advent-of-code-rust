@@ -1,0 +1,10 @@
+[package]
+name = "aoc-intervals"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+num.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true

@@ -1,0 +1,24 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "puzzles/*/*", "tools/*"]
+
+[profile.release]
+panic = 'abort'
+strip = true
+lto = true
+codegen-units = 1
+
+[workspace.dependencies]
+num = "0.4.3"
+assertables = "9.8.2"
+pretty_assertions = "1.4.1"
+ndarray = "0.16.1"
+clap = "4.5.44"
+include_dir = "0.7.4"
+leon = "3.0.2"
+reqwest = { version = "0.12.22", features = ["blocking"] }
+htmd = "0.3.0"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.142"
+visdom = { version = "1.0.3", features = ["destroy"] }
+rayon = "1.11.0"

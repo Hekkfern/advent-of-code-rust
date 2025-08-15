@@ -1,0 +1,18 @@
+# Project files
+.github/
+LICENSE
+README.md
+.devcontainer/
+CODE_OF_CONDUCT.md
+docs/
+
+# OS
+**/.DS_Store
+
+# IDEs
+**/.idea/
+**/.vscode/
+**/.vs/
+
+# Build folders
+target/

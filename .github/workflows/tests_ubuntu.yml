@@ -1,0 +1,41 @@
+name: Tests in Ubuntu
+run-name: Execute the tests of all the projects in Ubuntu
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Cache APT Packages
+        uses: awalsh128/cache-apt-pkgs-action@v1.2.2
+        id: installpackages
+        with:
+          packages: cppcheck ninja-build
+          version: 1.0
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Restore artifacts, or setup vcpkg for building artifacts
+        uses: lukka/run-vcpkg@v10
+        id: runvcpkg
+        with:
+          vcpkgDirectory: "${{ github.workspace }}/extern/vcpkg"
+          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
+      - name: Configure CMake project
+        id: configurecmake
+        run: cmake -S . --preset ${{ matrix.preset }} -DGENERATE_PROJECTS=UNITTESTS
+      - name: Build CMake project
+        id: buildcmake
+        run: cmake --build --preset ${{ matrix.preset }} -j
+      - name: Run CTest
+        id: runctest
+        run: ctest --preset ${{ matrix.preset }} -j
