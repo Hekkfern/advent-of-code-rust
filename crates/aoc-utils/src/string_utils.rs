@@ -12,24 +12,30 @@ pub fn convert_to_list_of_strings(s: &str) -> Vec<String> {
 }
 
 /// Extracts the content of a string as a list of numbers separated by new lines
-pub fn convert_to_list_of_numbers(s: &str) -> Vec<i64> {
+pub fn convert_to_list_of_numbers<T>(s: &str) -> Vec<T>
+where
+    T: std::str::FromStr + num::Integer,
+{
     s.trim()
         .lines()
-        .filter_map(|line| line.trim().parse::<i64>().ok())
+        .filter_map(|line| line.trim().parse::<T>().ok())
         .collect()
 }
 
 /// Extracts the content of a string as groups of numbers, separated by empty lines
-pub fn convert_to_groups_of_numbers(s: &str) -> Vec<Vec<i64>> {
+pub fn convert_to_groups_of_numbers<T>(s: &str) -> Vec<Vec<T>>
+where
+    T: std::str::FromStr + num::Integer,
+{
     s.trim()
         .split("\n\n")
         .map(|group| {
             group
                 .lines()
-                .filter_map(|line| line.trim().parse::<i64>().ok())
+                .filter_map(|line| line.trim().parse::<T>().ok())
                 .collect()
         })
-        .filter(|group: &Vec<i64>| !group.is_empty())
+        .filter(|group: &Vec<T>| !group.is_empty())
         .collect()
 }
 
