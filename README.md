@@ -29,16 +29,8 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
@@ -71,31 +63,22 @@ Features:
 
 Tested on:
 
-| Platform | OS |
-| --- | --- |
-| Windows | Windows 11 |
-| Linux | Ubuntu 24.04 |
-| Apple | macOS Sequoia 15  (M processor) |
+| Platform | OS                              |
+| -------- | ------------------------------- |
+| Windows  | Windows 11                      |
+| Linux    | Ubuntu 24.04                    |
+| Apple    | macOS Sequoia 15  (M processor) |
 
 <!-- GETTING STARTED -->
 
 ## Getting Started
 
-This is a set of instructions on setting up your project locally.
-To get a local copy up and running, follow these simple example steps.
-
-### Prerequisites
-
-First read [SETUP_DEV_ENVIRONMENT.md](./docs/SETUP_DEV_ENVIRONMENT.md) page to install the necessary tools in your computer to be able to use this project.
-
-### Installation
-
 Install [Git LFS](https://git-lfs.com/) tool in your machine.
 
-Clone the repository and all its submodules:
+Clone the repository:
 
 ```bash
-git clone --recursive git@github.com:Hekkfern/advent-of-code-rust.git
+git clone git@github.com:Hekkfern/advent-of-code-rust.git
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -104,11 +87,28 @@ git clone --recursive git@github.com:Hekkfern/advent-of-code-rust.git
 
 ## Usage
 
-### How to use
+### Run a puzzle solution
 
-Read [HOW_TO_USE.md](./docs/HOW_TO_USE.md) page.
+```bash
+cargo build --release -p aoc_<year>_<day> -- --part <part>
+```
 
-### How to add a new *Advent of Code* puzzle
+where:
+* <year> is the year (format 20XX) of the puzzle.
+* <day> is the day (from 1 to 25) of the puzzle.
+* <part> is the part number to run, `1` for Part 1 and `2` for Part 2.
+
+### Run the unit tests for one of the puzzles
+
+```bash
+cargo test --release -p aoc_<year>_<day>
+```
+
+where:
+* <year> is the year (format 20XX) of the puzzle.
+* <day> is the day (from 1 to 25) of the puzzle.
+
+### Add a new *Advent of Code* puzzle
 
 Read the docs of the **aoc-assistant** internal tool in its [README.md](./tools/aoc-assistant/README.md) page.
 
@@ -125,8 +125,6 @@ Read [FAQ.md](./docs/FAQ.md) page.
 <!-- ROADMAP -->
 
 ## Roadmap
-
-All the pending tasks (and their status) are shown in [@Hekkfern's pending tasks](https://github.com/users/Hekkfern/projects/1) board.
 
 See the [open issues](https://github.com/Hekkfern/advent-of-code-rust/issues) for a list of proposed features (and known issues).
 
@@ -163,13 +161,13 @@ in [Discussions](https://github.com/Hekkfern/advent-of-code-rust/discussions)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/Hekkfern/advent-of-code.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/Hekkfern/advent-of-code-rust.svg?style=for-the-badge
 [contributors-url]: https://github.com/Hekkfern/advent-of-code-rust/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Hekkfern/advent-of-code.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/Hekkfern/advent-of-code-rust.svg?style=for-the-badge
 [forks-url]: https://github.com/Hekkfern/advent-of-code-rust/network/members
-[stars-shield]: https://img.shields.io/github/stars/Hekkfern/advent-of-code.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/Hekkfern/advent-of-code-rust.svg?style=for-the-badge
 [stars-url]: https://github.com/Hekkfern/advent-of-code-rust/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Hekkfern/advent-of-code.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/Hekkfern/advent-of-code-rust.svg?style=for-the-badge
 [issues-url]: https://github.com/Hekkfern/advent-of-code-rust/issues
-[license-shield]: https://img.shields.io/github/license/Hekkfern/advent-of-code.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/Hekkfern/advent-of-code-rust.svg?style=for-the-badge
 [license-url]: https://github.com/Hekkfern/advent-of-code-rust/blob/master/LICENSE.txt
