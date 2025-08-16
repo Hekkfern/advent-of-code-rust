@@ -1,4 +1,4 @@
-use aoc_2023_01::{Part1Parameters, Part2Parameters, solve_part1, solve_part2};
+use aoc_2020_01::{Part1Parameters, Part2Parameters, solve_part1, solve_part2};
 use assertables::assert_not_empty;
 use include_dir::{Dir, include_dir};
 use pretty_assertions::assert_eq;
