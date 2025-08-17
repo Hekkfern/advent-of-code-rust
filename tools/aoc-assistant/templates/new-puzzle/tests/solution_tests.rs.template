@@ -14,29 +14,29 @@ fn read_data_file<P: AsRef<Path>>(file_path: P) -> &'static str \{
         .trim()
 \}
 
-macro_rules! test_part1_case {
-    ($params:expr, $expected_path:expr) => {{
+macro_rules! test_part1_case \{
+    ($params:expr, $expected_path:expr) => \{\{
         let result = solve_part1($params);
         assert_not_empty!(&result);
         let expected_result = read_data_file($expected_path);
         assert_eq!(result, expected_result);
-    }};
-}
+    \}\};
+\}
 
-macro_rules! test_part2_case {
-    ($params:expr, $expected_path:expr) => {{
+macro_rules! test_part2_case \{
+    ($params:expr, $expected_path:expr) => \{\{
         let result = solve_part2($params);
         assert_not_empty!(&result);
         let expected_result = read_data_file($expected_path);
         assert_eq!(result, expected_result);
-    }};
-}
+    \}\};
+\}
 
 #[test]
 fn test_part1_real() \{
     let input_data = read_data_file("input/input.txt");
     test_part1_case!(
-        Part1Parameters { input_data },
+        Part1Parameters \{ input_data \},
         "solutions/solution_part1.txt"
     );
 \}
@@ -45,7 +45,7 @@ fn test_part1_real() \{
 fn test_part1_test1() \{
     let input_data = read_data_file("input/input_part1_test1.txt");
     test_part1_case!(
-        Part1Parameters { input_data },
+        Part1Parameters \{ input_data \},
         "solutions/solution_part1_test1.txt"
     );
 \}
@@ -54,7 +54,7 @@ fn test_part1_test1() \{
 fn test_part2_real() \{
     let input_data = read_data_file("input/input.txt");
     test_part2_case!(
-        Part2Parameters { input_data },
+        Part2Parameters \{ input_data \},
         "solutions/solution_part2.txt"
     );
 \}
@@ -63,7 +63,7 @@ fn test_part2_real() \{
 fn test_part2_test1() \{
     let input_data = read_data_file("input/input_part2_test1.txt");
     test_part2_case!(
-        Part2Parameters { input_data },
+        Part2Parameters \{ input_data \},
         "solutions/solution_part2_test1.txt"
     );
 \}
