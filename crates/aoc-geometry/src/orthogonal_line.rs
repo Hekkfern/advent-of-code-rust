@@ -181,7 +181,7 @@ impl<T: CoordinateValue, const N: usize> Iterator for OrthogonalLineIterator<T, 
         // Move one unit in the direction along the axis
         let mut next_coordinates = *self.current.get_coordinates();
         next_coordinates[self.axis] = next_coordinates[self.axis] + self.direction;
-        self.current = Point::new(&next_coordinates);
+        self.current = Point::new(next_coordinates);
 
         Some(current_point)
     }

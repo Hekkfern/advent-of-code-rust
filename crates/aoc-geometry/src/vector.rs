@@ -59,9 +59,9 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     /// # Returns
     ///
     /// A new `Vector` with the given coordinates.
-    pub fn new(coordinates: &[T; N]) -> Self {
+    pub fn new(coordinates: [T; N]) -> Self {
         Vector {
-            coordinates: *coordinates,
+            coordinates,
         }
     }
 
@@ -173,7 +173,7 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     ///
     /// A new normalized `Vector` with coordinates clamped to [-1, 1].
     pub fn normalize(&self) -> Self {
-        Vector::new(&self.coordinates.map(|x| x.clamp(-T::one(), T::one())))
+        Vector::new(self.coordinates.map(|x| x.clamp(-T::one(), T::one())))
     }
 
     /// Checks if this is a zero vector (all coordinates are zero).
@@ -225,7 +225,7 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
         assert!(index < N, "Axis index out of bounds");
         let mut coordinates = [T::zero(); N];
         coordinates[index] = self.coordinates[index];
-        Vector::new(&coordinates)
+        Vector::new(coordinates)
     }
 }
 
@@ -259,7 +259,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Add for Vector<T, N> {
         for i in 0..N {
             result[i] = self.coordinates[i] + other.coordinates[i];
         }
-        Vector::new(&result)
+        Vector::new(result)
     }
 }
 
@@ -283,7 +283,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Sub for Vector<T, N> {
         for i in 0..N {
             result[i] = self.coordinates[i] - other.coordinates[i];
         }
-        Vector::new(&result)
+        Vector::new(result)
     }
 }
 
@@ -295,7 +295,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Neg for Vector<T, N> {
 
     /// Negates all coordinates of the vector.
     fn neg(self) -> Self::Output {
-        Vector::new(&self.coordinates.map(|x| -x))
+        Vector::new(self.coordinates.map(|x| -x))
     }
 }
 
@@ -315,7 +315,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Mul<i32> for Vector<T, N> {
     ///
     /// A new vector with all coordinates multiplied by the scalar.
     fn mul(self, scalar: i32) -> Self::Output {
-        Vector::new(&self.coordinates.map(|x| x * T::from(scalar).unwrap()))
+        Vector::new(self.coordinates.map(|x| x * T::from(scalar).unwrap()))
     }
 }
 
@@ -335,7 +335,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Mul<Vector<T, N>> for i32 {
     ///
     /// A new vector with all coordinates multiplied by the scalar.
     fn mul(self, vector: Vector<T, N>) -> Self::Output {
-        Vector::new(&vector.coordinates.map(|x| x * T::from(self).unwrap()))
+        Vector::new(vector.coordinates.map(|x| x * T::from(self).unwrap()))
     }
 }
 
@@ -372,6 +372,6 @@ impl<T: CoordinateValue, const N: usize> std::ops::Add<Point<T, N>> for Vector<T
         for i in 0..N {
             result[i] = self.coordinates[i] + point[i];
         }
-        Point::new(&result)
+        Point::new(result)
     }
 }

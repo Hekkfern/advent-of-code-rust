@@ -47,8 +47,8 @@ impl<T: CoordinateValue, const N: usize> Point<T, N> {
     /// # Returns
     ///
     /// A new `Point` with the given coordinates.
-    pub fn new(coordinates: &[T; N]) -> Self {
-        for &coordinate in coordinates {
+    pub fn new(coordinates: [T; N]) -> Self {
+        for coordinate in coordinates {
             assert!(
                 coordinate >= minimum_coordinate_value()
                     && coordinate <= maximum_coordinate_value(),
@@ -56,9 +56,7 @@ impl<T: CoordinateValue, const N: usize> Point<T, N> {
                 coordinate
             );
         }
-        Point {
-            coordinates: *coordinates,
-        }
+        Point { coordinates }
     }
 
     /// Gets a reference to the coordinate at the specified index.
@@ -101,9 +99,9 @@ impl<T: CoordinateValue, const N: usize> Point<T, N> {
         for i in 0..N {
             let mut neighbour = self.coordinates;
             neighbour[i] = neighbour[i] + T::one();
-            neighbours.insert(Point::new(&neighbour));
+            neighbours.insert(Point::new(neighbour.clone()));
             neighbour[i] = neighbour[i] - T::one() - T::one();
-            neighbours.insert(Point::new(&neighbour));
+            neighbours.insert(Point::new(neighbour.clone()));
         }
         neighbours
     }
@@ -166,7 +164,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Add<Vector<T, N>> for Point<T
         for i in 0..N {
             result[i] = self.coordinates[i] + vector[i];
         }
-        Point::new(&result)
+        Point::new(result)
     }
 }
 

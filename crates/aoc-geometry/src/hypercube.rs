@@ -36,7 +36,7 @@ impl<T: CoordinateValue, const N: usize> HyperCube<T, N> {
             "Diagonal vector must have all its coordinates with non-zero values."
         );
         let vertex2 = *vertex + *diagonal;
-        let most_negative_point = Point::new(&[minimum_coordinate_value::<T>(); N]);
+        let most_negative_point = Point::new([minimum_coordinate_value::<T>(); N]);
         if Vector::from_points(&most_negative_point, vertex).manhattan_distance()
             < Vector::from_points(&most_negative_point, &vertex2).manhattan_distance()
         {
@@ -102,13 +102,13 @@ impl<T: CoordinateValue, const N: usize> HyperCube<T, N> {
         for i in 0..N {
             let mut coords = *self.min_vertex.get_coordinates();
             coords[i] = *self.max_vertex.get(i);
-            vertices.insert(Point::new(&coords));
+            vertices.insert(Point::new(coords));
         }
         vertices.insert(self.max_vertex);
         for i in 0..N {
             let mut coords = *self.max_vertex.get_coordinates();
             coords[i] = *self.min_vertex.get(i);
-            vertices.insert(Point::new(&coords));
+            vertices.insert(Point::new(coords));
         }
         vertices
     }
