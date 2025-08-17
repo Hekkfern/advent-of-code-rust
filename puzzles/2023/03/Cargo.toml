@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 include_dir.workspace = true
+rayon.workspace = true
 aoc-utils = { path = "../../../crates/aoc-utils" }
 aoc-geometry = { path = "../../../crates/aoc-geometry" }
 

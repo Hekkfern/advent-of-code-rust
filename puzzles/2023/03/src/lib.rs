@@ -1,8 +1,8 @@
 use crate::part::Part;
 use crate::symbol::Symbol;
-use aoc_geometry::orthogonal_line::OrthogonalLine;
 use aoc_geometry::point::Point;
 use aoc_geometry::vector::Vector;
+use rayon::prelude::*;
 
 mod part;
 mod schematic;
@@ -108,7 +108,7 @@ pub fn solve_part2(params: Part2Parameters) -> String {
     let schematic = parse_input(params.input_data);
     let result: u32 = schematic
         .symbols()
-        .iter()
+        .par_iter()
         .filter(|symbol| symbol.character() == GEAR_SYMBOL)
         .filter_map(|symbol| {
             let close_parts: Vec<&Part> = schematic
