@@ -14,38 +14,119 @@ fn read_data_file<P: AsRef<Path>>(file_path: P) -> &'static str {
         .trim()
 }
 
+macro_rules! test_part1_case {
+    ($params:expr, $expected_path:expr) => {{
+        let result = solve_part1($params);
+        assert_not_empty!(&result);
+        let expected_result = read_data_file($expected_path);
+        assert_eq!(result, expected_result);
+    }};
+}
+
+macro_rules! test_part2_case {
+    ($params:expr, $expected_path:expr) => {{
+        let result = solve_part2($params);
+        assert_not_empty!(&result);
+        let expected_result = read_data_file($expected_path);
+        assert_eq!(result, expected_result);
+    }};
+}
+
 #[test]
 fn test_part1_real() {
     let input_data = read_data_file("input/input.txt");
-    let result = solve_part1(Part1Parameters { input_data });
-    assert_not_empty!(&result);
-    let expected_result = read_data_file("solutions/solution_part1.txt");
-    assert_eq!(result, expected_result);
+    test_part1_case!(
+        Part1Parameters { input_data },
+        "solutions/solution_part1.txt"
+    );
 }
 
 #[test]
 fn test_part1_test1() {
     let input_data = read_data_file("input/input_part1_test1.txt");
-    let result = solve_part1(Part1Parameters { input_data });
-    assert_not_empty!(&result);
-    let expected_result = read_data_file("solutions/solution_part1_test1.txt");
-    assert_eq!(result, expected_result);
+    test_part1_case!(
+        Part1Parameters { input_data },
+        "solutions/solution_part1_test1.txt"
+    );
+}
+
+#[test]
+fn test_part1_test2() {
+    let input_data = read_data_file("input/input_part1_test2.txt");
+    test_part1_case!(
+        Part1Parameters { input_data },
+        "solutions/solution_part1_test2.txt"
+    );
+}
+
+#[test]
+fn test_part1_test3() {
+    let input_data = read_data_file("input/input_part1_test3.txt");
+    test_part1_case!(
+        Part1Parameters { input_data },
+        "solutions/solution_part1_test3.txt"
+    );
+}
+
+#[test]
+fn test_part1_test4() {
+    let input_data = read_data_file("input/input_part1_test4.txt");
+    test_part1_case!(
+        Part1Parameters { input_data },
+        "solutions/solution_part1_test4.txt"
+    );
 }
 
 #[test]
 fn test_part2_real() {
     let input_data = read_data_file("input/input.txt");
-    let result = solve_part2(Part2Parameters { input_data });
-    assert_not_empty!(&result);
-    let expected_result = read_data_file("solutions/solution_part2.txt");
-    assert_eq!(result, expected_result);
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2.txt"
+    );
 }
 
 #[test]
 fn test_part2_test1() {
     let input_data = read_data_file("input/input_part2_test1.txt");
-    let result = solve_part2(Part2Parameters { input_data });
-    assert_not_empty!(&result);
-    let expected_result = read_data_file("solutions/solution_part2_test1.txt");
-    assert_eq!(result, expected_result);
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test1.txt"
+    );
+}
+
+#[test]
+fn test_part2_test2() {
+    let input_data = read_data_file("input/input_part2_test2.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test2.txt"
+    );
+}
+
+#[test]
+fn test_part2_test3() {
+    let input_data = read_data_file("input/input_part2_test3.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test3.txt"
+    );
+}
+
+#[test]
+fn test_part2_test4() {
+    let input_data = read_data_file("input/input_part2_test4.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test4.txt"
+    );
+}
+
+#[test]
+fn test_part2_test5() {
+    let input_data = read_data_file("input/input_part2_test5.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test5.txt"
+    );
 }
