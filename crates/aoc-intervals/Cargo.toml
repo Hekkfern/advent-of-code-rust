@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 num.workspace = true
+assertables.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true

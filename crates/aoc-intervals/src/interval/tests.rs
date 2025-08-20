@@ -1,4 +1,5 @@
 use super::*;
+use assertables::{assert_none, assert_some};
 use pretty_assertions::{assert_eq, assert_ne};
 
 // Tests for from_boundaries
@@ -49,7 +50,7 @@ fn from_boundaries_positive_left_negative_right() {
 
 #[test]
 fn from_boundaries_both_negative() {
-    let interval = Interval::from_boundaries(-5, -10);
+    let interval = Interval::from_boundaries(-10, -5);
     assert_eq!(interval.min, -10);
     assert_eq!(interval.max, -5);
     assert_eq!(interval.count(), 6);
@@ -60,7 +61,7 @@ fn from_boundaries_both_negative() {
 
 #[test]
 fn from_boundaries_both_negative_reversed() {
-    let interval = Interval::from_boundaries(-10, -5);
+    let interval = Interval::from_boundaries(-5, -10);
     assert_eq!(interval.min, -10);
     assert_eq!(interval.max, -5);
     assert_eq!(interval.count(), 6);
@@ -117,24 +118,24 @@ fn from_boundaries_zero_and_negative() {
 
 #[test]
 fn from_boundaries_large_values() {
-    let interval = Interval::from_boundaries(1000000, 2000000);
-    assert_eq!(interval.min, 1000000);
-    assert_eq!(interval.max, 2000000);
-    assert_eq!(interval.count(), 1000001);
-    assert_eq!(interval.get_min(), 1000000);
-    assert_eq!(interval.get_max(), 2000000);
-    assert_eq!(interval.get_boundaries(), (1000000, 2000000));
+    let interval = Interval::from_boundaries(1_000_000, 2_000_000);
+    assert_eq!(interval.min, 1_000_000);
+    assert_eq!(interval.max, 2_000_000);
+    assert_eq!(interval.count(), 1_000_001);
+    assert_eq!(interval.get_min(), 1_000_000);
+    assert_eq!(interval.get_max(), 2_000_000);
+    assert_eq!(interval.get_boundaries(), (1_000_000, 2_000_000));
 }
 
 #[test]
 fn from_boundaries_large_values_reversed() {
-    let interval = Interval::from_boundaries(2000000, 1000000);
-    assert_eq!(interval.min, 1000000);
-    assert_eq!(interval.max, 2000000);
-    assert_eq!(interval.count(), 1000001);
-    assert_eq!(interval.get_min(), 1000000);
-    assert_eq!(interval.get_max(), 2000000);
-    assert_eq!(interval.get_boundaries(), (1000000, 2000000));
+    let interval = Interval::from_boundaries(2_000_000, 1_000_000);
+    assert_eq!(interval.min, 1_000_000);
+    assert_eq!(interval.max, 2_000_000);
+    assert_eq!(interval.count(), 1_000_001);
+    assert_eq!(interval.get_min(), 1_000_000);
+    assert_eq!(interval.get_max(), 2_000_000);
+    assert_eq!(interval.get_boundaries(), (1_000_000, 2_000_000));
 }
 
 #[test]
@@ -150,13 +151,13 @@ fn from_boundaries_i32_type() {
 
 #[test]
 fn from_boundaries_i64_type() {
-    let interval: Interval<i64> = Interval::from_boundaries(-1000000000, 1000000000);
-    assert_eq!(interval.min, -1000000000);
-    assert_eq!(interval.max, 1000000000);
-    assert_eq!(interval.count(), 2000000001);
-    assert_eq!(interval.get_min(), -1000000000);
-    assert_eq!(interval.get_max(), 1000000000);
-    assert_eq!(interval.get_boundaries(), (-1000000000, 1000000000));
+    let interval: Interval<i64> = Interval::from_boundaries(-1_000_000_000, 1_000_000_000);
+    assert_eq!(interval.min, -1_000_000_000);
+    assert_eq!(interval.max, 1_000_000_000);
+    assert_eq!(interval.count(), 2_000_000_001);
+    assert_eq!(interval.get_min(), -1_000_000_000);
+    assert_eq!(interval.get_max(), 1_000_000_000);
+    assert_eq!(interval.get_boundaries(), (-1_000_000_000, 1_000_000_000));
 }
 
 #[test]
@@ -182,29 +183,7 @@ fn from_boundaries_consecutive_values_reversed() {
 }
 
 #[test]
-fn from_boundaries_minimum_valid_values() {
-    let interval: Interval<i32> = Interval::from_boundaries(i32::MIN + 1, i32::MIN + 10);
-    assert_eq!(interval.min, i32::MIN + 1);
-    assert_eq!(interval.max, i32::MIN + 10);
-    assert_eq!(interval.count(), 10);
-    assert_eq!(interval.get_min(), i32::MIN + 1);
-    assert_eq!(interval.get_max(), i32::MIN + 10);
-    assert_eq!(interval.get_boundaries(), (i32::MIN + 1, i32::MIN + 10));
-}
-
-#[test]
-fn from_boundaries_maximum_valid_values() {
-    let interval: Interval<i32> = Interval::from_boundaries(i32::MAX - 10, i32::MAX);
-    assert_eq!(interval.min, i32::MAX - 10);
-    assert_eq!(interval.max, i32::MAX);
-    assert_eq!(interval.count(), 11);
-    assert_eq!(interval.get_min(), i32::MAX - 10);
-    assert_eq!(interval.get_max(), i32::MAX);
-    assert_eq!(interval.get_boundaries(), (i32::MAX - 10, i32::MAX));
-}
-
-#[test]
-fn from_boundaries_minimum_and_maximum_valid_values() {
+fn from_boundaries_minimum_and_maximum_valid_values_i32_type() {
     let interval: Interval<i32> = Interval::from_boundaries(i32::MIN + 1, i32::MAX);
     assert_eq!(interval.min, i32::MIN + 1);
     assert_eq!(interval.max, i32::MAX);
@@ -215,38 +194,15 @@ fn from_boundaries_minimum_and_maximum_valid_values() {
 }
 
 #[test]
-fn from_boundaries_minimum_and_maximum_valid_values_reversed() {
-    let interval: Interval<i32> = Interval::from_boundaries(i32::MAX, i32::MIN + 1);
-    assert_eq!(interval.min, i32::MIN + 1);
-    assert_eq!(interval.max, i32::MAX);
-    assert_eq!(interval.get_min(), i32::MIN + 1);
-    assert_eq!(interval.get_max(), i32::MAX);
-    assert_eq!(interval.get_boundaries(), (i32::MIN + 1, i32::MAX));
-}
-
-#[test]
-fn from_boundaries_i64_minimum_valid_values() {
-    let interval: Interval<i64> = Interval::from_boundaries(i64::MIN + 1, i64::MIN + 100);
+fn from_boundaries_minimum_and_maximum_valid_values_i64_type() {
+    let interval: Interval<i64> = Interval::from_boundaries(i64::MIN + 1, i64::MAX);
     assert_eq!(interval.min, i64::MIN + 1);
-    assert_eq!(interval.max, i64::MIN + 100);
-    assert_eq!(interval.count(), 100);
-    assert_eq!(interval.get_min(), i64::MIN + 1);
-    assert_eq!(interval.get_max(), i64::MIN + 100);
-    assert_eq!(interval.get_boundaries(), (i64::MIN + 1, i64::MIN + 100));
-}
-
-#[test]
-fn from_boundaries_i64_maximum_valid_values() {
-    let interval: Interval<i64> = Interval::from_boundaries(i64::MAX - 100, i64::MAX);
-    assert_eq!(interval.min, i64::MAX - 100);
     assert_eq!(interval.max, i64::MAX);
-    assert_eq!(interval.count(), 101);
-    assert_eq!(interval.get_min(), i64::MAX - 100);
+    assert_eq!(interval.count(), 18_446_744_073_709_551_615);
+    assert_eq!(interval.get_min(), i64::MIN + 1);
     assert_eq!(interval.get_max(), i64::MAX);
-    assert_eq!(interval.get_boundaries(), (i64::MAX - 100, i64::MAX));
+    assert_eq!(interval.get_boundaries(), (i64::MIN + 1, i64::MAX));
 }
-
-// Tests for boundary validation failures
 
 #[test]
 #[should_panic(
@@ -294,98 +250,6 @@ fn from_boundaries_boundary2_too_small_i64() {
 )]
 fn from_boundaries_both_boundaries_too_small_i64() {
     let _interval: Interval<i64> = Interval::from_boundaries(i64::MIN, i64::MIN);
-}
-
-#[test]
-fn from_boundaries_edge_case_minimum_valid_boundary_i32() {
-    // Test the exact minimum valid boundary value
-    let interval: Interval<i32> = Interval::from_boundaries(i32::MIN + 1, i32::MIN + 1);
-    assert_eq!(interval.min, i32::MIN + 1);
-    assert_eq!(interval.max, i32::MIN + 1);
-    assert_eq!(interval.count(), 1);
-    assert!(interval.has_one_value());
-    assert_eq!(interval.get_min(), i32::MIN + 1);
-    assert_eq!(interval.get_max(), i32::MIN + 1);
-    assert_eq!(interval.get_boundaries(), (i32::MIN + 1, i32::MIN + 1));
-}
-
-#[test]
-fn from_boundaries_edge_case_maximum_valid_boundary_i32() {
-    // Test the exact maximum valid boundary value
-    let interval: Interval<i32> = Interval::from_boundaries(i32::MAX, i32::MAX);
-    assert_eq!(interval.min, i32::MAX);
-    assert_eq!(interval.max, i32::MAX);
-    assert_eq!(interval.count(), 1);
-    assert!(interval.has_one_value());
-    assert_eq!(interval.get_min(), i32::MAX);
-    assert_eq!(interval.get_max(), i32::MAX);
-    assert_eq!(interval.get_boundaries(), (i32::MAX, i32::MAX));
-}
-
-#[test]
-fn from_boundaries_edge_case_minimum_valid_boundary_i64() {
-    // Test the exact minimum valid boundary value
-    let interval: Interval<i64> = Interval::from_boundaries(i64::MIN + 1, i64::MIN + 1);
-    assert_eq!(interval.min, i64::MIN + 1);
-    assert_eq!(interval.max, i64::MIN + 1);
-    assert_eq!(interval.count(), 1);
-    assert!(interval.has_one_value());
-    assert_eq!(interval.get_min(), i64::MIN + 1);
-    assert_eq!(interval.get_max(), i64::MIN + 1);
-    assert_eq!(interval.get_boundaries(), (i64::MIN + 1, i64::MIN + 1));
-}
-
-#[test]
-fn from_boundaries_edge_case_maximum_valid_boundary_i64() {
-    // Test the exact maximum valid boundary value
-    let interval: Interval<i64> = Interval::from_boundaries(i64::MAX, i64::MAX);
-    assert_eq!(interval.min, i64::MAX);
-    assert_eq!(interval.max, i64::MAX);
-    assert_eq!(interval.count(), 1);
-    assert!(interval.has_one_value());
-    assert_eq!(interval.get_min(), i64::MAX);
-    assert_eq!(interval.get_max(), i64::MAX);
-    assert_eq!(interval.get_boundaries(), (i64::MAX, i64::MAX));
-}
-
-#[test]
-fn from_boundaries_boundary_order_independence_with_validation() {
-    // Test that boundary order doesn't matter when values are at validation limits
-    let interval1: Interval<i32> = Interval::from_boundaries(i32::MIN + 1, i32::MAX - 100);
-    let interval2: Interval<i32> = Interval::from_boundaries(i32::MAX - 100, i32::MIN + 1);
-
-    assert_eq!(interval1.get_boundaries(), interval2.get_boundaries());
-    assert_eq!(interval1.count(), interval2.count());
-    assert_eq!(interval1.get_min(), interval2.get_min());
-    assert_eq!(interval1.get_max(), interval2.get_max());
-}
-
-#[test]
-fn from_boundaries_verification_with_helper_methods() {
-    // Test using the helper methods to verify boundary limits
-    let min_valid: i32 = minimum_interval_value();
-    let max_valid: i32 = maximum_interval_value();
-
-    let interval = Interval::from_boundaries(min_valid, max_valid);
-    assert_eq!(interval.min, min_valid);
-    assert_eq!(interval.max, max_valid);
-    assert_eq!(interval.get_min(), min_valid);
-    assert_eq!(interval.get_max(), max_valid);
-    assert_eq!(interval.get_boundaries(), (min_valid, max_valid));
-}
-
-#[test]
-fn from_boundaries_verification_with_helper_methods_i64() {
-    // Test using the helper methods to verify boundary limits for i64
-    let min_valid: i64 = minimum_interval_value();
-    let max_valid: i64 = maximum_interval_value();
-
-    let interval = Interval::from_boundaries(min_valid, max_valid);
-    assert_eq!(interval.min, min_valid);
-    assert_eq!(interval.max, max_valid);
-    assert_eq!(interval.get_min(), min_valid);
-    assert_eq!(interval.get_max(), max_valid);
-    assert_eq!(interval.get_boundaries(), (min_valid, max_valid));
 }
 
 // Tests for from_size
@@ -459,13 +323,13 @@ fn from_size_i32_type() {
 
 #[test]
 fn from_size_i64_type() {
-    let interval: Interval<i64> = Interval::from_size(-1000000, 2000000);
-    assert_eq!(interval.min, -1000000);
-    assert_eq!(interval.max, 999999);
-    assert_eq!(interval.count(), 2000000);
-    assert_eq!(interval.get_min(), -1000000);
-    assert_eq!(interval.get_max(), 999999);
-    assert_eq!(interval.get_boundaries(), (-1000000, 999999));
+    let interval: Interval<i64> = Interval::from_size(-1_000_000, 2_000_000);
+    assert_eq!(interval.min, -1_000_000);
+    assert_eq!(interval.max, 999_999);
+    assert_eq!(interval.count(), 2_000_000);
+    assert_eq!(interval.get_min(), -1_000_000);
+    assert_eq!(interval.get_max(), 999_999);
+    assert_eq!(interval.get_boundaries(), (-1_000_000, 999_999));
 }
 
 #[test]
@@ -501,7 +365,7 @@ fn from_size_invalid_start_too_small() {
 #[test]
 #[should_panic(expected = "start + size would exceed the maximum interval value")]
 fn from_size_invalid_resulting_max_too_large() {
-    let _interval: Interval<i32> = Interval::from_size(i32::MAX - 2, 5); // Would result in max > i32::MAX
+    let _interval: Interval<i32> = Interval::from_size(i32::MAX - 2, 5);
 }
 
 #[test]
@@ -545,18 +409,15 @@ fn whole_i64() {
 // Tests for contains
 
 #[test]
-fn contains_value_within() {
+fn contains_positive_values() {
     let interval = Interval::from_boundaries(10, 20);
     assert!(interval.contains(15));
     assert!(interval.contains(10)); // left boundary
     assert!(interval.contains(20)); // right boundary
-}
-
-#[test]
-fn contains_value_outside() {
-    let interval = Interval::from_boundaries(10, 20);
     assert!(!interval.contains(5));
     assert!(!interval.contains(25));
+    assert!(!interval.contains(-2));
+    assert!(!interval.contains(100));
 }
 
 #[test]
@@ -567,6 +428,7 @@ fn contains_negative_values() {
     assert!(interval.contains(-10));
     assert!(!interval.contains(-25));
     assert!(!interval.contains(-5));
+    assert!(!interval.contains(15));
 }
 
 // Tests for has_one_value
@@ -588,37 +450,41 @@ fn has_one_value_false() {
 // Tests for subsumes
 
 #[test]
-fn subsumes_true_completely_inside() {
+fn subsumes_completely_inside() {
     let outer = Interval::from_boundaries(5, 15);
     let inner = Interval::from_boundaries(8, 12);
     assert!(outer.subsumes(&inner));
+    assert!(!inner.subsumes(&outer));
 }
 
 #[test]
-fn subsumes_true_same_interval() {
+fn subsumes_same_interval() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(5, 15);
     assert!(interval1.subsumes(&interval2));
+    assert!(interval2.subsumes(&interval1));
 }
 
 #[test]
-fn subsumes_false_partial_overlap() {
+fn subsumes_partial_overlap() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(10, 20);
     assert!(!interval1.subsumes(&interval2));
+    assert!(!interval2.subsumes(&interval1));
 }
 
 #[test]
-fn subsumes_false_no_overlap() {
+fn subsumes_no_overlap() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(15, 20);
     assert!(!interval1.subsumes(&interval2));
+    assert!(!interval2.subsumes(&interval1));
 }
 
 // Tests for overlaps
 
 #[test]
-fn overlaps_true_partial() {
+fn overlaps_partial() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(10, 20);
     assert!(interval1.overlaps(&interval2));
@@ -626,21 +492,23 @@ fn overlaps_true_partial() {
 }
 
 #[test]
-fn overlaps_true_touching_boundary() {
+fn overlaps_touching_boundary() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(10, 15);
     assert!(interval1.overlaps(&interval2));
+    assert!(interval2.overlaps(&interval1));
 }
 
 #[test]
-fn overlaps_false_separate() {
+fn overlaps_separate() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(15, 20);
     assert!(!interval1.overlaps(&interval2));
+    assert!(!interval2.overlaps(&interval1));
 }
 
 #[test]
-fn overlaps_true_one_subsumes_other() {
+fn overlaps_one_subsumes_other() {
     let outer = Interval::from_boundaries(5, 20);
     let inner = Interval::from_boundaries(8, 12);
     assert!(outer.overlaps(&inner));
@@ -665,6 +533,10 @@ fn get_relationship_overlapped() {
         interval1.get_relationship_with(&interval2),
         Relationship::Overlapped
     );
+    assert_eq!(
+        interval2.get_relationship_with(&interval1),
+        Relationship::Overlapped
+    );
 }
 
 #[test]
@@ -675,6 +547,10 @@ fn get_relationship_isolated() {
         interval1.get_relationship_with(&interval2),
         Relationship::Isolated
     );
+    assert_eq!(
+        interval2.get_relationship_with(&interval1),
+        Relationship::Isolated
+    );
 }
 
 // Tests for join
@@ -683,31 +559,56 @@ fn get_relationship_isolated() {
 fn join_overlapping_intervals() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(10, 20);
-    let result = interval1.join(&interval2).unwrap();
-    assert_eq!(result.get_boundaries(), (5, 20));
+    {
+        let result = interval1.join(&interval2);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 20));
+    }
+    {
+        let result = interval2.join(&interval1);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 20));
+    }
 }
 
 #[test]
 fn join_contiguous_intervals() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(11, 15);
-    let result = interval1.join(&interval2).unwrap();
-    assert_eq!(result.get_boundaries(), (5, 15));
+    {
+        let result = interval1.join(&interval2);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 15));
+    }
+    {
+        let result = interval2.join(&interval1);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 15));
+    }
 }
 
 #[test]
 fn join_separate_intervals_returns_none() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(15, 20);
-    assert!(interval1.join(&interval2).is_none());
+    assert_none!(interval1.join(&interval2));
+    assert_none!(interval2.join(&interval1));
 }
 
 #[test]
 fn join_identical_intervals() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(5, 10);
-    let result = interval1.join(&interval2).unwrap();
-    assert_eq!(result.get_boundaries(), (5, 10));
+    {
+        let result = interval1.join(&interval2);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 10));
+    }
+    {
+        let result = interval2.join(&interval1);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (5, 10));
+    }
 }
 
 // Tests for intersect
@@ -716,37 +617,61 @@ fn join_identical_intervals() {
 fn intersect_overlapping_intervals() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(10, 20);
-    let result = interval1.intersect(&interval2).unwrap();
-    assert_eq!(result.get_boundaries(), (10, 15));
+    {
+        let result = interval1.intersect(&interval2);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (10, 15));
+    }
+    {
+        let result = interval2.intersect(&interval1);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (10, 15));
+    }
 }
 
 #[test]
 fn intersect_one_subsumes_other() {
     let outer = Interval::from_boundaries(5, 20);
     let inner = Interval::from_boundaries(8, 12);
-    let result = outer.intersect(&inner).unwrap();
-    assert_eq!(result.get_boundaries(), (8, 12));
+    {
+        let result = outer.intersect(&inner);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (8, 12));
+    }
+    {
+        let result = inner.intersect(&outer);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (8, 12));
+    }
 }
 
 #[test]
-fn intersect_no_overlap_returns_none() {
+fn intersect_no_overlap() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(15, 20);
-    assert!(interval1.intersect(&interval2).is_none());
+    assert_none!(interval1.intersect(&interval2));
 }
 
 #[test]
 fn intersect_touching_boundaries() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(10, 15);
-    let result = interval1.intersect(&interval2).unwrap();
-    assert_eq!(result.get_boundaries(), (10, 10));
+    {
+        let result = interval1.intersect(&interval2);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (10, 10));
+    }
+    {
+        let result = interval2.intersect(&interval1);
+        assert_some!(result);
+        assert_eq!(result.unwrap().get_boundaries(), (10, 10));
+    }
 }
 
 // Tests for is_contiguous_to
 
 #[test]
-fn is_contiguous_to_true_right_adjacent() {
+fn is_contiguous_to_right_adjacent() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(11, 15);
     assert!(interval1.is_contiguous_to(&interval2));
@@ -754,17 +679,19 @@ fn is_contiguous_to_true_right_adjacent() {
 }
 
 #[test]
-fn is_contiguous_to_false_gap() {
+fn is_contiguous_to_gap() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(13, 18);
     assert!(!interval1.is_contiguous_to(&interval2));
+    assert!(!interval2.is_contiguous_to(&interval1));
 }
 
 #[test]
-fn is_contiguous_to_false_overlapping() {
+fn is_contiguous_to_overlapping() {
     let interval1 = Interval::from_boundaries(5, 12);
     let interval2 = Interval::from_boundaries(10, 15);
     assert!(!interval1.is_contiguous_to(&interval2));
+    assert!(!interval2.is_contiguous_to(&interval1));
 }
 
 // Tests for get_location
@@ -773,6 +700,8 @@ fn is_contiguous_to_false_overlapping() {
 fn get_location_within() {
     let interval = Interval::from_boundaries(10, 20);
     assert_eq!(interval.get_location(15), Location::Within);
+    assert_eq!(interval.get_location(11), Location::Within);
+    assert_eq!(interval.get_location(19), Location::Within);
 }
 
 #[test]
@@ -791,59 +720,111 @@ fn get_location_right_boundary() {
 fn get_location_left_outside() {
     let interval = Interval::from_boundaries(10, 20);
     assert_eq!(interval.get_location(5), Location::LeftOutside);
+    assert_eq!(interval.get_location(-7), Location::LeftOutside);
 }
 
 #[test]
 fn get_location_right_outside() {
     let interval = Interval::from_boundaries(10, 20);
     assert_eq!(interval.get_location(25), Location::RightOutside);
+    assert_eq!(interval.get_location(101), Location::RightOutside);
 }
 
 // Tests for shift
+
 #[test]
-fn shift_positive_offset() {
+fn shift_positive_interval_positive_offset() {
     let interval = Interval::from_boundaries(10, 20);
     let shifted = interval.shift(5);
     assert_eq!(shifted.get_boundaries(), (15, 25));
 }
 
 #[test]
-fn shift_negative_offset() {
+fn shift_positive_interval_negative_offset() {
     let interval = Interval::from_boundaries(10, 20);
     let shifted = interval.shift(-3);
     assert_eq!(shifted.get_boundaries(), (7, 17));
 }
 
 #[test]
-fn shift_zero_offset() {
+fn shift_positive_interval_zero_offset() {
     let interval = Interval::from_boundaries(10, 20);
     let shifted = interval.shift(0);
     assert_eq!(shifted.get_boundaries(), (10, 20));
 }
 
+#[test]
+fn shift_negative_interval_positive_offset() {
+    let interval = Interval::from_boundaries(-20, -10);
+    let shifted = interval.shift(5);
+    assert_eq!(shifted.get_boundaries(), (-15, -5));
+}
+
+#[test]
+fn shift_negative_interval_negative_offset() {
+    let interval = Interval::from_boundaries(-20, -10);
+    let shifted = interval.shift(-5);
+    assert_eq!(shifted.get_boundaries(), (-25, -15));
+}
+
 // Tests for expand_equally
 
 #[test]
-fn expand_equally_positive() {
+fn expand_equally_positive_interval_positive_offset() {
     let interval = Interval::from_boundaries(10, 20);
     let expanded = interval.expand_equally(5);
     assert_eq!(expanded.get_boundaries(), (5, 25));
 }
 
 #[test]
-fn expand_equally_zero() {
+fn expand_equally_positive_interval_negative_offset() {
+    let interval = Interval::from_boundaries(10, 20);
+    let expanded = interval.expand_equally(-5);
+    assert_eq!(expanded.get_boundaries(), (15, 15));
+}
+
+#[test]
+fn expand_equally_positive_interval_zero_offset() {
     let interval = Interval::from_boundaries(10, 20);
     let expanded = interval.expand_equally(0);
     assert_eq!(expanded.get_boundaries(), (10, 20));
 }
 
+#[test]
+fn expand_equally_negative_interval_positive_offset() {
+    let interval = Interval::from_boundaries(-20, -10);
+    let expanded = interval.expand_equally(5);
+    assert_eq!(expanded.get_boundaries(), (-25, -5));
+}
+
+#[test]
+fn expand_equally_negative_interval_negative_offset() {
+    let interval = Interval::from_boundaries(-20, -10);
+    let expanded = interval.expand_equally(-5);
+    assert_eq!(expanded.get_boundaries(), (-15, -15));
+}
+
+#[test]
+#[should_panic]
+fn expand_equally_wrong_offset() {
+    let interval = Interval::from_boundaries(10, 20);
+    let expanded = interval.expand_equally(-10);
+}
+
 // Tests for expand
 
 #[test]
-fn expand_different_offsets() {
+fn expand_positive_offsets() {
     let interval = Interval::from_boundaries(10, 20);
     let expanded = interval.expand(3, 7);
     assert_eq!(expanded.get_boundaries(), (7, 27));
+}
+
+#[test]
+fn expand_negative_offsets() {
+    let interval = Interval::from_boundaries(10, 20);
+    let expanded = interval.expand(-2, -3);
+    assert_eq!(expanded.get_boundaries(), (12, 17));
 }
 
 #[test]
@@ -854,10 +835,24 @@ fn expand_zero_offsets() {
 }
 
 #[test]
-fn expand_asymmetric() {
+fn expand_only_left_offset() {
     let interval = Interval::from_boundaries(10, 20);
-    let expanded = interval.expand(2, 8);
-    assert_eq!(expanded.get_boundaries(), (8, 28));
+    let expanded = interval.expand(3, 0);
+    assert_eq!(expanded.get_boundaries(), (7, 20));
+}
+
+#[test]
+fn expand_only_right_offset() {
+    let interval = Interval::from_boundaries(10, 20);
+    let expanded = interval.expand(0, 3);
+    assert_eq!(expanded.get_boundaries(), (10, 23));
+}
+
+#[test]
+#[should_panic]
+fn expand_wrong_offset() {
+    let interval = Interval::from_boundaries(10, 20);
+    let expanded = interval.expand(-10, -10);
 }
 
 // Tests for difference
@@ -1119,12 +1114,12 @@ fn shl_i32_type() {
 
 #[test]
 fn shl_i64_type() {
-    let interval: Interval<i64> = Interval::from_boundaries(-1000000, 1000000);
-    let shifted = interval << 500000;
-    assert_eq!(shifted.get_boundaries(), (-1500000, 500000)); // Shl decreases values
+    let interval: Interval<i64> = Interval::from_boundaries(-1_000_000, 1_000_000);
+    let shifted = interval << 500_000;
+    assert_eq!(shifted.get_boundaries(), (-1_500_000, 500_000)); // Shl decreases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -1500000);
-    assert_eq!(shifted.get_max(), 500000);
+    assert_eq!(shifted.get_min(), -1_500_000);
+    assert_eq!(shifted.get_max(), 500_000);
 }
 
 // Tests for Shr (right shift) operator

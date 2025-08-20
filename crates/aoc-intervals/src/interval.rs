@@ -489,9 +489,19 @@ impl<T: IntervalValue> Interval<T> {
     /// A new `Interval` shifted by the specified offset
     pub fn shift(&self, offset: i32) -> Self {
         let offset: T = cast(offset).expect("Failed to convert offset to type T");
+        let new_min = self.min + offset;
+        let new_max = self.max + offset;
+        assert!(
+            new_min >= minimum_interval_value() && new_min <= maximum_interval_value(),
+            "Shifted minimum value is out of bounds"
+        );
+        assert!(
+            new_max >= minimum_interval_value() && new_max <= maximum_interval_value(),
+            "Shifted maximum value is out of bounds"
+        );
         Interval {
-            min: self.min + offset,
-            max: self.max + offset,
+            min: new_min,
+            max: new_max,
         }
     }
 
@@ -507,11 +517,22 @@ impl<T: IntervalValue> Interval<T> {
     /// # Returns
     ///
     /// A new `Interval` expanded by the specified offset on both sides
-    pub fn expand_equally(&self, offset: T) -> Self {
+    pub fn expand_equally(&self, offset: i32) -> Self {
         let offset: T = cast(offset).expect("Failed to convert offset to type T");
+        let new_min = self.min - offset;
+        let new_max = self.max + offset;
+        assert!(new_min <= new_max);
+        assert!(
+            new_min >= minimum_interval_value() && new_min <= maximum_interval_value(),
+            "Shifted minimum value is out of bounds"
+        );
+        assert!(
+            new_max >= minimum_interval_value() && new_max <= maximum_interval_value(),
+            "Shifted maximum value is out of bounds"
+        );
         Interval {
-            min: self.min - offset,
-            max: self.max + offset,
+            min: new_min,
+            max: new_max,
         }
     }
 
@@ -531,9 +552,20 @@ impl<T: IntervalValue> Interval<T> {
     pub fn expand(&self, left_offset: i32, right_offset: i32) -> Self {
         let left_offset: T = cast(left_offset).expect("Failed to convert left offset to type T");
         let right_offset: T = cast(right_offset).expect("Failed to convert right offset to type T");
+        let new_min = self.min - left_offset;
+        let new_max = self.max + right_offset;
+        assert!(new_min <= new_max);
+        assert!(
+            new_min >= minimum_interval_value() && new_min <= maximum_interval_value(),
+            "Shifted minimum value is out of bounds"
+        );
+        assert!(
+            new_max >= minimum_interval_value() && new_max <= maximum_interval_value(),
+            "Shifted maximum value is out of bounds"
+        );
         Interval {
-            min: self.min - left_offset,
-            max: self.max + right_offset,
+            min: new_min,
+            max: new_max,
         }
     }
 
