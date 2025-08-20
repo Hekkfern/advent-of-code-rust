@@ -47,7 +47,8 @@ impl<T: IntervalValue> IntervalSet<T> {
     ///
     /// A vector containing all intervals in the set.
     pub fn get(&self) -> Vec<Interval<T>> {
-        let intervals: Vec<_> = self.intervals.iter().copied().collect();
+        let mut intervals: Vec<_> = self.intervals.iter().copied().collect();
+        intervals.sort();
         intervals
     }
 
@@ -110,7 +111,7 @@ impl<T: IntervalValue> IntervalSet<T> {
     /// # Arguments
     ///
     /// * `erase_interval` - The interval to remove.
-    pub fn remove(&mut self, erase_interval: &Interval<T>) {
+    pub fn remove_interval(&mut self, erase_interval: &Interval<T>) {
         let mut temp_intervals = HashSet::new();
 
         for inner_interval in &self.intervals {
@@ -271,11 +272,11 @@ impl<T: IntervalValue> IntervalSet<T> {
     /// A sub interval set.
     pub fn extract(&self, min: T, max: T) -> Self {
         let mut result_interval = self.clone();
-        result_interval.remove(&Interval::from_boundaries(
+        result_interval.remove_interval(&Interval::from_boundaries(
             minimum_interval_value(),
             min - T::one(),
         ));
-        result_interval.remove(&Interval::from_boundaries(
+        result_interval.remove_interval(&Interval::from_boundaries(
             max + T::one(),
             maximum_interval_value(),
         ));

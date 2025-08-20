@@ -852,7 +852,7 @@ fn expand_only_right_offset() {
 #[should_panic]
 fn expand_wrong_offset() {
     let interval = Interval::from_boundaries(10, 20);
-    let expanded = interval.expand(-10, -10);
+    let _expanded = interval.expand(-10, -10);
 }
 
 // Tests for difference
@@ -1275,7 +1275,7 @@ fn shr_negative_equivalent_to_shl_positive() {
     assert_eq!(shr_negative.get_max(), shl_positive.get_max());
 }
 
-// Tests for fmt
+// Tests for Display trait
 
 #[test]
 fn fmt_display_positive_values() {
@@ -1287,4 +1287,33 @@ fn fmt_display_positive_values() {
 fn fmt_display_negative_values() {
     let interval = Interval::from_boundaries(-20, -10);
     assert_eq!(format!("{}", interval), "[-20, -10]");
+}
+
+// Tests for PartialOrd and Ord trait
+
+#[test]
+fn ord() {
+    let a = Interval::from_boundaries(1, 5);
+    let b = Interval::from_boundaries(2, 6);
+    let c = Interval::from_boundaries(0, 3);
+    let d = Interval::from_boundaries(1, 5);
+
+    let mut intervals = vec![&b, &a, &c, &d];
+    intervals.sort();
+    let mins: Vec<_> = intervals.iter().map(|i| i.get_min()).collect();
+    assert_eq!(mins, vec![0, 1, 1, 2]);
+}
+
+#[test]
+fn partial_ord() {
+    let a = Interval::from_boundaries(1, 5);
+    let b = Interval::from_boundaries(2, 6);
+    let c = Interval::from_boundaries(0, 3);
+    let d = Interval::from_boundaries(1, 5);
+
+    assert!(a < b);
+    assert!(c < a);
+    assert!(b > c);
+    assert_eq!(a.partial_cmp(&d), Some(std::cmp::Ordering::Equal));
+    assert_eq!(a.cmp(&d), std::cmp::Ordering::Equal);
 }

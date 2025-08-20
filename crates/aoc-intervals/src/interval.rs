@@ -622,3 +622,15 @@ impl<T: IntervalValue> std::ops::Shr<i32> for Interval<T> {
         self.shift(rhs)
     }
 }
+
+impl<T: IntervalValue> PartialOrd for Interval<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.min.cmp(&other.min))
+    }
+}
+
+impl<T: IntervalValue> Ord for Interval<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.min.cmp(&other.min)
+    }
+}
