@@ -808,7 +808,7 @@ fn expand_equally_negative_interval_negative_offset() {
 #[should_panic]
 fn expand_equally_wrong_offset() {
     let interval = Interval::from_boundaries(10, 20);
-    let expanded = interval.expand_equally(-10);
+    let _expanded = interval.expand_equally(-10);
 }
 
 // Tests for expand

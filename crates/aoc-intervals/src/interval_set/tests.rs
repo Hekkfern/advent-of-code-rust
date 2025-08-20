@@ -18,6 +18,7 @@ fn from_vec_empty_vector() {
     let set: IntervalSet<i32> = IntervalSet::from_vec(vec![]);
     assert!(set.is_empty());
     assert_eq!(set.count(), 0);
+    assert_eq!(set.get().len(), 0);
 }
 
 #[test]
@@ -37,10 +38,16 @@ fn from_vec_non_overlapping_intervals() {
     let interval2 = Interval::from_boundaries(7, 9);
     let interval3 = Interval::from_boundaries(15, 20);
     let set = IntervalSet::from_vec(vec![interval1, interval2, interval3]);
-
-    assert_eq!(set.count(), 3 + 3 + 6); // 12 total values
+    assert!(!set.is_empty());
+    assert_eq!(
+        set.count(),
+        interval1.count() + interval2.count() + interval3.count()
+    );
     let intervals = set.get();
     assert_eq!(intervals.len(), 3);
+    assert!(intervals.contains(&interval1));
+    assert!(intervals.contains(&interval2));
+    assert!(intervals.contains(&interval3));
 }
 
 #[test]
@@ -49,14 +56,10 @@ fn from_vec_overlapping_intervals() {
     let interval2 = Interval::from_boundaries(5, 15);
     let interval3 = Interval::from_boundaries(12, 20);
     let set = IntervalSet::from_vec(vec![interval1, interval2, interval3]);
-
-    // Should merge into one interval [1, 20]
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
-    assert_eq!(set.count(), 20);
-    assert!(set.contains(1));
-    assert!(set.contains(20));
-    assert!(set.contains(10));
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 20));
 }
 
 #[test]
@@ -65,21 +68,20 @@ fn from_vec_contiguous_intervals() {
     let interval2 = Interval::from_boundaries(6, 10);
     let interval3 = Interval::from_boundaries(11, 15);
     let set = IntervalSet::from_vec(vec![interval1, interval2, interval3]);
-
-    // Should merge into one interval [1, 15]
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
-    assert_eq!(set.count(), 15);
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 15));
 }
 
 #[test]
 fn from_vec_identical_intervals() {
     let interval = Interval::from_boundaries(5, 10);
     let set = IntervalSet::from_vec(vec![interval, interval, interval]);
-
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
-    assert_eq!(set.count(), 6);
+    assert_eq!(intervals[0], interval);
 }
 
 #[test]
@@ -88,10 +90,10 @@ fn from_vec_negative_values() {
     let interval2 = Interval::from_boundaries(-11, 5);
     let interval3 = Interval::from_boundaries(10, 20);
     let set = IntervalSet::from_vec(vec![interval1, interval2, interval3]);
-
     let intervals = set.get();
-    assert_eq!(intervals.len(), 2); // Should merge first two: [-20, 5] and [10, 20]
-    assert_eq!(set.count(), 26 + 11); // 37 total values
+    assert_eq!(intervals.len(), 2);
+    assert!(intervals.contains(&Interval::from_boundaries(-20, 5)));
+    assert!(intervals.contains(&Interval::from_boundaries(10, 20)));
 }
 
 // Tests for add()
@@ -99,73 +101,76 @@ fn from_vec_negative_values() {
 #[test]
 fn add_to_empty_set() {
     let mut set = IntervalSet::new();
-    let interval = Interval::from_boundaries(5, 10);
-    set.add(interval);
-
+    let interval1 = Interval::from_boundaries(5, 10);
+    let interval2 = Interval::from_boundaries(20, 30);
+    set.add(interval1);
+    set.add(interval2);
     assert!(!set.is_empty());
-    assert_eq!(set.count(), 6);
     let intervals = set.get();
-    assert_eq!(intervals.len(), 1);
-    assert!(intervals.contains(&interval));
+    assert_eq!(intervals.len(), 2);
+    assert!(intervals.contains(&interval1));
+    assert!(intervals.contains(&interval2));
 }
 
 #[test]
 fn add_non_overlapping_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(10, 15));
-
-    assert_eq!(set.count(), 5 + 6); // 11 total values
+    let interval1 = Interval::from_boundaries(1, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    let interval2 = Interval::from_boundaries(10, 15);
+    set.add(interval2);
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 2);
+    assert!(intervals.contains(&interval1));
+    assert!(intervals.contains(&interval2));
 }
 
 #[test]
 fn add_overlapping_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(5, 15));
-
-    // Should merge into [1, 15]
-    assert_eq!(set.count(), 15);
+    let interval1 = Interval::from_boundaries(1, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    let interval2 = Interval::from_boundaries(5, 15);
+    set.add(interval2);
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
-    assert!(set.contains(1));
-    assert!(set.contains(15));
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 15));
 }
 
 #[test]
 fn add_contiguous_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
+    let interval1 = Interval::from_boundaries(1, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    let interval2 = Interval::from_boundaries(6, 10);
     set.add(Interval::from_boundaries(6, 10));
-
-    // Should merge into [1, 10]
-    assert_eq!(set.count(), 10);
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 10));
 }
 
 #[test]
 fn add_subsumed_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 20));
-    set.add(Interval::from_boundaries(5, 15)); // Completely inside
-
-    assert_eq!(set.count(), 20);
+    let interval1 = Interval::from_boundaries(1, 20);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    let interval2 = Interval::from_boundaries(5, 15);
+    set.add(interval2);
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], interval1);
 }
 
 #[test]
 fn add_subsuming_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 15));
-    set.add(Interval::from_boundaries(1, 20)); // Completely contains the first
-
-    assert_eq!(set.count(), 20);
+    let interval1 = Interval::from_boundaries(5, 15);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    let interval2 = Interval::from_boundaries(1, 20);
+    set.add(interval2);
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], interval2);
 }
 
 // Tests for add_value()
@@ -174,57 +179,61 @@ fn add_subsuming_interval() {
 fn add_value_to_empty_set() {
     let mut set = IntervalSet::new();
     set.add_value(10);
-
     assert!(!set.is_empty());
     assert_eq!(set.count(), 1);
     assert!(set.contains(10));
+    let intervals = set.get();
+    assert_eq!(intervals[0], Interval::from_boundaries(10, 10));
 }
 
 #[test]
 fn add_value_isolated() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
+    let interval1 = Interval::from_boundaries(1, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.add_value(10);
-
-    assert_eq!(set.count(), 6);
+    assert!(!set.is_empty());
+    assert!(set.contains(10));
     let intervals = set.get();
     assert_eq!(intervals.len(), 2);
-    assert!(set.contains(10));
+    assert_eq!(intervals[0], interval1);
+    assert_eq!(intervals[1], Interval::from_boundaries(10, 10));
 }
 
 #[test]
 fn add_value_extends_interval() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add_value(6); // Contiguous
-
-    assert_eq!(set.count(), 6);
+    let interval1 = Interval::from_boundaries(1, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    set.add_value(6);
+    assert!(!set.is_empty());
+    assert!(set.contains(6));
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
-    assert!(set.contains(6));
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 6));
 }
 
 #[test]
 fn add_value_already_contained() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add_value(5); // Already contained
-
-    assert_eq!(set.count(), 10);
+    let interval1 = Interval::from_boundaries(1, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
+    set.add_value(5);
+    assert!(!set.is_empty());
+    assert!(set.contains(6));
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 10));
 }
 
 #[test]
 fn add_value_bridges_intervals() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(7, 10));
+    let interval1 = Interval::from_boundaries(1, 5);
+    let interval2 = Interval::from_boundaries(7, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1, interval2]);
     set.add_value(6); // Bridges the gap
-
-    assert_eq!(set.count(), 10);
+    assert!(!set.is_empty());
+    assert!(set.contains(6));
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 10));
 }
 
 // Tests for remove_value()
@@ -233,80 +242,75 @@ fn add_value_bridges_intervals() {
 fn remove_value_from_empty_set() {
     let mut set: IntervalSet<i32> = IntervalSet::new();
     set.remove_value(5);
-
     assert!(set.is_empty());
 }
 
 #[test]
 fn remove_value_not_in_set() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
+    let interval1 = Interval::from_boundaries(1, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(15);
-
-    assert_eq!(set.count(), 10);
+    assert!(!set.is_empty());
+    assert!(!set.contains(15));
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], interval1);
 }
 
 #[test]
 fn remove_value_single_value_interval() {
-    let mut set = IntervalSet::new();
-    set.add_value(5);
+    let interval1 = Interval::from_boundaries(5, 5);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(5);
-
     assert!(set.is_empty());
 }
 
 #[test]
 fn remove_value_at_left_boundary() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    let interval1 = Interval::from_boundaries(5, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(5);
-
-    assert_eq!(set.count(), 5); // [6, 10]
-    assert!(!set.contains(5));
-    assert!(set.contains(6));
-    assert!(set.contains(10));
+    assert!(!set.is_empty());
+    let intervals = set.get();
+    assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], Interval::from_boundaries(6, 10));
 }
 
 #[test]
 fn remove_value_at_right_boundary() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    let interval1 = Interval::from_boundaries(5, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(10);
-
-    assert_eq!(set.count(), 5); // [5, 9]
-    assert!(set.contains(5));
-    assert!(set.contains(9));
-    assert!(!set.contains(10));
+    assert!(!set.is_empty());
+    let intervals = set.get();
+    assert_eq!(intervals.len(), 1);
+    assert_eq!(intervals[0], Interval::from_boundaries(5, 9));
 }
 
 #[test]
 fn remove_value_in_middle() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 15));
+    let interval1 = Interval::from_boundaries(5, 15);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(10);
-
-    assert_eq!(set.count(), 10); // [5, 9] and [11, 15]
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 2);
-    assert!(set.contains(9));
-    assert!(!set.contains(10));
-    assert!(set.contains(11));
+    assert_eq!(intervals[0], Interval::from_boundaries(5, 9));
+    assert_eq!(intervals[1], Interval::from_boundaries(11, 15));
 }
 
 #[test]
 fn remove_value_multiple_times() {
-    let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
+    let interval1 = Interval::from_boundaries(1, 10);
+    let mut set = IntervalSet::from_vec(vec![interval1]);
     set.remove_value(3);
     set.remove_value(7);
-
-    assert_eq!(set.count(), 8); // [1, 2], [4, 6], [8, 10]
+    assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 3);
-    assert!(!set.contains(3));
-    assert!(!set.contains(7));
+    assert_eq!(intervals[0], Interval::from_boundaries(1, 2));
+    assert_eq!(intervals[1], Interval::from_boundaries(4, 6));
+    assert_eq!(intervals[2], Interval::from_boundaries(8, 10));
 }
 
 // Tests for remove()
@@ -1039,4 +1043,30 @@ fn stress_test_merging() {
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
     assert_eq!(set.count(), 60); // [0, 59]
+}
+
+// Tests for fmt
+
+#[test]
+fn fmt_empty_set() {
+    let set: IntervalSet<i32> = IntervalSet::new();
+    let formatted = format!("{}", set);
+    assert_eq!(formatted, "");
+}
+
+#[test]
+fn fmt_single_interval() {
+    let mut set = IntervalSet::new();
+    set.add(Interval::from_boundaries(5, 10));
+    let formatted = format!("{}", set);
+    assert_eq!(formatted, "[5, 10]");
+}
+
+#[test]
+fn fmt_multiple_intervals() {
+    let mut set = IntervalSet::new();
+    set.add(Interval::from_boundaries(1, 3));
+    set.add(Interval::from_boundaries(7, 9));
+    let formatted = format!("{}", set);
+    assert_eq!(formatted, "[1, 3],[7, 9]");
 }
