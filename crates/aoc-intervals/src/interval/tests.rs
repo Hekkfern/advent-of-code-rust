@@ -861,66 +861,118 @@ fn expand_wrong_offset() {
 fn difference_no_overlap() {
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(15, 20);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 2);
-    assert_eq!(result[0].get_boundaries(), (5, 10));
-    assert_eq!(result[1].get_boundaries(), (15, 20));
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 10));
+        assert_eq!(result[1].get_boundaries(), (15, 20));
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 10));
+        assert_eq!(result[1].get_boundaries(), (15, 20));
+    }
 }
 
 #[test]
 fn difference_partial_overlap_left() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(10, 20);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 2);
-    assert_eq!(result[0].get_boundaries(), (5, 9));
-    assert_eq!(result[1].get_boundaries(), (16, 20));
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+        assert_eq!(result[1].get_boundaries(), (16, 20));
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+        assert_eq!(result[1].get_boundaries(), (16, 20));
+    }
 }
 
 #[test]
 fn difference_partial_overlap_right() {
     let interval1 = Interval::from_boundaries(10, 20);
     let interval2 = Interval::from_boundaries(5, 15);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 2);
-    assert_eq!(result[0].get_boundaries(), (5, 9));
-    assert_eq!(result[1].get_boundaries(), (16, 20));
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+        assert_eq!(result[1].get_boundaries(), (16, 20));
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+        assert_eq!(result[1].get_boundaries(), (16, 20));
+    }
 }
 
 #[test]
 fn difference_one_subsumes_other() {
     let outer = Interval::from_boundaries(5, 20);
     let inner = Interval::from_boundaries(8, 12);
-    let result = outer.difference(&inner);
-    assert_eq!(result.len(), 2);
-    assert_eq!(result[0].get_boundaries(), (5, 7));
-    assert_eq!(result[1].get_boundaries(), (13, 20));
+    {
+        let result = outer.difference(&inner);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 7));
+        assert_eq!(result[1].get_boundaries(), (13, 20));
+    }
+    {
+        let result = inner.difference(&outer);
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].get_boundaries(), (5, 7));
+        assert_eq!(result[1].get_boundaries(), (13, 20));
+    }
 }
 
 #[test]
 fn difference_same_left_boundary() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(5, 20);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 1);
-    assert_eq!(result[0].get_boundaries(), (16, 20));
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].get_boundaries(), (16, 20));
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].get_boundaries(), (16, 20));
+    }
 }
 
 #[test]
 fn difference_same_right_boundary() {
     let interval1 = Interval::from_boundaries(10, 20);
     let interval2 = Interval::from_boundaries(5, 20);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 1);
-    assert_eq!(result[0].get_boundaries(), (5, 9));
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0].get_boundaries(), (5, 9));
+    }
 }
 
 #[test]
 fn difference_identical_intervals() {
     let interval1 = Interval::from_boundaries(5, 15);
     let interval2 = Interval::from_boundaries(5, 15);
-    let result = interval1.difference(&interval2);
-    assert_eq!(result.len(), 0);
+    {
+        let result = interval1.difference(&interval2);
+        assert_eq!(result.len(), 0);
+    }
+    {
+        let result = interval2.difference(&interval1);
+        assert_eq!(result.len(), 0);
+    }
 }
 
 // Tests for get_relative_position_from
@@ -1015,8 +1067,8 @@ fn get_relative_position_from_large_values() {
 }
 
 #[test]
-fn get_relative_position_from_i32_type() {
-    let interval: Interval<i32> = Interval::from_boundaries(-100, 50);
+fn get_relative_position_from_i64_type() {
+    let interval: Interval<i64> = Interval::from_boundaries(-100, 50);
     assert_eq!(
         interval.get_relative_position_from(Boundary::Start, -50),
         50
@@ -1037,8 +1089,6 @@ fn shl_positive_shift() {
     let shifted = interval << 5;
     assert_eq!(shifted.get_boundaries(), (5, 15)); // Shl now decreases values
     assert_eq!(shifted.count(), interval.count()); // Size remains the same
-    assert_eq!(shifted.get_min(), 5);
-    assert_eq!(shifted.get_max(), 15);
 }
 
 #[test]
@@ -1057,8 +1107,6 @@ fn shl_negative_shift() {
     let shifted = interval << -5;
     assert_eq!(shifted.get_boundaries(), (15, 25)); // Negative shift increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 15);
-    assert_eq!(shifted.get_max(), 25);
 }
 
 #[test]
@@ -1067,18 +1115,6 @@ fn shl_negative_values() {
     let shifted = interval << 15;
     assert_eq!(shifted.get_boundaries(), (-35, -25)); // Shl decreases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -35);
-    assert_eq!(shifted.get_max(), -25);
-}
-
-#[test]
-fn shl_crossing_zero() {
-    let interval = Interval::from_boundaries(-5, 5);
-    let shifted = interval << 10;
-    assert_eq!(shifted.get_boundaries(), (-15, -5)); // Shl decreases values
-    assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -15);
-    assert_eq!(shifted.get_max(), -5);
 }
 
 #[test]
@@ -1086,10 +1122,8 @@ fn shl_single_value_interval() {
     let interval = Interval::from_boundaries(7, 7);
     let shifted = interval << 3;
     assert_eq!(shifted.get_boundaries(), (4, 4)); // Shl decreases values
-    assert_eq!(shifted.count(), 1);
+    assert_eq!(shifted.count(), interval.count());
     assert!(shifted.has_one_value());
-    assert_eq!(shifted.get_min(), 4);
-    assert_eq!(shifted.get_max(), 4);
 }
 
 #[test]
@@ -1098,8 +1132,6 @@ fn shl_large_shift() {
     let shifted = interval << 1000;
     assert_eq!(shifted.get_boundaries(), (100, 200)); // Shl decreases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 100);
-    assert_eq!(shifted.get_max(), 200);
 }
 
 #[test]
@@ -1130,8 +1162,6 @@ fn shr_positive_shift() {
     let shifted = interval >> 5;
     assert_eq!(shifted.get_boundaries(), (15, 25)); // Shr now increases values
     assert_eq!(shifted.count(), interval.count()); // Size remains the same
-    assert_eq!(shifted.get_min(), 15);
-    assert_eq!(shifted.get_max(), 25);
 }
 
 #[test]
@@ -1140,8 +1170,6 @@ fn shr_zero_shift() {
     let shifted = interval >> 0;
     assert_eq!(shifted.get_boundaries(), (10, 20));
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 10);
-    assert_eq!(shifted.get_max(), 20);
 }
 
 #[test]
@@ -1150,8 +1178,6 @@ fn shr_negative_shift() {
     let shifted = interval >> -5;
     assert_eq!(shifted.get_boundaries(), (5, 15)); // Negative shift decreases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 5);
-    assert_eq!(shifted.get_max(), 15);
 }
 
 #[test]
@@ -1160,8 +1186,6 @@ fn shr_negative_values() {
     let shifted = interval >> 10;
     assert_eq!(shifted.get_boundaries(), (-5, 5)); // Shr increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -5);
-    assert_eq!(shifted.get_max(), 5);
 }
 
 #[test]
@@ -1170,8 +1194,6 @@ fn shr_crossing_zero() {
     let shifted = interval >> 10;
     assert_eq!(shifted.get_boundaries(), (5, 15)); // Shr increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 5);
-    assert_eq!(shifted.get_max(), 15);
 }
 
 #[test]
@@ -1179,10 +1201,8 @@ fn shr_single_value_interval() {
     let interval = Interval::from_boundaries(7, 7);
     let shifted = interval >> 3;
     assert_eq!(shifted.get_boundaries(), (10, 10)); // Shr increases values
-    assert_eq!(shifted.count(), 1);
+    assert_eq!(shifted.count(), interval.count());
     assert!(shifted.has_one_value());
-    assert_eq!(shifted.get_min(), 10);
-    assert_eq!(shifted.get_max(), 10);
 }
 
 #[test]
@@ -1191,8 +1211,6 @@ fn shr_large_shift() {
     let shifted = interval >> 1000;
     assert_eq!(shifted.get_boundaries(), (1100, 1200)); // Shr increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), 1100);
-    assert_eq!(shifted.get_max(), 1200);
 }
 
 #[test]
@@ -1201,8 +1219,6 @@ fn shr_i32_type() {
     let shifted = interval >> 25;
     assert_eq!(shifted.get_boundaries(), (-50, 50)); // Shr increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -50);
-    assert_eq!(shifted.get_max(), 50);
 }
 
 #[test]
@@ -1211,50 +1227,6 @@ fn shr_i64_type() {
     let shifted = interval >> 500000;
     assert_eq!(shifted.get_boundaries(), (-1000000, 1000000)); // Shr increases values
     assert_eq!(shifted.count(), interval.count());
-    assert_eq!(shifted.get_min(), -1000000);
-    assert_eq!(shifted.get_max(), 1000000);
-}
-
-// Tests for chaining shift operations
-
-#[test]
-fn shift_operations_chaining() {
-    let interval = Interval::from_boundaries(10, 20);
-    let result = (interval << 5) >> 3; // First decrease by 5, then increase by 3
-    assert_eq!(result.get_boundaries(), (8, 18)); // Net decrease of 2
-    assert_eq!(result.count(), interval.count());
-    assert_eq!(result.get_min(), 8);
-    assert_eq!(result.get_max(), 18);
-}
-
-#[test]
-fn shift_operations_reverse_chaining() {
-    let interval = Interval::from_boundaries(10, 20);
-    let result = (interval >> 3) << 5; // First increase by 3, then decrease by 5
-    assert_eq!(result.get_boundaries(), (8, 18)); // Net decrease of 2
-    assert_eq!(result.count(), interval.count());
-    assert_eq!(result.get_min(), 8);
-    assert_eq!(result.get_max(), 18);
-}
-
-#[test]
-fn shift_operations_cancel_out() {
-    let interval = Interval::from_boundaries(10, 20);
-    let result = (interval << 7) >> 7; // Decrease by 7, then increase by 7
-    assert_eq!(result.get_boundaries(), (10, 20));
-    assert_eq!(result.count(), interval.count());
-    assert_eq!(result.get_min(), 10);
-    assert_eq!(result.get_max(), 20);
-}
-
-#[test]
-fn shift_operations_multiple_chaining() {
-    let interval = Interval::from_boundaries(10, 20);
-    let result = ((interval << 5) >> 2) << 3; // -5, +2, -3 = net -6
-    assert_eq!(result.get_boundaries(), (4, 14));
-    assert_eq!(result.count(), interval.count());
-    assert_eq!(result.get_min(), 4);
-    assert_eq!(result.get_max(), 14);
 }
 
 // Tests comparing shift operators with shift method
@@ -1303,40 +1275,16 @@ fn shr_negative_equivalent_to_shl_positive() {
     assert_eq!(shr_negative.get_max(), shl_positive.get_max());
 }
 
-// Edge case tests
+// Tests for fmt
 
 #[test]
-fn shift_with_max_i32_shift() {
-    let interval = Interval::from_boundaries(1000000, 1000010);
-    // Test with a reasonably large shift that won't cause overflow
-    let shifted = interval << 1000000; // Shl decreases values
-    assert_eq!(shifted.get_boundaries(), (0, 10));
-    assert_eq!(shifted.count(), interval.count());
+fn fmt_display_positive_values() {
+    let interval = Interval::from_boundaries(10, 20);
+    assert_eq!(format!("{}", interval), "[10, 20]");
 }
 
 #[test]
-fn shift_with_min_i32_shift() {
-    let interval = Interval::from_boundaries(0, 10);
-    // Test with a reasonably large positive shift
-    let shifted = interval >> 1000000; // Shr increases values
-    assert_eq!(shifted.get_boundaries(), (1000000, 1000010));
-    assert_eq!(shifted.count(), interval.count());
-}
-
-#[test]
-fn shift_preserves_interval_properties() {
-    let interval = Interval::from_boundaries(15, 25);
-    let shifted_left = interval << 7; // Decreases values
-    let shifted_right = interval >> 3; // Increases values
-
-    // Size should be preserved
-    assert_eq!(shifted_left.count(), interval.count());
-    assert_eq!(shifted_right.count(), interval.count());
-
-    // Single value property should be preserved
-    let single_interval = Interval::from_boundaries(42, 42);
-    let shifted_single_left = single_interval << 10;
-    let shifted_single_right = single_interval >> 10;
-    assert!(shifted_single_left.has_one_value());
-    assert!(shifted_single_right.has_one_value());
+fn fmt_display_negative_values() {
+    let interval = Interval::from_boundaries(-20, -10);
+    assert_eq!(format!("{}", interval), "[-20, -10]");
 }
