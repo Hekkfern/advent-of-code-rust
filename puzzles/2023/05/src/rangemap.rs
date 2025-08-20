@@ -86,3 +86,80 @@ impl RangeMap {
         result
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn convert_key_key_exists_1() {
+        let mut map = RangeMap::new();
+        map.add_section(50, 95, 2);
+        let result = map.convert_key(96);
+        assert_eq!(result, 51);
+    }
+
+    #[test]
+    fn convert_key_key_exists_2() {
+        let mut map = RangeMap::new();
+        map.add_section(52, 50, 48);
+        let result = map.convert_key(53);
+        assert_eq!(result, 55);
+    }
+
+    #[test]
+    fn convert_key_key_not_exists() {
+        let mut map = RangeMap::new();
+        map.add_section(50, 95, 2);
+        let result = map.convert_key(40);
+        assert_eq!(result, 40);
+    }
+
+    #[test]
+    fn convert_interval_interval_totally_included_1() {
+        let mut map = RangeMap::new();
+        map.add_section(50, 95, 2);
+        let interval = Interval::from_size(95, 2);
+        let result = map.convert_interval(&interval);
+        let result_intervals = result.get();
+        assert_eq!(result_intervals.len(), 1);
+        assert_eq!(result_intervals[0], Interval::from_size(50, 2));
+    }
+
+    #[test]
+    fn convert_interval_interval_totally_included_2() {
+        let mut map = RangeMap::new();
+        map.add_section(52, 50, 48);
+        let interval = Interval::from_boundaries(55, 60);
+        let result = map.convert_interval(&interval);
+        let result_intervals = result.get();
+        assert_eq!(result_intervals.len(), 1);
+        assert_eq!(result_intervals[0], Interval::from_boundaries(57, 62));
+    }
+
+    #[test]
+    fn convert_interval_half_included_1() {
+        let mut map = RangeMap::new();
+        map.add_section(50, 95, 2);
+        let interval = Interval::from_size(90, 10);
+        let result = map.convert_interval(&interval);
+        let result_intervals = result.get();
+        assert_eq!(result_intervals.len(), 3);
+        assert_eq!(result_intervals[0], Interval::from_boundaries(50, 51));
+        assert_eq!(result_intervals[1], Interval::from_boundaries(90, 94));
+        assert_eq!(result_intervals[2], Interval::from_boundaries(97, 99));
+    }
+
+    #[test]
+    fn convert_interval_half_included_2() {
+        let mut map = RangeMap::new();
+        map.add_section(52, 50, 48);
+        let interval = Interval::from_boundaries(45, 100);
+        let result = map.convert_interval(&interval);
+        let result_intervals = result.get();
+        assert_eq!(result_intervals.len(), 2);
+        assert_eq!(result_intervals[0], Interval::from_boundaries(45, 49));
+        assert_eq!(result_intervals[1], Interval::from_boundaries(52, 100));
+    }
+}

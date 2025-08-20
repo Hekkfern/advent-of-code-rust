@@ -1,9 +1,9 @@
 use aoc_intervals::interval::Interval;
 
-#[derive(Eq, PartialEq, Debug, Hash, Clone)]
+#[derive(Eq, PartialEq, PartialOrd, Ord, Debug, Hash, Clone)]
 pub struct RangeMapSection {
-    destination: Interval<i64>,
     source: Interval<i64>,
+    destination: Interval<i64>,
 }
 
 impl RangeMapSection {
@@ -29,5 +29,26 @@ impl RangeMapSection {
             return None;
         }
         Some(self.destination.get_min() + (key - self.source.get_min()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use assertables::{assert_none, assert_some};
+
+    #[test]
+    fn convert_some() {
+        let section = RangeMapSection::new(50, 98, 2);
+        let result = section.convert(99);
+        assert_some!(result);
+        assert_eq!(result, Some(51));
+    }
+
+    #[test]
+    fn convert_none() {
+        let section = RangeMapSection::new(50, 98, 2);
+        let result = section.convert(40);
+        assert_none!(result);
     }
 }
