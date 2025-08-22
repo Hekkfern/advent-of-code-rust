@@ -54,10 +54,10 @@ fn from_default_value_custom_struct() {
     }
 }
 
-// Tests for from_vec
+// Tests for from_single_vec
 #[test]
-fn from_vec_primitive_values() {
-    let grid: Grid2D<i32> = Grid2D::from_vec(&[2, 3], vec![1, 2, 3, 4, 5, 6]);
+fn from_single_vec_primitive_values() {
+    let grid: Grid2D<i32> = Grid2D::from_single_vec(&[2, 3], vec![1, 2, 3, 4, 5, 6]);
     // Check get_size and get_sizes
     assert_eq!(grid.get_size(0), 2);
     assert_eq!(grid.get_size(1), 3);
@@ -76,7 +76,7 @@ fn from_vec_primitive_values() {
 }
 
 #[test]
-fn from_vec_custom_struct() {
+fn from_single_vec_custom_struct() {
     #[derive(Debug, PartialEq, Clone, Eq)]
     struct MyStruct {
         a: i32,
@@ -86,7 +86,7 @@ fn from_vec_custom_struct() {
     let v2 = MyStruct { a: 2, b: "b" };
     let v3 = MyStruct { a: 3, b: "c" };
     let v4 = MyStruct { a: 4, b: "d" };
-    let grid: Grid2D<MyStruct> = Grid2D::from_vec(
+    let grid: Grid2D<MyStruct> = Grid2D::from_single_vec(
         &[2, 2],
         vec![v1.clone(), v2.clone(), v3.clone(), v4.clone()],
     );
@@ -105,21 +105,21 @@ fn from_vec_custom_struct() {
 
 #[test]
 #[should_panic(expected = "All dimensions must be greater than zero")]
-fn from_vec_zero_size() {
-    let _grid: Grid2D<i32> = Grid2D::from_vec(&[0, 0], vec![]);
+fn from_single_vec_zero_size() {
+    let _grid: Grid2D<i32> = Grid2D::from_single_vec(&[0, 0], vec![]);
 }
 
 #[test]
 #[should_panic(expected = "Grid data length does not match specified dimensions")]
-fn from_vec_wrong_length() {
-    let _grid: Grid2D<i32> = Grid2D::from_vec(&[2, 2], vec![1, 2, 3]);
+fn from_single_vec_wrong_length() {
+    let _grid: Grid2D<i32> = Grid2D::from_single_vec(&[2, 2], vec![1, 2, 3]);
 }
 
 // Tests for rotate_counter_clockwise
 
 #[test]
 fn rotate_counter_clockwise_2x2() {
-    let mut grid = Grid2D::from_vec(&[2, 2], vec![1, 2, 3, 4]);
+    let mut grid = Grid2D::from_single_vec(&[2, 2], vec![1, 2, 3, 4]);
     grid.rotate_counter_clockwise();
     // After rotation, shape should be [2, 2]
     assert_eq!(grid.get_sizes(), [2, 2]);
@@ -133,7 +133,7 @@ fn rotate_counter_clockwise_2x2() {
 
 #[test]
 fn rotate_counter_clockwise_3x2() {
-    let mut grid = Grid2D::from_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
+    let mut grid = Grid2D::from_single_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
     grid.rotate_counter_clockwise();
     // After rotation, shape should be [2, 3]
     assert_eq!(grid.get_sizes(), [2, 3]);
@@ -151,7 +151,7 @@ fn rotate_counter_clockwise_3x2() {
 
 #[test]
 fn rotate_clockwise_2x2() {
-    let mut grid = Grid2D::from_vec(&[2, 2], vec![1, 2, 3, 4]);
+    let mut grid = Grid2D::from_single_vec(&[2, 2], vec![1, 2, 3, 4]);
     grid.rotate_clockwise();
     // After rotation, shape should be [2, 2]
     assert_eq!(grid.get_sizes(), [2, 2]);
@@ -165,7 +165,7 @@ fn rotate_clockwise_2x2() {
 
 #[test]
 fn rotate_clockwise_3x2() {
-    let mut grid = Grid2D::from_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
+    let mut grid = Grid2D::from_single_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
     grid.rotate_clockwise();
     // After rotation, shape should be [2, 3]
     assert_eq!(grid.get_sizes(), [2, 3]);
@@ -183,7 +183,7 @@ fn rotate_clockwise_3x2() {
 
 #[test]
 fn flip_horizontal_2x2() {
-    let mut grid = Grid2D::from_vec(&[2, 2], vec![1, 2, 3, 4]);
+    let mut grid = Grid2D::from_single_vec(&[2, 2], vec![1, 2, 3, 4]);
     grid.flip_horizontal();
     // After flip, shape should be [2, 2]
     assert_eq!(grid.get_sizes(), [2, 2]);
@@ -197,7 +197,7 @@ fn flip_horizontal_2x2() {
 
 #[test]
 fn flip_horizontal_3x2() {
-    let mut grid = Grid2D::from_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
+    let mut grid = Grid2D::from_single_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
     grid.flip_horizontal();
     // After flip, shape should be [3, 2]
     assert_eq!(grid.get_sizes(), [3, 2]);
@@ -215,7 +215,7 @@ fn flip_horizontal_3x2() {
 
 #[test]
 fn flip_vertical_2x2() {
-    let mut grid = Grid2D::from_vec(&[2, 2], vec![1, 2, 3, 4]);
+    let mut grid = Grid2D::from_single_vec(&[2, 2], vec![1, 2, 3, 4]);
     grid.flip_vertical();
     // After flip, shape should be [2, 2]
     assert_eq!(grid.get_sizes(), [2, 2]);
@@ -229,7 +229,7 @@ fn flip_vertical_2x2() {
 
 #[test]
 fn flip_vertical_3x2() {
-    let mut grid = Grid2D::from_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
+    let mut grid = Grid2D::from_single_vec(&[3, 2], vec![1, 2, 3, 4, 5, 6]);
     grid.flip_vertical();
     // After flip, shape should be [3, 2]
     assert_eq!(grid.get_sizes(), [3, 2]);
@@ -247,37 +247,37 @@ fn flip_vertical_3x2() {
 
 #[test]
 fn test_position_status_inside_center() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[1, 1]), PositionStatus::Inside);
 }
 
 #[test]
 fn test_position_status_on_border_0_1() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[0, 1]), PositionStatus::OnBorder);
 }
 
 #[test]
 fn test_position_status_on_border_1_0() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[1, 0]), PositionStatus::OnBorder);
 }
 
 #[test]
 fn test_position_status_on_border_2_2() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[2, 2]), PositionStatus::OnBorder);
 }
 
 #[test]
 fn test_position_status_outside_3_0() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[3, 0]), PositionStatus::Outside);
 }
 
 #[test]
 fn test_position_status_outside_0_3() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&[0, 3]), PositionStatus::Outside);
 }
 
@@ -285,7 +285,7 @@ fn test_position_status_outside_0_3() {
 
 #[test]
 fn test_is_outside_inside() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(!grid.is_outside(&[0, 0]));
     assert!(!grid.is_outside(&[1, 1]));
     assert!(!grid.is_outside(&[2, 2]));
@@ -293,7 +293,7 @@ fn test_is_outside_inside() {
 
 #[test]
 fn test_is_outside_outside() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(grid.is_outside(&[3, 0]));
     assert!(grid.is_outside(&[0, 3]));
 }
@@ -302,7 +302,7 @@ fn test_is_outside_outside() {
 
 #[test]
 fn test_contains_true() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(grid.contains(&[0, 0]));
     assert!(grid.contains(&[1, 1]));
     assert!(grid.contains(&[2, 2]));
@@ -310,7 +310,7 @@ fn test_contains_true() {
 
 #[test]
 fn test_contains_false() {
-    let grid = Grid2D::from_vec(&[3, 3], vec![1,2,3,4,5,6,7,8,9]);
+    let grid = Grid2D::from_single_vec(&[3, 3], vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(!grid.contains(&[3, 0]));
     assert!(!grid.contains(&[0, 3]));
 }

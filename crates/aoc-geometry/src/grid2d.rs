@@ -50,8 +50,8 @@ impl<ValueType> Grid2D<ValueType> {
     ///
     /// # Returns
     ///
-    /// A new `Grid` constructed filled with the vector data.
-    pub fn from_vec(sizes: &[usize; DIMENSIONS], grid_data: Vec<ValueType>) -> Self {
+    /// A new `Grid` constructed filled with the 1-D vector data.
+    pub fn from_single_vec(sizes: &[usize; DIMENSIONS], grid_data: Vec<ValueType>) -> Self {
         assert!(
             sizes.iter().all(|s| *s > 0),
             "All dimensions must be greater than zero"
@@ -64,6 +64,32 @@ impl<ValueType> Grid2D<ValueType> {
         );
         Self {
             data: ndarray::Array2::from_shape_vec(*sizes, grid_data).unwrap(),
+        }
+    }
+
+    /// Creates a new grid filled with the specified 2-D vector data.
+    ///
+    /// # Arguments
+    ///
+    /// * `grid_data` - A 2-D vector representing the grid data
+    ///
+    /// # Returns
+    ///
+    /// A new `Grid` constructed filled with the 2-D vector data.
+    pub fn from_double_vec(grid_data: Vec<Vec<ValueType>>) -> Self {
+        assert!(
+            !grid_data.is_empty() && !grid_data[0].is_empty(),
+            "Grid data cannot be empty"
+        );
+        let rows = grid_data.len();
+        let cols = grid_data[0].len();
+        assert!(
+            grid_data.iter().all(|row| row.len() == cols),
+            "All rows must have the same number of columns"
+        );
+        let flat_data: Vec<ValueType> = grid_data.into_iter().flatten().collect();
+        Self {
+            data: ndarray::Array2::from_shape_vec((rows, cols), flat_data).unwrap(),
         }
     }
 
@@ -146,33 +172,82 @@ impl<ValueType> Grid2D<ValueType> {
         false
     }
 
-    /// Determines whether the given coordinates are part of the grid.
+    /// Determines whether the given coordinates are part of the grid (by being inside or on the border).
     ///
     /// # Arguments
     ///
-    /// * `point` - The N-dimensional coordinates
+    /// * `coord` - The N-dimensional coordinates
     ///
     /// # Returns
     ///
     /// True if the point is within the grid bounds, false otherwise.
+    ///
+    /// # Notes
+    ///
+    /// * This function is the inverse of `is_outside()`.
     pub fn contains(&self, coords: &[usize; DIMENSIONS]) -> bool {
-        let shape = self.data.shape();
-        if coords.len() != shape.len() {
-            return false;
+        self.data
+            .shape()
+            .iter()
+            .zip(coords.iter())
+            .all(|(dim, coord)| coord < dim)
+    }
+
+    /// Determines whether the given coordinates are outside the grid.
+    ///
+    /// # Arguments
+    ///
+    /// * `coord` - The N-dimensional coordinates
+    ///
+    /// # Returns
+    ///
+    /// True if the point is within the grid bounds, false otherwise.
+    ///
+    /// # Notes
+    ///
+    /// * This function is the inverse of `contains()`.
+    pub fn is_outside(&self, coord: &[usize; DIMENSIONS]) -> bool {
+        !self.contains(coord)
+    }
+
+    /// Determines the position status of given coordinates in the grid.
+    ///
+    /// It checks whether the given coordinates are inside the grid, on the border, or outside the grid bounds.
+    ///
+    /// # Arguments
+    ///
+    /// * `coord` - The N-dimensional coordinates to check
+    ///
+    /// # Returns
+    ///
+    /// A `PositionStatus` enum indicating the status of the coordinates:
+    /// - `Inside`: coordinates are within the grid and not on any border
+    /// - `OnBorder`: coordinates are on the edge/border of the grid
+    /// - `Outside`: coordinates are outside the grid bounds
+    pub fn position_status(&self, coord: &[usize; DIMENSIONS]) -> PositionStatus {
+        let mut is_on_border: bool = false;
+        for (&dim, &coord) in self.data.shape().iter().zip(coord.iter()) {
+            if coord >= dim {
+                return PositionStatus::Outside;
+            }
+            if coord == 0 || coord == (dim - 1) {
+                is_on_border = true;
+            }
         }
-        coords.iter().zip(shape.iter()).all(|(&i, &dim)| i < dim)
+        if is_on_border {
+            PositionStatus::OnBorder
+        } else {
+            PositionStatus::Inside
+        }
     }
 
     /// Rotates the grid 90 degrees counter-clockwise.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the axis index is out of bounds.
     pub fn rotate_counter_clockwise(&mut self) {
         self.data.swap_axes(0, 1);
         self.data.invert_axis(ndarray::Axis(0));
     }
 
+    /// Rotates the grid 90 degrees clockwise.
     pub fn rotate_clockwise(&mut self) {
         self.data.swap_axes(0, 1);
         self.data.invert_axis(ndarray::Axis(1));
@@ -246,16 +321,6 @@ impl<ValueType> Grid2D<ValueType> {
         let view = self.data.slice(ndarray::s![rows, cols]);
         let sub_data = view.to_owned();
         Some(Self { data: sub_data })
-    }
-
-    /// Checks if a point is outside the grid bounds.
-    pub fn is_outside(&self, coords: &[usize; DIMENSIONS]) -> bool {
-        for i in 0..DIMENSIONS {
-            if coords[i] >= self.get_size(i) {
-                return true;
-            }
-        }
-        false
     }
 
     /// Resizes the grid to new, bigger dimensions, filling new spaces with a default value.
@@ -358,37 +423,6 @@ impl<ValueType> Grid2D<ValueType> {
     /// A mutable iterator over references to the values in the grid.
     pub fn iter_mut(&mut self) -> ndarray::iter::IterMut<ValueType, ndarray::Ix2> {
         self.data.iter_mut()
-    }
-
-    /// Determines the position status of given coordinates in the grid.
-    ///
-    /// It checks whether the given coordinates are inside the grid, on the border, or outside the grid bounds.
-    ///
-    /// # Arguments
-    ///
-    /// * `point` - The N-dimensional coordinates to check
-    ///
-    /// # Returns
-    ///
-    /// A `PositionStatus` enum indicating the status of the coordinates:
-    /// - `Inside`: coordinates are within the grid and not on any border
-    /// - `OnBorder`: coordinates are on the edge/border of the grid
-    /// - `Outside`: coordinates are outside the grid bounds
-    pub fn position_status(&self, coord: &[usize; DIMENSIONS]) -> PositionStatus {
-        // Check if outside
-        for i in 0..DIMENSIONS {
-            if coord[i] >= self.get_size(i) {
-                return PositionStatus::Outside;
-            }
-        }
-        // Check if on the border
-        for i in 0..DIMENSIONS {
-            if coord[i] == 0 || coord[i] == self.get_size(i) - 1 {
-                return PositionStatus::OnBorder;
-            }
-        }
-        // Otherwise, inside
-        PositionStatus::Inside
     }
 
     fn is_array_unary(arr: &[usize; DIMENSIONS]) -> bool {
