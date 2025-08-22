@@ -9,3 +9,4 @@ ndarray.workspace = true
 
 [dev-dependencies]
 pretty_assertions.workspace = true
+assertables.workspace = true

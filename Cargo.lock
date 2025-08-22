@@ -285,6 +285,7 @@ dependencies = [
 name = "aoc-geometry"
 version = "1.0.0"
 dependencies = [
+ "assertables",
  "ndarray",
  "num",
  "pretty_assertions",
