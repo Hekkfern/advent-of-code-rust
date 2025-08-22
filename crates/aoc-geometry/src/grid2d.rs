@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use crate::position_status::PositionStatus;
 use std::collections::HashSet;
 
