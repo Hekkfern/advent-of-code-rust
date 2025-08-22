@@ -4,7 +4,6 @@ use crate::pipe_type::PipeType;
 use aoc_geometry::grid2d::Grid2D;
 use aoc_geometry::point::Point;
 use aoc_geometry::vector::Vector;
-use std::collections::HashMap;
 
 type Field = Grid2D<PipeType>;
 
@@ -22,8 +21,14 @@ fn parse_input(input: &str) -> (Field, Point<i32, 2>) {
         });
         grid_data.push(row);
     });
+    // Flip the grid vertically to have (0,0) at the bottom-left
     let mut field = Grid2D::from_double_vec(grid_data);
     field.flip_vertical();
+    // Adjust the start position accordingly
+    start = Point::new([
+        start.get(0).clone(),
+        (field.get_size(1) as i32 - 1) - start.get(1).clone(),
+    ]);
 
     (field, start)
 }
@@ -38,6 +43,19 @@ fn get_pipe_translation(pipe: PipeType) -> (Vector<i32, 2>, Vector<i32, 2>) {
         PipeType::SouthWest => (Vector::new([0, -1]), Vector::new([-1, 0])),
         _ => unreachable!(),
     }
+}
+
+fn get_pipe_type_at(
+    field: &Field,
+    position: &Point<i32, 2>,
+) -> PipeType {
+    field
+        .get(&[
+            position.get(0).clone() as usize,
+            position.get(1).clone() as usize,
+        ])
+        .unwrap()
+        .clone()
 }
 
 fn move_across_field(
@@ -63,15 +81,11 @@ fn move_across_field(
 
 fn get_starting_neighbor(field: &Field, start: &Point<i32, 2>) -> Point<i32, 2> {
     for neighbor in start.get_neighbours() {
-        let translation = get_pipe_translation(
-            field
-                .get(&[
-                    neighbor.get(0).clone() as usize,
-                    neighbor.get(1).clone() as usize,
-                ])
-                .unwrap()
-                .clone(),
-        );
+        let pipe_type = get_pipe_type_at(field, &neighbor);
+        if matches!(pipe_type, PipeType::None) {
+            continue;
+        }
+        let translation = get_pipe_translation(pipe_type);
         if (neighbor + translation.0 == *start) || (neighbor + translation.1 == *start) {
             return neighbor;
         }
@@ -95,8 +109,17 @@ pub struct Part1Parameters {
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     let (field, start) = parse_input(params.input_data);
-    // TODO
-    String::from("")
+    let mut current_position = get_starting_neighbor(&field, &start);
+    let mut previous_position = start;
+
+    let mut count: u64 = 1;
+    while current_position != start {
+        let next_position = move_across_field(&field, &current_position, &previous_position);
+        previous_position = current_position;
+        current_position = next_position;
+        count += 1;
+    }
+    (count / 2).to_string()
 }
 
 /// Parameters for solving Part 2 of the puzzle.

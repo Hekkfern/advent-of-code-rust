@@ -8,7 +8,6 @@ pub enum PipeType {
     NorthWest,
     SouthWest,
     SouthEast,
-    StartingPosition,
 }
 
 impl From<&str> for PipeType {
