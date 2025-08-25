@@ -4,10 +4,12 @@ mod tests_2d;
 #[cfg(test)]
 mod tests_3d;
 
-use crate::coordinate_value::{
-    CoordinateValue, maximum_coordinate_value, minimum_coordinate_value,
+use crate::point_coordinate::{
+    PointCoordinate, maximum_point_coordinate_value, minimum_point_coordinate_value,
 };
 use crate::vector::Vector;
+use crate::vector_coordinate::VectorCoordinate;
+use num::cast::cast;
 use std::collections::HashSet;
 
 /// A point in N-dimensional space with coordinates of type T.
@@ -22,11 +24,11 @@ use std::collections::HashSet;
 /// * `T` - The numeric type for coordinates (must implement `CoordinateValue`)
 /// * `N` - The number of dimensions (compile-time constant)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Point<T: CoordinateValue, const N: usize> {
+pub struct Point<T: PointCoordinate, const N: usize> {
     coordinates: [T; N],
 }
 
-impl<T: CoordinateValue, const N: usize> Point<T, N> {
+impl<T: PointCoordinate, const N: usize> Point<T, N> {
     /// Creates a new point at the origin (all coordinates are zero).
     ///
     /// # Returns
@@ -48,14 +50,13 @@ impl<T: CoordinateValue, const N: usize> Point<T, N> {
     ///
     /// A new `Point` with the given coordinates.
     pub fn new(coordinates: [T; N]) -> Self {
-        for coordinate in coordinates {
-            assert!(
-                coordinate >= minimum_coordinate_value()
-                    && coordinate <= maximum_coordinate_value(),
-                "Coordinate value out of bounds: {}",
-                coordinate
-            );
-        }
+        assert!(
+            coordinates
+                .iter()
+                .all(|&c| c >= minimum_point_coordinate_value()
+                    && c <= maximum_point_coordinate_value()),
+            "Coordinate value out of bounds"
+        );
         Point { coordinates }
     }
 
@@ -105,26 +106,27 @@ impl<T: CoordinateValue, const N: usize> Point<T, N> {
         }
         neighbours
     }
-}
 
-/// Negation operation for points.
-///
-/// Returns a new point with all coordinates negated, i.e., the mirror image of the original point across the origin.
-impl<T: CoordinateValue, const N: usize> std::ops::Neg for Point<T, N> {
-    type Output = Self;
-
-    /// Negates all coordinates of the point.
-    fn neg(self) -> Self::Output {
-        Point {
-            coordinates: self.coordinates.map(|c| -c),
-        }
+    /// Mirrors the point across a specified origin point.
+    ///
+    /// # Arguments
+    ///
+    /// * `origin` - The origin point to mirror across
+    ///
+    /// # Returns
+    ///
+    /// A new point that is the mirror image of this point across the selected origin
+    pub fn mirror(&self, origin: &Point<T, N>) -> Self {
+        let vector: Vector<i64, _> = Vector::from_points(origin, self);
+        let mirrored_vector = -vector;
+        *origin + mirrored_vector
     }
 }
 
 /// Display formatting for points.
 ///
 /// Formats the point as "(x,y)" for 2D, "(x,y,z)" for 3D, etc.
-impl<T: CoordinateValue, const N: usize> std::fmt::Display for Point<T, N> {
+impl<T: PointCoordinate, const N: usize> std::fmt::Display for Point<T, N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let coords = self.coordinates.map(|c| c.to_string());
         write!(f, "({})", coords.join(","))
@@ -134,7 +136,7 @@ impl<T: CoordinateValue, const N: usize> std::fmt::Display for Point<T, N> {
 /// Index operation for points.
 ///
 /// Allows accessing coordinates using bracket notation.
-impl<T: CoordinateValue, const N: usize> std::ops::Index<usize> for Point<T, N> {
+impl<T: PointCoordinate, const N: usize> std::ops::Index<usize> for Point<T, N> {
     type Output = T;
 
     /// Gets the coordinate at the specified index.
@@ -147,7 +149,9 @@ impl<T: CoordinateValue, const N: usize> std::ops::Index<usize> for Point<T, N> 
 /// Addition operation between a point and a vector.
 ///
 /// Returns a new point that is the result of translating the original point by the vector.
-impl<T: CoordinateValue, const N: usize> std::ops::Add<Vector<T, N>> for Point<T, N> {
+impl<T: PointCoordinate, const N: usize, U: VectorCoordinate> std::ops::Add<Vector<U, N>>
+    for Point<T, N>
+{
     type Output = Self;
 
     /// Adds a vector to a point, resulting in a translated point.
@@ -159,10 +163,16 @@ impl<T: CoordinateValue, const N: usize> std::ops::Add<Vector<T, N>> for Point<T
     /// # Returns
     ///
     /// A new point with coordinates that are the sum of the original point and vector coordinates.
-    fn add(self, vector: Vector<T, N>) -> Self::Output {
+    fn add(self, vector: Vector<U, N>) -> Self::Output {
         let mut result = [T::zero(); N];
         for i in 0..N {
-            result[i] = self.coordinates[i] + vector[i];
+            let mut new_coord = self.coordinates[i];
+            if vector[i].is_positive() {
+                new_coord = new_coord + cast(vector[i]).unwrap();
+            } else {
+                new_coord = new_coord - cast(vector[i]).unwrap();
+            }
+            result[i] = new_coord;
         }
         Point::new(result)
     }
@@ -171,7 +181,9 @@ impl<T: CoordinateValue, const N: usize> std::ops::Add<Vector<T, N>> for Point<T
 /// Subtraction operation between a point and a vector.
 ///
 /// Returns a new point that is the result of translating the original point by the negated vector.
-impl<T: CoordinateValue, const N: usize> std::ops::Sub<Vector<T, N>> for Point<T, N> {
+impl<T: PointCoordinate, const N: usize, U: VectorCoordinate> std::ops::Sub<Vector<U, N>>
+    for Point<T, N>
+{
     type Output = Self;
 
     /// Subtracts a vector from a point, resulting in a translated point.
@@ -185,7 +197,7 @@ impl<T: CoordinateValue, const N: usize> std::ops::Sub<Vector<T, N>> for Point<T
     /// # Returns
     ///
     /// A new point with coordinates that are the difference between the original point and vector coordinates.
-    fn sub(self, vector: Vector<T, N>) -> Self::Output {
+    fn sub(self, vector: Vector<U, N>) -> Self::Output {
         self + (-vector)
     }
 }

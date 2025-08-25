@@ -2,9 +2,8 @@
 ///
 /// This consolidates all the trait bounds needed for `T` in the `Point<T>` type,
 /// making it easier to maintain and ensuring consistency across the codebase.
-pub trait CoordinateValue:
+pub trait PointCoordinate:
     num::Integer
-    + num::Signed
     + num::Bounded
     + num::NumCast
     + Copy
@@ -15,9 +14,8 @@ pub trait CoordinateValue:
 }
 
 /// Blanket implementation for any type that satisfies all the required traits.
-impl<T> CoordinateValue for T where
+impl<T> PointCoordinate for T where
     T: num::Integer
-        + num::Signed
         + num::Bounded
         + num::NumCast
         + Copy
@@ -32,8 +30,8 @@ impl<T> CoordinateValue for T where
 /// # Returns
 ///
 /// The minimum valid boundary value for coordinates of type `T`
-pub fn minimum_coordinate_value<T: CoordinateValue>() -> T {
-    T::min_value() + T::one()
+pub fn minimum_point_coordinate_value<T: PointCoordinate>() -> T {
+    T::min_value()
 }
 
 /// Returns the maximum value that can be used to create a valid coordinate.
@@ -41,6 +39,6 @@ pub fn minimum_coordinate_value<T: CoordinateValue>() -> T {
 /// # Returns
 ///
 /// The maximum valid boundary value for coordinates of type `T`
-pub fn maximum_coordinate_value<T: CoordinateValue>() -> T {
+pub fn maximum_point_coordinate_value<T: PointCoordinate>() -> T {
     T::max_value()
 }

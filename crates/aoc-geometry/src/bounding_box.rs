@@ -1,17 +1,10 @@
-use crate::coordinate_value::{
-    CoordinateValue, maximum_coordinate_value, minimum_coordinate_value,
+use crate::point_coordinate::{
+    PointCoordinate, maximum_point_coordinate_value, minimum_point_coordinate_value,
 };
 use crate::point::Point;
 use crate::position_status::PositionStatus;
+use crate::direction::Direction;
 
-/// Represents a direction for axis-based operations.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Direction {
-    /// Positive direction along an axis.
-    Positive,
-    /// Negative direction along an axis.
-    Negative,
-}
 
 /// A multidimensional bounding box that tracks the minimum and maximum coordinates across all dimensions.
 ///
@@ -23,23 +16,23 @@ pub enum Direction {
 /// * `T` - The type of coordinate values.
 /// * `N` - The number of dimensions (must be known at compile time).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct BoundingBox<T: CoordinateValue, const N: usize> {
+pub struct BoundingBox<T: PointCoordinate, const N: usize> {
     /// The minimum values for each coordinate axis.
     minimums: [T; N],
     /// The maximum values for each coordinate axis.
     maximums: [T; N],
 }
 
-impl<T: CoordinateValue, const N: usize> Default for BoundingBox<T, N> {
+impl<T: PointCoordinate, const N: usize> Default for BoundingBox<T, N> {
     fn default() -> Self {
         Self {
-            minimums: [maximum_coordinate_value(); N],
-            maximums: [minimum_coordinate_value(); N],
+            minimums: [maximum_point_coordinate_value(); N],
+            maximums: [minimum_point_coordinate_value(); N],
         }
     }
 }
 
-impl<T: CoordinateValue, const N: usize> BoundingBox<T, N> {
+impl<T: PointCoordinate, const N: usize> BoundingBox<T, N> {
     /// Creates a new empty bounding box.
     ///
     /// The bounding box is initialized with minimum values set to the maximum possible value
