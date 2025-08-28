@@ -85,27 +85,12 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         }
     }
 
-    /// Gets the absolute length of each coordinate.
-    ///
-    /// This method returns an array where each element is the absolute value
-    /// of the corresponding coordinate, converted to u64.
+    /// Calculates the length of the line.
     ///
     /// # Returns
     ///
-    /// An array of absolute coordinate values as u64.
-    pub fn absolute_coordinates(&self) -> [u64; N] {
-        self.inherent_vector().absolute_coordinates()
-    }
-
-    /// Calculates the Manhattan Distance.
-    ///
-    /// The Manhattan distance (also known as L1 norm or taxicab distance)
-    /// is the sum of the absolute values of all coordinates.
-    ///
-    /// # Returns
-    ///
-    /// The Manhattan distance as u64.
-    pub fn manhattan_distance(&self) -> u64 {
+    /// The length.
+    pub fn length(&self) -> u64 {
         self.inherent_vector().manhattan_distance()
     }
 
@@ -131,6 +116,20 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
             }
         }
         panic!("Line is not aligned with any axis, all coordinates are zero.");
+    }
+    
+    pub fn contains_point(&self, point: &Point<T, N>) -> bool {
+        let axis = self.get_axis();
+        // Check if the point matches the fixed coordinates
+        for i in 0..N {
+            if i != axis && self.vertices[0].get(i) != point.get(i) {
+                return false;
+            }
+        }
+        // Check if the point's coordinate along the line's axis is within the line segment
+        let min_coord = std::cmp::min(self.vertices[0].get(axis), self.vertices[1].get(axis));
+        let max_coord = std::cmp::max(self.vertices[0].get(axis), self.vertices[1].get(axis));
+        point.get(axis) >= &min_coord && point.get(axis) <= &max_coord
     }
 
     /// Creates an iterator that yields all points along the line from start to end.

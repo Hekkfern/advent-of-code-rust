@@ -1,7 +1,7 @@
 mod pipe_type;
 
 use crate::pipe_type::PipeType;
-use aoc_geometry::grid2d::Grid2D;
+use aoc_geometry::grid_2d::Grid2D;
 use aoc_geometry::point::Point;
 use aoc_geometry::vector::Vector;
 

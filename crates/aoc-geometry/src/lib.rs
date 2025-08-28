@@ -1,11 +1,12 @@
 pub mod bounding_box;
 pub mod direction;
-pub mod grid2d;
+pub mod grid_2d;
 pub mod hypercube;
 pub mod line;
 pub mod orthogonal_line;
 pub mod point;
-pub mod point_coordinate;
+mod point_coordinate;
 pub mod position_status;
 pub mod vector;
 mod vector_coordinate;
+pub mod orthogonal_polygon_2d;
