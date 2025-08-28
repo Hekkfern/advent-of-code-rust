@@ -1,9 +1,9 @@
 use crate::bounding_box::BoundingBox;
-use crate::coordinate_value::{CoordinateValue, minimum_coordinate_value};
 use crate::point::Point;
+use crate::point_coordinate::PointCoordinate;
 use crate::position_status::PositionStatus;
 use crate::vector::{Vector, VectorType};
-use num::cast;
+use crate::vector_coordinate::VectorCoordinate;
 use std::collections::HashSet;
 
 /// A hypercube in N-dimensional space with coordinates of type T.
@@ -13,12 +13,13 @@ use std::collections::HashSet;
 /// * `T` - The numeric type for coordinates (must implement `CoordinateValue`)
 /// * `N` - The number of dimensions (compile-time constant)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct HyperCube<T: CoordinateValue, const N: usize> {
+pub struct HyperCube<T: PointCoordinate, const N: usize> {
     min_vertex: Point<T, N>,
     max_vertex: Point<T, N>,
+    sizes: [u64; N],
 }
 
-impl<T: CoordinateValue, const N: usize> HyperCube<T, N> {
+impl<T: PointCoordinate, const N: usize> HyperCube<T, N> {
     /// Creates a new hypercube from a vertex and a diagonal vector.
     ///
     /// The vertex is one corner of the hypercube, and the diagonal vector
@@ -29,40 +30,48 @@ impl<T: CoordinateValue, const N: usize> HyperCube<T, N> {
     /// * `vertex` - A point representing one vertex of the hypercube
     /// * `diagonal` - A vector representing the diagonal from the vertex to the opposite
     ///   vertex
-    pub fn from_vertex_and_diagonal(vertex: &Point<T, N>, diagonal: &Vector<T, N>) -> Self {
+    pub fn from_vertex_and_diagonal<U>(vertex: &Point<T, N>, diagonal: &Vector<U, N>) -> Self
+    where
+        U: VectorCoordinate,
+    {
         assert_eq!(
             diagonal.is(),
             VectorType::Arbitrary,
             "Diagonal vector must have all its coordinates with non-zero values."
         );
-        let vertex2 = *vertex + *diagonal;
-        let most_negative_point = Point::new([minimum_coordinate_value::<T>(); N]);
-        if Vector::from_points(&most_negative_point, vertex).manhattan_distance()
-            < Vector::from_points(&most_negative_point, &vertex2).manhattan_distance()
+        let vertex2_opt = vertex.move_by(diagonal);
+        assert!(vertex2_opt.is_some(), "Other vertex is out of bounds.");
+        let vertex2 = vertex2_opt.unwrap();
+        let most_negative_point = Point::new([T::min_value(); N]);
+        if Vector::<i128, N>::from_points(&most_negative_point, vertex)
+            .unwrap()
+            .manhattan_distance()
+            < Vector::<i128, N>::from_points(&most_negative_point, &vertex2)
+                .unwrap()
+                .manhattan_distance()
         {
             Self {
                 min_vertex: *vertex,
                 max_vertex: vertex2,
+                sizes: diagonal.absolute_coordinates(),
             }
         } else {
             Self {
                 min_vertex: vertex2,
                 max_vertex: *vertex,
+                sizes: diagonal.absolute_coordinates(),
             }
         }
     }
 
     pub fn from_opposite_vertices(vertex1: &Point<T, N>, vertex2: &Point<T, N>) -> Self {
-        HyperCube::from_vertex_and_diagonal(vertex1, &Vector::from_points(&vertex1, &vertex2))
+        let diagonal = Vector::<i128, N>::from_points(&vertex1, &vertex2)
+            .expect("Diagonal vector cannot be created");
+        HyperCube::from_vertex_and_diagonal(vertex1, &diagonal)
     }
 
     pub fn get_sizes(&self) -> [u64; N] {
-        let v = Vector::from_points(&self.min_vertex, &self.max_vertex);
-        let mut sizes = [0; N];
-        for i in 0..N {
-            sizes[i] = cast(v.get(i).abs()).unwrap();
-        }
-        sizes
+        self.sizes
     }
 
     pub fn area(&self) -> u64 {

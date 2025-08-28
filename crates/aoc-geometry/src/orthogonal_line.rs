@@ -1,16 +1,18 @@
-use crate::coordinate_value::CoordinateValue;
+use crate::direction::Direction;
 use crate::point::Point;
+use crate::point_coordinate::PointCoordinate;
 use crate::vector::Vector;
+use crate::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE: usize = 2;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct OrthogonalLine<T: CoordinateValue, const N: usize> {
+pub struct OrthogonalLine<T: PointCoordinate, const N: usize> {
     /// The two points that define the line segment.
-    points: [Point<T, N>; NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE],
+    vertices: [Point<T, N>; NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE],
 }
 
-impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
+impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     /// Returns the vector from the first point to the second point.
     ///
     /// This internal method calculates the directional vector that represents
@@ -19,8 +21,9 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     /// # Returns
     ///
     /// A `Vector` representing the direction and length of the line
-    fn inherent_vector(&self) -> Vector<T, N> {
-        Vector::from_points(&self.points[0], &self.points[1])
+    fn inherent_vector(&self) -> Vector<i128, N> {
+        Vector::<i128, N>::from_points(&self.vertices[0], &self.vertices[1])
+            .expect("Inherent vector cannot be created")
     }
 
     /// Creates a new line from two distinct points.
@@ -39,13 +42,17 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     /// # Panics
     ///
     /// Panics if the two points are identical, as they cannot form a line
-    pub fn from_points(p1: Point<T, N>, p2: Point<T, N>) -> Self {
+    pub fn from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Self {
         assert!(p1 != p2, "Points must be distinct to form a line.");
+        let vector = Vector::<i64, N>::from_points(&p1, &p2);
+        assert!(vector.is_some(), "Vector cannot be created from points.");
         assert!(
-            Vector::from_points(&p1, &p2).is_axis(),
+            vector.unwrap().is_axis(),
             "Orthogonal line must be axis-aligned."
         );
-        Self { points: [p1, p2] }
+        Self {
+            vertices: [*p1, *p2],
+        }
     }
 
     /// Creates a new line from a starting point and a direction vector.
@@ -65,11 +72,16 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     /// # Panics
     ///
     /// Panics if the vector is zero, as it cannot define a line direction
-    pub fn from_point_and_vector(p1: Point<T, N>, v: Vector<T, N>) -> Self {
+    pub fn from_point_and_vector<U>(p1: &Point<T, N>, v: &Vector<U, N>) -> Self
+    where
+        U: VectorCoordinate,
+    {
         assert!(!v.is_zero(), "Vector must be non-zero to form a line.");
         assert!(v.is_axis(), "Orthogonal line must be axis-aligned.");
+        let p2 = p1.move_by(&v);
+        assert!(p2.is_some(), "Other vertex is out of bounds.");
         Self {
-            points: [p1, p1 + v],
+            vertices: [*p1, p2.unwrap()],
         }
     }
 
@@ -103,7 +115,7 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     ///
     /// A reference to the array containing the two vertices of the line
     pub fn get_vertexes(&self) -> &[Point<T, N>; NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE] {
-        &self.points
+        &self.vertices
     }
 
     /// Gets the dimension index of the axis that this line is aligned with.
@@ -114,7 +126,7 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     pub fn get_axis(&self) -> usize {
         let vector = self.inherent_vector();
         for i in 0..N {
-            if vector.get(i) != &T::zero() {
+            if *vector.get(i) != 0 {
                 return i;
             }
         }
@@ -130,14 +142,14 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
     /// An iterator that yields `Point<T, N>` values
     pub fn iter(&self) -> OrthogonalLineIterator<T, N> {
         let axis = self.get_axis();
-        let start = self.points[0];
-        let end = self.points[1];
+        let start = self.vertices[0];
+        let end = self.vertices[1];
 
         // Determine direction (1 or -1) along the axis
         let direction = if start.get(axis) <= end.get(axis) {
-            T::one()
+            Direction::Positive
         } else {
-            -T::one()
+            Direction::Negative
         };
 
         OrthogonalLineIterator {
@@ -154,15 +166,15 @@ impl<T: CoordinateValue, const N: usize> OrthogonalLine<T, N> {
 ///
 /// This iterator yields all points from the start to the end of the line,
 /// moving one unit at a time along the axis the line is aligned with.
-pub struct OrthogonalLineIterator<T: CoordinateValue, const N: usize> {
+pub struct OrthogonalLineIterator<T: PointCoordinate, const N: usize> {
     current: Point<T, N>,
     end: Point<T, N>,
     axis: usize,
-    direction: T,
+    direction: Direction,
     finished: bool,
 }
 
-impl<T: CoordinateValue, const N: usize> Iterator for OrthogonalLineIterator<T, N> {
+impl<T: PointCoordinate, const N: usize> Iterator for OrthogonalLineIterator<T, N> {
     type Item = Point<T, N>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -180,14 +192,18 @@ impl<T: CoordinateValue, const N: usize> Iterator for OrthogonalLineIterator<T, 
 
         // Move one unit in the direction along the axis
         let mut next_coordinates = *self.current.get_coordinates();
-        next_coordinates[self.axis] = next_coordinates[self.axis] + self.direction;
+        if self.direction == Direction::Positive {
+            next_coordinates[self.axis] = next_coordinates[self.axis] + T::one();
+        } else {
+            next_coordinates[self.axis] = next_coordinates[self.axis] - T::one();
+        }
         self.current = Point::new(next_coordinates);
 
         Some(current_point)
     }
 }
 
-impl<T: CoordinateValue, const N: usize> IntoIterator for OrthogonalLine<T, N> {
+impl<T: PointCoordinate, const N: usize> IntoIterator for OrthogonalLine<T, N> {
     type Item = Point<T, N>;
     type IntoIter = OrthogonalLineIterator<T, N>;
 
@@ -196,7 +212,7 @@ impl<T: CoordinateValue, const N: usize> IntoIterator for OrthogonalLine<T, N> {
     }
 }
 
-impl<T: CoordinateValue, const N: usize> IntoIterator for &OrthogonalLine<T, N> {
+impl<T: PointCoordinate, const N: usize> IntoIterator for &OrthogonalLine<T, N> {
     type Item = Point<T, N>;
     type IntoIter = OrthogonalLineIterator<T, N>;
 
@@ -208,9 +224,9 @@ impl<T: CoordinateValue, const N: usize> IntoIterator for &OrthogonalLine<T, N> 
 /// Display formatting for orthogonal lines.
 ///
 /// Formats the line as "[(x,y),(x,y)]" for 2D, "[(x,y,z),(x,y,z)]" for 3D, etc.
-impl<T: CoordinateValue, const N: usize> std::fmt::Display for OrthogonalLine<T, N> {
+impl<T: PointCoordinate, const N: usize> std::fmt::Display for OrthogonalLine<T, N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let points = self.points.map(|c| c.to_string());
+        let points = self.vertices.map(|c| c.to_string());
         write!(f, "[{}]", points.join(","))
     }
 }

@@ -77,7 +77,10 @@ pub fn solve_part1(params: Part1Parameters) -> String {
     let result: u64 = schematic.parts().iter().fold(0, |acc, part| {
         if schematic.symbols().iter().any(|symbol| {
             part.vertexes().iter().any(|vertex| {
-                Vector::from_points(vertex, symbol.position()).chebyshev_distance() <= 1
+                Vector::<i64, 2>::from_points(vertex, symbol.position())
+                    .unwrap()
+                    .max_coordinate()
+                    <= 1
             })
         }) {
             acc + part.number() as u64
@@ -116,7 +119,10 @@ pub fn solve_part2(params: Part2Parameters) -> String {
                 .iter()
                 .filter(|part| {
                     part.vertexes().iter().any(|vertex| {
-                        Vector::from_points(vertex, symbol.position()).chebyshev_distance() <= 1
+                        Vector::<i64, 2>::from_points(vertex, symbol.position())
+                            .unwrap()
+                            .max_coordinate()
+                            <= 1
                     })
                 })
                 .collect();

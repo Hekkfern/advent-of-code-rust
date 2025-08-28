@@ -1,6 +1,6 @@
 use crate::instruction::Instruction;
 use crate::network_node::{NetworkNode, NodeId};
-use num::Integer;
+use num_integer::Integer;
 use std::collections::HashMap;
 
 pub struct Map {

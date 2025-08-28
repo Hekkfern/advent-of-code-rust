@@ -1,6 +1,7 @@
-use crate::coordinate_value::CoordinateValue;
 use crate::point::Point;
+use crate::point_coordinate::PointCoordinate;
 use crate::vector::Vector;
+use crate::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_LINE: usize = 2;
 
@@ -15,12 +16,12 @@ const NUM_OF_VERTEXES_IN_LINE: usize = 2;
 /// * `T` - The type of coordinate values.
 /// * `N` - The number of dimensions (must be known at compile time).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Line<T: CoordinateValue, const N: usize> {
+pub struct Line<T: PointCoordinate, const N: usize> {
     /// The two points that define the line segment.
-    vertexes: [Point<T, N>; NUM_OF_VERTEXES_IN_LINE],
+    vertices: [Point<T, N>; NUM_OF_VERTEXES_IN_LINE],
 }
 
-impl<T: CoordinateValue, const N: usize> Line<T, N> {
+impl<T: PointCoordinate, const N: usize> Line<T, N> {
     /// Returns the vector from the first point to the second point.
     ///
     /// This internal method calculates the directional vector that represents
@@ -29,8 +30,9 @@ impl<T: CoordinateValue, const N: usize> Line<T, N> {
     /// # Returns
     ///
     /// A `Vector` representing the direction and length of the line
-    fn inherent_vector(&self) -> Vector<T, N> {
-        Vector::from_points(&self.vertexes[0], &self.vertexes[1])
+    fn inherent_vector(&self) -> Vector<i128, N> {
+        Vector::<i128, N>::from_points(&self.vertices[0], &self.vertices[1])
+            .expect("Inherent vector cannot be created")
     }
 
     /// Creates a new line from two distinct points.
@@ -49,9 +51,11 @@ impl<T: CoordinateValue, const N: usize> Line<T, N> {
     /// # Panics
     ///
     /// Panics if the two points are identical, as they cannot form a line
-    pub fn from_points(p1: Point<T, N>, p2: Point<T, N>) -> Self {
+    pub fn from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Self {
         assert!(p1 != p2, "Points must be distinct to form a line.");
-        Self { vertexes: [p1, p2] }
+        Self {
+            vertices: [*p1, *p2],
+        }
     }
 
     /// Creates a new line from a starting point and a direction vector.
@@ -71,10 +75,15 @@ impl<T: CoordinateValue, const N: usize> Line<T, N> {
     /// # Panics
     ///
     /// Panics if the vector is zero, as it cannot define a line direction
-    pub fn from_point_and_vector(p1: Point<T, N>, v: Vector<T, N>) -> Self {
+    pub fn from_point_and_vector<U>(p1: &Point<T, N>, v: &Vector<U, N>) -> Self
+    where
+        U: VectorCoordinate,
+    {
         assert!(!v.is_zero(), "Vector must be non-zero to form a line.");
+        let p2 = p1.move_by(v);
+        assert!(p2.is_some(), "Other vertex is out of bounds.");
         Self {
-            vertexes: [p1, p1 + v],
+            vertices: [*p1, p2.unwrap()],
         }
     }
 
@@ -108,7 +117,7 @@ impl<T: CoordinateValue, const N: usize> Line<T, N> {
     ///
     /// A reference to the array containing the two vertices of the line
     pub fn get_vertexes(&self) -> &[Point<T, N>; NUM_OF_VERTEXES_IN_LINE] {
-        &self.vertexes
+        &self.vertices
     }
 
     /// Checks if this is an axis-aligned line (only one coordinate is non-zero).
@@ -124,9 +133,9 @@ impl<T: CoordinateValue, const N: usize> Line<T, N> {
 /// Display formatting for lines.
 ///
 /// Formats the line as "[(x,y),(x,y)]" for 2D, "[(x,y,z),(x,y,z)]" for 3D, etc.
-impl<T: CoordinateValue, const N: usize> std::fmt::Display for Line<T, N> {
+impl<T: PointCoordinate, const N: usize> std::fmt::Display for Line<T, N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let points = self.vertexes.map(|c| c.to_string());
+        let points = self.vertices.map(|c| c.to_string());
         write!(f, "[{}]", points.join(","))
     }
 }

@@ -9,7 +9,8 @@ lto = true
 codegen-units = 1
 
 [workspace.dependencies]
-num = "0.4.3"
+num-traits = "0.2.19"
+num-integer = "0.1.46"
 assertables = "9.8.2"
 pretty_assertions = "1.4.1"
 ndarray = "0.16.1"

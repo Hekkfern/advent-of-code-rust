@@ -3,11 +3,11 @@
 /// This consolidates all the trait bounds needed for `T` in the `Interval<T>` type,
 /// making it easier to maintain and ensuring consistency across the codebase.
 pub trait IntervalValue:
-    num::Integer
-    + num::Signed
-    + num::Bounded
-    + num::NumCast
-    + num::CheckedSub
+    num_integer::Integer
+    + num_traits::Signed
+    + num_traits::Bounded
+    + num_traits::NumCast
+    + num_traits::CheckedSub
     + Copy
     + Ord
     + std::fmt::Display
@@ -17,11 +17,11 @@ pub trait IntervalValue:
 
 /// Blanket implementation for any type that satisfies all the required traits.
 impl<T> IntervalValue for T where
-    T: num::Integer
-        + num::Signed
-        + num::Bounded
-        + num::NumCast
-        + num::CheckedSub
+    T: num_integer::Integer
+        + num_traits::Signed
+        + num_traits::Bounded
+        + num_traits::NumCast
+        + num_traits::CheckedSub
         + Copy
         + Ord
         + std::fmt::Display

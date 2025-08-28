@@ -1,12 +1,10 @@
 #[cfg(test)]
-mod tests_2d;
+mod tests;
 
-#[cfg(test)]
-mod tests_3d;
-
-use crate::coordinate_value::CoordinateValue;
 use crate::point::Point;
-use num::cast::cast;
+use crate::point_coordinate::PointCoordinate;
+use crate::vector_coordinate::VectorCoordinate;
+use num_traits::cast::cast;
 
 /// Classification of vector types based on their properties.
 ///
@@ -34,18 +32,18 @@ pub enum VectorType {
 /// * `T` - The numeric type for coordinates (must implement `CoordinateValue`)
 /// * `N` - The number of dimensions (compile-time constant)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Vector<T: CoordinateValue, const N: usize> {
+pub struct Vector<T: VectorCoordinate, const N: usize> {
     coordinates: [T; N],
 }
 
-impl<T: CoordinateValue, const N: usize> Vector<T, N> {
+impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
     /// Creates a new zero vector (all coordinates are zero).
     ///
     /// # Returns
     ///
     /// A new `Vector` with all coordinates set to zero.
     pub fn zero() -> Self {
-        Vector {
+        Self {
             coordinates: [T::zero(); N],
         }
     }
@@ -60,9 +58,7 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     ///
     /// A new `Vector` with the given coordinates.
     pub fn new(coordinates: [T; N]) -> Self {
-        Vector {
-            coordinates,
-        }
+        Self { coordinates }
     }
 
     /// Creates a new vector where the origin is the coordinate (0,0) and the destination is the selected point.
@@ -77,10 +73,11 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     /// # Returns
     ///
     /// A new `Vector` with coordinates matching the point's coordinates.
-    pub fn from_point(point: &Point<T, N>) -> Self {
-        Vector {
-            coordinates: *point.get_coordinates(),
-        }
+    pub fn from_point<U>(point: &Point<U, N>) -> Option<Self>
+    where
+        U: PointCoordinate,
+    {
+        Self::from_points(&Point::<U, N>::origin(), point)
     }
 
     /// Creates a new vector from two points, representing the displacement from origin to destination.
@@ -93,12 +90,16 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     /// # Returns
     ///
     /// A new `Vector` representing the difference between the destination and origin points.
-    pub fn from_points(origin: &Point<T, N>, destination: &Point<T, N>) -> Self {
+    pub fn from_points<U>(origin: &Point<U, N>, destination: &Point<U, N>) -> Option<Self>
+    where
+        U: PointCoordinate,
+    {
         let mut coordinates = [T::zero(); N];
         for i in 0..N {
-            coordinates[i] = destination[i] - origin[i];
+            let diff = destination[i].checked_sub(&origin[i])?;
+            coordinates[i] = cast(diff)?;
         }
-        Vector { coordinates }
+        Some(Vector { coordinates })
     }
 
     /// Gets a reference to the coordinate at the specified index.
@@ -148,8 +149,12 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     /// # Returns
     ///
     /// The coordinate with the maximum absolute value.
-    pub fn chebyshev_distance(&self) -> T {
-        self.coordinates.iter().map(num::Signed::abs).max().unwrap()
+    pub fn max_coordinate(&self) -> T {
+        self.coordinates
+            .iter()
+            .map(num_traits::Signed::abs)
+            .max()
+            .unwrap()
     }
 
     /// Calculates the Manhattan Distance.
@@ -174,6 +179,12 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
     /// A new normalized `Vector` with coordinates clamped to [-1, 1].
     pub fn normalize(&self) -> Self {
         Vector::new(self.coordinates.map(|x| x.clamp(-T::one(), T::one())))
+    }
+
+    pub fn is_normalized(&self) -> bool {
+        self.coordinates
+            .iter()
+            .all(|&x| x >= -T::one() && x <= T::one())
     }
 
     /// Checks if this is a zero vector (all coordinates are zero).
@@ -227,151 +238,59 @@ impl<T: CoordinateValue, const N: usize> Vector<T, N> {
         coordinates[index] = self.coordinates[index];
         Vector::new(coordinates)
     }
+
+    pub fn add(self, other: Self) -> Option<Self> {
+        let mut result = [T::zero(); N];
+        for i in 0..N {
+            result[i] = self.coordinates[i].checked_add(&other.coordinates[i])?;
+        }
+        Some(Vector::new(result))
+    }
+
+    pub fn subtract(self, other: Self) -> Option<Self> {
+        let mut result = [T::zero(); N];
+        for i in 0..N {
+            result[i] = self.coordinates[i].checked_sub(&other.coordinates[i])?;
+        }
+        Some(Vector::new(result))
+    }
+
+    pub fn invert(self) -> Option<Self> {
+        let mut coordinates = [T::zero(); N];
+        for i in 0..N {
+            coordinates[i] = self.coordinates[i].checked_neg()?;
+        }
+        Some(Vector::new(coordinates))
+    }
+
+    pub fn multiply_by_scalar(self, scalar: i32) -> Option<Self> {
+        let mut coordinates = [T::zero(); N];
+        for i in 0..N {
+            coordinates[i] = self.coordinates[i].checked_mul(&T::from(scalar)?)?;
+        }
+        Some(Vector::new(coordinates))
+    }
 }
 
 /// Display formatting for vectors.
 ///
 /// Formats the vector as "(x,y)" for 2D, "(x,y,z)" for 3D, etc.
-impl<T: CoordinateValue, const N: usize> std::fmt::Display for Vector<T, N> {
+impl<T: VectorCoordinate, const N: usize> std::fmt::Display for Vector<T, N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let coords = self.coordinates.map(|c| c.to_string());
         write!(f, "({})", coords.join(","))
     }
 }
 
-/// Addition operation for vectors.
-///
-/// Adds two vectors component-wise to produce a new vector.
-impl<T: CoordinateValue, const N: usize> std::ops::Add for Vector<T, N> {
-    type Output = Self;
-
-    /// Adds two vectors component-wise.
-    ///
-    /// # Arguments
-    ///
-    /// * `other` - The vector to add to this vector
-    ///
-    /// # Returns
-    ///
-    /// A new vector with coordinates that are the sum of the corresponding coordinates.
-    fn add(self, other: Self) -> Self::Output {
-        let mut result = [T::zero(); N];
-        for i in 0..N {
-            result[i] = self.coordinates[i] + other.coordinates[i];
-        }
-        Vector::new(result)
-    }
-}
-
-/// Subtraction operation for vectors.
-///
-/// Subtracts one vector from another component-wise to produce a new vector.
-impl<T: CoordinateValue, const N: usize> std::ops::Sub for Vector<T, N> {
-    type Output = Self;
-
-    /// Subtracts one vector from another component-wise.
-    ///
-    /// # Arguments
-    ///
-    /// * `other` - The vector to subtract from this vector
-    ///
-    /// # Returns
-    ///
-    /// A new vector with coordinates that are the difference of the corresponding coordinates.
-    fn sub(self, other: Self) -> Self::Output {
-        let mut result = [T::zero(); N];
-        for i in 0..N {
-            result[i] = self.coordinates[i] - other.coordinates[i];
-        }
-        Vector::new(result)
-    }
-}
-
-/// Negation operation for vectors.
-///
-/// Returns a new vector with all coordinates negated, i.e., its direction is reversed.
-impl<T: CoordinateValue, const N: usize> std::ops::Neg for Vector<T, N> {
-    type Output = Self;
-
-    /// Negates all coordinates of the vector.
-    fn neg(self) -> Self::Output {
-        Vector::new(self.coordinates.map(|x| -x))
-    }
-}
-
-/// Scalar multiplication for vectors.
-///
-/// Multiplies each coordinate of the vector by a scalar value.
-impl<T: CoordinateValue, const N: usize> std::ops::Mul<i32> for Vector<T, N> {
-    type Output = Self;
-
-    /// Multiplies the vector by a scalar, scaling all coordinates.
-    ///
-    /// # Arguments
-    ///
-    /// * `scalar` - The scalar value to multiply by
-    ///
-    /// # Returns
-    ///
-    /// A new vector with all coordinates multiplied by the scalar.
-    fn mul(self, scalar: i32) -> Self::Output {
-        Vector::new(self.coordinates.map(|x| x * T::from(scalar).unwrap()))
-    }
-}
-
-/// Scalar multiplication for vectors (commutative).
-///
-/// Multiplies each coordinate of the vector by a scalar value, allowing scalar * vector syntax.
-impl<T: CoordinateValue, const N: usize> std::ops::Mul<Vector<T, N>> for i32 {
-    type Output = Vector<T, N>;
-
-    /// Multiplies a vector by a scalar, scaling all coordinates.
-    ///
-    /// # Arguments
-    ///
-    /// * `vector` - The vector to multiply by this scalar
-    ///
-    /// # Returns
-    ///
-    /// A new vector with all coordinates multiplied by the scalar.
-    fn mul(self, vector: Vector<T, N>) -> Self::Output {
-        Vector::new(vector.coordinates.map(|x| x * T::from(self).unwrap()))
-    }
-}
-
 /// Index operation for vectors.
 ///
 /// Allows accessing coordinates using bracket notation.
-impl<T: CoordinateValue, const N: usize> std::ops::Index<usize> for Vector<T, N> {
+impl<T: VectorCoordinate, const N: usize> std::ops::Index<usize> for Vector<T, N> {
     type Output = T;
 
     /// Gets the coordinate at the specified index.
     fn index(&self, index: usize) -> &Self::Output {
         assert!(index < N, "Axis index out of bounds");
         self.get(index)
-    }
-}
-
-/// Addition operation between a vector and a point.
-///
-/// Returns a new point that is the result of translating the point by the vector.
-impl<T: CoordinateValue, const N: usize> std::ops::Add<Point<T, N>> for Vector<T, N> {
-    type Output = Point<T, N>;
-
-    /// Adds a vector to a point, resulting in a translated point.
-    ///
-    /// # Arguments
-    ///
-    /// * `point` - The point to add to this vector
-    ///
-    /// # Returns
-    ///
-    /// A new point with coordinates that are the sum of the vector and point coordinates.
-    fn add(self, point: Point<T, N>) -> Self::Output {
-        let mut result = [T::zero(); N];
-        for i in 0..N {
-            result[i] = self.coordinates[i] + point[i];
-        }
-        Point::new(result)
     }
 }

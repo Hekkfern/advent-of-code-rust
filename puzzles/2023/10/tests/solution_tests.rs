@@ -1,4 +1,4 @@
-use aoc_2023_09::{Part1Parameters, Part2Parameters, solve_part1, solve_part2};
+use aoc_2023_10::{Part1Parameters, Part2Parameters, solve_part1, solve_part2};
 use assertables::assert_not_empty;
 use include_dir::{Dir, include_dir};
 use pretty_assertions::assert_eq;
@@ -32,6 +32,10 @@ macro_rules! test_part2_case {
     }};
 }
 
+// -----------------------------------------------------------
+// -------------------- Tests for Part 1  --------------------
+// -----------------------------------------------------------
+
 #[test]
 fn test_part1_real() {
     let input_data = read_data_file("input/input.txt");
@@ -50,14 +54,9 @@ fn test_part1_test1() {
     );
 }
 
-#[test]
-fn test_part1_test2() {
-    let input_data = read_data_file("input/input_part1_test2.txt");
-    test_part1_case!(
-        Part1Parameters { input_data },
-        "solutions/solution_part1_test2.txt"
-    );
-}
+// -----------------------------------------------------------
+// -------------------- Tests for Part 2  --------------------
+// -----------------------------------------------------------
 
 #[test]
 fn test_part2_real() {
@@ -74,5 +73,23 @@ fn test_part2_test1() {
     test_part2_case!(
         Part2Parameters { input_data },
         "solutions/solution_part2_test1.txt"
+    );
+}
+
+#[test]
+fn test_part2_test2() {
+    let input_data = read_data_file("input/input_part2_test2.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test2.txt"
+    );
+}
+
+#[test]
+fn test_part2_test3() {
+    let input_data = read_data_file("input/input_part2_test3.txt");
+    test_part2_case!(
+        Part2Parameters { input_data },
+        "solutions/solution_part2_test3.txt"
     );
 }

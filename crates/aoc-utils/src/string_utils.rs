@@ -14,7 +14,7 @@ pub fn convert_to_list_of_strings(s: &str) -> Vec<String> {
 /// Extracts the content of a string as a list of numbers separated by new lines
 pub fn convert_to_list_of_numbers<T>(s: &str) -> Vec<T>
 where
-    T: std::str::FromStr + num::Integer,
+    T: std::str::FromStr + num_integer::Integer,
 {
     s.trim()
         .lines()
@@ -25,7 +25,7 @@ where
 /// Extracts the content of a string as groups of numbers, separated by empty lines
 pub fn convert_to_groups_of_numbers<T>(s: &str) -> Vec<Vec<T>>
 where
-    T: std::str::FromStr + num::Integer,
+    T: std::str::FromStr + num_integer::Integer,
 {
     s.trim()
         .split("\n\n")

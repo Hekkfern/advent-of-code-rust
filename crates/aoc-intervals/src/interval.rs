@@ -2,7 +2,7 @@
 mod tests;
 
 use crate::interval_value::{IntervalValue, maximum_interval_value, minimum_interval_value};
-use num::cast::cast;
+use num_traits::cast::cast;
 
 /// Represents the location of a value relative to an interval.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
