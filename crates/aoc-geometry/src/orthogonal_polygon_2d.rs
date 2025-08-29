@@ -34,18 +34,14 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     }
 
     fn are_vertices_orthogonal(vertices: &Vec<Point<T, DIMENSIONS>>) -> bool {
-        let n = vertices.len();
-        for i in 0..n {
-            let current = &vertices[i];
-            let next = &vertices[(i + 1) % n];
-
-            let v = Vector::<i64, DIMENSIONS>::from_points(current, next).unwrap();
-
-            if !v.is_axis() {
-                return false;
-            }
-        }
-        true
+        vertices
+            .iter()
+            .zip(vertices.iter().cycle().skip(1).take(vertices.len()))
+            .all(|(a, b)| {
+                Vector::<i64, DIMENSIONS>::from_points(a, b)
+                    .map(|v| v.is_axis())
+                    .unwrap_or(false)
+            })
     }
 
     /// Returns all the vertexes of this shape.
@@ -67,21 +63,18 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     /// * `perimeter_points` - List of all the points forming the perimeter of the polygon, ordered
     ///                        in a counter-clock-wise or clock-wise sequence.
     fn calculate_arbitrary_polygon_area(perimeter_points: &Vec<Point<T, DIMENSIONS>>) -> f64 {
-        let n = perimeter_points.len();
-        let mut left_sum = T::zero();
-        let mut right_sum = T::zero();
-
-        for i in 0..n {
-            let j = (i + 1) % n;
-            let xi = perimeter_points[i][0];
-            let yi = perimeter_points[i][1];
-            let xj = perimeter_points[j][0];
-            let yj = perimeter_points[j][1];
-
-            left_sum = left_sum + xi * yj;
-            right_sum = right_sum + xj * yi;
-        }
-
+        let (left_sum, right_sum) = perimeter_points
+            .iter()
+            .zip(
+                perimeter_points
+                    .iter()
+                    .cycle()
+                    .skip(1)
+                    .take(perimeter_points.len()),
+            )
+            .fold((T::zero(), T::zero()), |(left, right), (a, b)| {
+                (left + a[0] * b[1], right + b[0] * a[1])
+            });
         (cast::<T, f64>(left_sum).unwrap() - cast::<T, f64>(right_sum).unwrap()).abs() * 0.5
     }
 
@@ -114,16 +107,22 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     /// * `true` if the point is inside the shape, `false` otherwise.
     pub fn is_inside(&self, point: &Point<T, DIMENSIONS>) -> bool {
         use std::f64::consts::PI;
-        let n = self.vertices.len();
-        let mut angle = 0.0;
-
-        for i in 0..n {
-            let v1 = Vector::<i64, DIMENSIONS>::from_points(&self.vertices[i], point).unwrap();
-            let v2 =
-                Vector::<i64, DIMENSIONS>::from_points(&self.vertices[(i + 1) % n], point).unwrap();
-            angle += calculate_angle_between_vectors(&v1, &v2);
-        }
-
+        let angle: f64 = self
+            .vertices
+            .iter()
+            .zip(
+                self.vertices
+                    .iter()
+                    .cycle()
+                    .skip(1)
+                    .take(self.vertices.len()),
+            )
+            .map(|(a, b)| {
+                let v1 = Vector::<i64, DIMENSIONS>::from_points(a, point).unwrap();
+                let v2 = Vector::<i64, DIMENSIONS>::from_points(b, point).unwrap();
+                calculate_angle_between_vectors(&v1, &v2)
+            })
+            .sum();
         angle.abs() >= PI
     }
 
@@ -137,33 +136,38 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     ///
     /// * `true` if the point is on the border of the shape, `false` otherwise.
     pub fn is_on_edge(&self, point: &Point<T, DIMENSIONS>) -> bool {
-        let n = self.vertices.len();
-        for i in 0..n {
-            let a = &self.vertices[i];
-            let b = &self.vertices[(i + 1) % n];
-            let line = OrthogonalLine::from_points(&a, &b);
-            if line.contains_point(&point) {
-                return true;
-            }
-        }
-        false
+        self.vertices
+            .iter()
+            .zip(
+                self.vertices
+                    .iter()
+                    .cycle()
+                    .skip(1)
+                    .take(self.vertices.len()),
+            )
+            .any(|(a, b)| {
+                let line = OrthogonalLine::from_points(a, b);
+                line.contains_point(point)
+            })
     }
 
     /// Calculates the perimeter length of this shape.
     pub fn perimeter(&self) -> u64 {
-        let n = self.vertices.len();
-        let mut length: u64 = 0;
-
-        for index in 0..n {
-            let next_index = (index + 1) % n;
-            length += Vector::<i64, DIMENSIONS>::from_points(
-                &self.vertices[next_index],
-                &self.vertices[index],
+        self.vertices
+            .iter()
+            .zip(
+                self.vertices
+                    .iter()
+                    .cycle()
+                    .skip(1)
+                    .take(self.vertices.len()),
             )
-            .unwrap()
-            .manhattan_distance();
-        }
-        length
+            .map(|(a, b)| {
+                Vector::<i64, DIMENSIONS>::from_points(b, a)
+                    .unwrap()
+                    .manhattan_distance()
+            })
+            .sum()
     }
 
     /// Calculates the number of intrinsic points inside this shape.
@@ -184,25 +188,27 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     }
 
     fn get_boundary_points(&self) -> Vec<Point<T, DIMENSIONS>> {
-        let n = self.vertices.len();
-        let mut points = Vec::with_capacity(n * 2);
-
-        for index in 0..n {
-            let next_index = (index + 1) % n;
-            let vector = Vector::<i64, DIMENSIONS>::from_points(
-                &self.vertices[index],
-                &self.vertices[next_index],
+        self.vertices
+            .iter()
+            .zip(
+                self.vertices
+                    .iter()
+                    .cycle()
+                    .skip(1)
+                    .take(self.vertices.len()),
             )
-            .unwrap();
-            let unary_vector = vector.normalize();
-
-            let mut current_point = self.vertices[index];
-            while current_point != self.vertices[next_index] {
-                current_point = current_point.move_by(&unary_vector).unwrap();
-                points.push(current_point);
-            }
-        }
-        points
+            .flat_map(|(start, end)| {
+                let vector = Vector::<i64, DIMENSIONS>::from_points(start, end).unwrap();
+                let unary_vector = vector.normalize();
+                let mut current_point = *start;
+                let mut points = Vec::new();
+                while current_point != *end {
+                    current_point = current_point.move_by(&unary_vector).unwrap();
+                    points.push(current_point);
+                }
+                points
+            })
+            .collect()
     }
 }
 

@@ -93,14 +93,23 @@ fn calculate_boundary_points() {
 #[test]
 fn area() {
     let vertices = vec![
-        Point::<i32, 2>::new([1, 6]),
-        Point::<i32, 2>::new([3, 1]),
-        Point::<i32, 2>::new([7, 2]),
-        Point::<i32, 2>::new([4, 4]),
-        Point::<i32, 2>::new([8, 5]),
+        Point::<i32, 2>::new([0, 0]),
+        Point::<i32, 2>::new([6, 0]),
+        Point::<i32, 2>::new([6, -5]),
+        Point::<i32, 2>::new([4, -5]),
+        Point::<i32, 2>::new([4, -7]),
+        Point::<i32, 2>::new([6, -7]),
+        Point::<i32, 2>::new([6, -9]),
+        Point::<i32, 2>::new([1, -9]),
+        Point::<i32, 2>::new([1, -7]),
+        Point::<i32, 2>::new([0, -7]),
+        Point::<i32, 2>::new([0, -5]),
+        Point::<i32, 2>::new([2, -5]),
+        Point::<i32, 2>::new([2, -2]),
+        Point::<i32, 2>::new([0, -2]),
     ];
     let polygon = OrthogonalPolygon2D::from_vertices(vertices);
-    assert_approx_eq!(polygon.area(), 16.5);
+    assert_approx_eq!(polygon.area(), 42.0);
 }
 
 // Tests for calculate_angle_between_vectors
