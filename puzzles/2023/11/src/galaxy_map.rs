@@ -1,5 +1,6 @@
 use aoc_geometry::point::Point;
 
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub struct GalaxyMap {
     galaxies: Vec<Point<usize, 2>>,
     empty_rows: Vec<usize>,

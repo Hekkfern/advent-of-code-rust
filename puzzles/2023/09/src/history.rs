@@ -1,3 +1,4 @@
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub struct History {
     sequence: Vec<i64>,
 }
@@ -8,12 +9,14 @@ impl History {
     }
 
     pub fn extrapolate_right(&self) -> i64 {
-        let next_level = Self::extrapolate_right_recursive(&self.sequence).expect("Should always have a next level");
+        let next_level = Self::extrapolate_right_recursive(&self.sequence)
+            .expect("Should always have a next level");
         self.sequence.last().unwrap() + next_level
     }
 
     pub fn extrapolate_left(&self) -> i64 {
-        let next_level = Self::extrapolate_left_recursive(&self.sequence).expect("Should always have a next level");
+        let next_level = Self::extrapolate_left_recursive(&self.sequence)
+            .expect("Should always have a next level");
         self.sequence.first().unwrap() - next_level
     }
 
@@ -39,7 +42,8 @@ impl History {
         match Self::extrapolate_right_recursive(&diffs) {
             Some(next_level) => diffs.last().unwrap() + next_level,
             None => diffs[0],
-        }.into()
+        }
+        .into()
     }
 
     // Private helper: recursive extrapolation to the left
@@ -51,6 +55,7 @@ impl History {
         match Self::extrapolate_left_recursive(&diffs) {
             Some(next_level) => diffs.first().unwrap() - next_level,
             None => diffs[0],
-        }.into()
+        }
+        .into()
     }
 }

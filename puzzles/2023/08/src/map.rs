@@ -3,6 +3,7 @@ use crate::network_node::{NetworkNode, NodeId};
 use num_integer::Integer;
 use std::collections::HashMap;
 
+#[derive(Eq, PartialEq, Debug)]
 pub struct Map {
     instructions: Vec<Instruction>,
     nodes: HashMap<NodeId, NetworkNode>,
