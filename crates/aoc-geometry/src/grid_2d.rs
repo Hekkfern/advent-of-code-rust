@@ -19,7 +19,7 @@ const COL_INDEX: usize = 1;
 /// # Type Parameters
 ///
 /// * `ValueType` - The type of values stored in the grid
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Grid2D<ValueType> {
     /// The underlying data storage for the grid. It stores data in column-major order, meaning the
     /// coordinates are (x, y) or (col, row).

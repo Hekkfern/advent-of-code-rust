@@ -1,3 +1,4 @@
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub struct Pattern {
     /// Stores the information of the rows of this pattern in binary format, where '1' means '#'
     /// and '0' means '.'.
