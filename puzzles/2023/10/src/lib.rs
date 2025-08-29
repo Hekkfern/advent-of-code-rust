@@ -2,6 +2,7 @@ mod pipe_type;
 
 use crate::pipe_type::PipeType;
 use aoc_geometry::grid_2d::Grid2D;
+use aoc_geometry::orthogonal_polygon_2d::OrthogonalPolygon2D;
 use aoc_geometry::point::Point;
 use aoc_geometry::vector::Vector;
 
@@ -131,6 +132,17 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let (field, start) = parse_input(params.input_data);
+    let mut current_position = get_starting_neighbor(&field, &start);
+    let mut previous_position = start;
+
+    let mut points: Vec<GridPosition> = vec![start];
+    while current_position != start {
+        let next_position = move_across_field(&field, &current_position, &previous_position);
+        previous_position = current_position;
+        current_position = next_position;
+        points.push(previous_position);
+    }
+    let polygon = OrthogonalPolygon2D::<usize>::from_vertices(points);
+    polygon.number_of_intrinsic_points().to_string()
 }

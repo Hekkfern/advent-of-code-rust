@@ -24,7 +24,7 @@ fn calculate_number_of_intrinsic_points_shape_1() {
         Point::<i32, 2>::new([0, -2]),
     ];
     let polygon = OrthogonalPolygon2D::from_vertices(vertices);
-    assert_eq!(polygon.calculate_number_of_intrinsic_points(), 24);
+    assert_eq!(polygon.number_of_intrinsic_points(), 24);
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn calculate_number_of_intrinsic_points_shape_2() {
         Point::<i32, 2>::new([1, 2]),
     ];
     let polygon = OrthogonalPolygon2D::from_vertices(vertices);
-    assert_eq!(polygon.calculate_number_of_intrinsic_points(), 1);
+    assert_eq!(polygon.number_of_intrinsic_points(), 1);
 }
 
 // Tests for perimeter
@@ -84,7 +84,7 @@ fn calculate_boundary_points() {
         Point::<i32, 2>::new([0, -2]),
     ];
     let polygon = OrthogonalPolygon2D::from_vertices(vertices);
-    let boundary_points = polygon.calculate_boundary_points();
+    let boundary_points = polygon.get_boundary_points();
     assert_eq!(boundary_points.len(), 38);
 }
 

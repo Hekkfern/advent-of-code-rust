@@ -26,7 +26,26 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
             vertices.len() >= 3,
             "A polygon must have at least 3 vertices."
         );
+        assert!(
+            Self::are_vertices_orthogonal(&vertices),
+            "The provided vertices do not form an orthogonal polygon."
+        );
         Self { vertices }
+    }
+
+    fn are_vertices_orthogonal(vertices: &Vec<Point<T, DIMENSIONS>>) -> bool {
+        let n = vertices.len();
+        for i in 0..n {
+            let current = &vertices[i];
+            let next = &vertices[(i + 1) % n];
+
+            let v = Vector::<i64, DIMENSIONS>::from_points(current, next).unwrap();
+
+            if !v.is_axis() {
+                return false;
+            }
+        }
+        true
     }
 
     /// Returns all the vertexes of this shape.
@@ -156,15 +175,15 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     /// # Returns
     ///
     /// The number of intrinsic points inside the shape.
-    pub fn calculate_number_of_intrinsic_points(&self) -> u64 {
-        let boundary_points = self.calculate_boundary_points();
+    pub fn number_of_intrinsic_points(&self) -> u64 {
+        let boundary_points = self.get_boundary_points();
         let boundary_count = boundary_points.len() as u64;
         let area = Self::calculate_arbitrary_polygon_area(&boundary_points);
         // Using Pick's Theorem: A = I + B/2 - 1  =>  I = A - B/2 + 1
         (area - (boundary_count as f64 * 0.5) + 1.0) as u64
     }
 
-    fn calculate_boundary_points(&self) -> Vec<Point<T, DIMENSIONS>> {
+    fn get_boundary_points(&self) -> Vec<Point<T, DIMENSIONS>> {
         let n = self.vertices.len();
         let mut points = Vec::with_capacity(n * 2);
 
