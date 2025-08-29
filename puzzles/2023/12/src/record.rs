@@ -4,6 +4,9 @@ enum ExpandedSpringStatus {
     GroupOfOperational,
 }
 
+const OPERATIONAL_SPRING: char = '.';
+const DAMAGED_SPRING: char = '#';
+
 #[derive(Eq, PartialEq, Hash, Debug)]
 pub struct Record {
     springs: String,
@@ -36,7 +39,9 @@ impl Record {
 
     pub fn solve_original(&self) -> u64 {
         // add extra operational springs in both sides
-        let extended_springs = format!(".{}.", self.springs).chars().collect::<Vec<_>>();
+        let extended_springs = format!("{OPERATIONAL_SPRING}{}{OPERATIONAL_SPRING}", self.springs)
+            .chars()
+            .collect::<Vec<_>>();
         // translate groupInfo
         let expanded_group_info = expand_contiguous_group_info(&self.contiguous_group_info, 1);
 
@@ -49,11 +54,11 @@ impl Record {
             let start_j = m.checked_sub(n - i).unwrap_or(0);
             for j in (start_j..m).rev() {
                 let mut value: u64 = 0;
-                if extended_springs[i] != '.'
+                if extended_springs[i] != OPERATIONAL_SPRING
                     && expanded_group_info[j] == ExpandedSpringStatus::OneDamaged
                 {
                     value = dp[i + 1][j + 1];
-                } else if extended_springs[i] != '#'
+                } else if extended_springs[i] != DAMAGED_SPRING
                     && expanded_group_info[j] == ExpandedSpringStatus::GroupOfOperational
                 {
                     value = dp[i + 1][j + 1] + dp[i + 1][j];
@@ -67,9 +72,12 @@ impl Record {
 
     pub fn solve_unfolded(&self) -> u64 {
         // create 4 more copies and add extra operational springs in both sides
-        let extended_springs = format!(".{0}?{0}?{0}?{0}?{0}.", self.springs)
-            .chars()
-            .collect::<Vec<_>>();
+        let extended_springs = format!(
+            "{OPERATIONAL_SPRING}{0}?{0}?{0}?{0}?{0}{OPERATIONAL_SPRING}",
+            self.springs
+        )
+        .chars()
+        .collect::<Vec<_>>();
         // translate groupInfo
         let expanded_group_info = expand_contiguous_group_info(&self.contiguous_group_info, 5);
 
@@ -82,11 +90,11 @@ impl Record {
             let start_j = m.checked_sub(n - i).unwrap_or(0);
             for j in (start_j..m).rev() {
                 let mut value: u64 = 0;
-                if extended_springs[i] != '.'
+                if extended_springs[i] != OPERATIONAL_SPRING
                     && expanded_group_info[j] == ExpandedSpringStatus::OneDamaged
                 {
                     value = dp[i + 1][j + 1];
-                } else if extended_springs[i] != '#'
+                } else if extended_springs[i] != DAMAGED_SPRING
                     && expanded_group_info[j] == ExpandedSpringStatus::GroupOfOperational
                 {
                     value = dp[i + 1][j + 1] + dp[i + 1][j];

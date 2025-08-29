@@ -2,17 +2,19 @@ mod pattern;
 
 use pattern::Pattern;
 
+const ROCK_CHARACTER: char = '#';
+
 fn parse_pattern(block: &str) -> Pattern {
     let mut rows: Vec<u64> = Vec::new();
     let mut cols: Vec<u64> = Vec::new();
     for line in block.lines() {
         let mut row_value: u64 = 0;
         for (col_idx, c) in line.trim().chars().enumerate() {
-            row_value = (row_value << 1) | if c == '#' { 1 } else { 0 };
+            row_value = (row_value << 1) | if c == ROCK_CHARACTER { 1 } else { 0 };
             if cols.len() == col_idx {
-                cols.push(if c == '#' { 1 } else { 0 });
+                cols.push(if c == ROCK_CHARACTER { 1 } else { 0 });
             } else {
-                cols[col_idx] = (cols[col_idx] << 1) | if c == '#' { 1 } else { 0 };
+                cols[col_idx] = (cols[col_idx] << 1) | if c == ROCK_CHARACTER { 1 } else { 0 };
             }
         }
         rows.push(row_value);

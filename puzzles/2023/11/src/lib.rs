@@ -5,6 +5,8 @@ use aoc_geometry::vector::Vector;
 use galaxy_map::GalaxyMap;
 use itertools::Itertools;
 
+const GALAXY_CHARACTER: char = '#';
+
 fn parse_input(input: &str) -> GalaxyMap {
     let mut galaxies = Vec::new();
     let mut empty_rows = Vec::new();
@@ -17,7 +19,7 @@ fn parse_input(input: &str) -> GalaxyMap {
         line.trim()
             .chars()
             .enumerate()
-            .filter(|(_, c)| *c == '#')
+            .filter(|(_, c)| *c == GALAXY_CHARACTER)
             .for_each(|(col_idx, _)| {
                 galaxies.push(Point::new([col_idx, row_idx]));
                 galaxies_per_column[col_idx] += 1;
