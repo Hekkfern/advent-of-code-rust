@@ -165,6 +165,11 @@ impl<T: PointCoordinate, const N: usize> Point<T, N> {
         }
         Some(Point::new(result))
     }
+
+    pub fn is_in(&self, axis: usize, position: T) -> bool {
+        assert!(axis < N, "Axis index out of bounds");
+        self.coordinates[axis] == position
+    }
 }
 
 /// Display formatting for points.

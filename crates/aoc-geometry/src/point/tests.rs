@@ -343,3 +343,28 @@ fn move_by_out_of_bounds() {
     let result_opt = point.move_by(&vector);
     assert_none!(result_opt);
 }
+
+// Tests for is_in
+
+#[test]
+fn is_in_matching_axis_and_value() {
+    let point = p(5, -3, 7);
+    assert!(point.is_in(0, 5));
+    assert!(point.is_in(1, -3));
+    assert!(point.is_in(2, 7));
+}
+
+#[test]
+fn is_in_non_matching_value() {
+    let point = p(1, 2, 3);
+    assert!(!point.is_in(0, 2));
+    assert!(!point.is_in(1, 3));
+    assert!(!point.is_in(2, 1));
+}
+
+#[test]
+#[should_panic(expected = "Axis index out of bounds")]
+fn is_in_out_of_bounds_axis_panics() {
+    let point = p(1, 2, 3);
+    let _result = point.is_in(3, 0);
+}

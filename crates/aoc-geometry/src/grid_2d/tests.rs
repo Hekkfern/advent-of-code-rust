@@ -359,37 +359,37 @@ fn flip_vertical_3x2() {
 // Tests for position_status
 
 #[test]
-fn test_position_status_inside_center() {
+fn position_status_inside_center() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(1, 1)), PositionStatus::Inside);
 }
 
 #[test]
-fn test_position_status_on_border_0_1() {
+fn position_status_on_border_0_1() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(0, 1)), PositionStatus::OnBorder);
 }
 
 #[test]
-fn test_position_status_on_border_1_0() {
+fn position_status_on_border_1_0() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(1, 0)), PositionStatus::OnBorder);
 }
 
 #[test]
-fn test_position_status_on_border_2_2() {
+fn position_status_on_border_2_2() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(2, 2)), PositionStatus::OnBorder);
 }
 
 #[test]
-fn test_position_status_outside_3_0() {
+fn position_status_outside_3_0() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(3, 0)), PositionStatus::Outside);
 }
 
 #[test]
-fn test_position_status_outside_0_3() {
+fn position_status_outside_0_3() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert_eq!(grid.position_status(&coord(0, 3)), PositionStatus::Outside);
 }
@@ -397,7 +397,7 @@ fn test_position_status_outside_0_3() {
 // Tests for is_outside
 
 #[test]
-fn test_is_outside_inside() {
+fn is_outside_inside() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(!grid.is_outside(&coord(0, 0)));
     assert!(!grid.is_outside(&coord(1, 1)));
@@ -405,7 +405,7 @@ fn test_is_outside_inside() {
 }
 
 #[test]
-fn test_is_outside_outside() {
+fn is_outside_outside() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(grid.is_outside(&coord(3, 0)));
     assert!(grid.is_outside(&coord(0, 3)));
@@ -414,7 +414,7 @@ fn test_is_outside_outside() {
 // Tests for contains
 
 #[test]
-fn test_contains_true() {
+fn contains_true() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(grid.contains(&coord(0, 0)));
     assert!(grid.contains(&coord(1, 1)));
@@ -422,7 +422,7 @@ fn test_contains_true() {
 }
 
 #[test]
-fn test_contains_false() {
+fn contains_false() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     assert!(!grid.contains(&coord(3, 0)));
     assert!(!grid.contains(&coord(0, 3)));
@@ -431,7 +431,7 @@ fn test_contains_false() {
 // Tests for get_neighbors
 
 #[test]
-fn test_get_neighbors_center() {
+fn get_neighbors_center() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     let neighbors = grid.get_neighbors(&coord(1, 1));
     let expected: HashSet<_> = [coord(1, 2), coord(1, 0), coord(2, 1), coord(0, 1)]
@@ -442,7 +442,7 @@ fn test_get_neighbors_center() {
 }
 
 #[test]
-fn test_get_neighbors_corner() {
+fn get_neighbors_corner() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     let neighbors = grid.get_neighbors(&coord(0, 0));
     let expected: HashSet<_> = [coord(0, 1), coord(1, 0)].into_iter().collect();
@@ -451,7 +451,7 @@ fn test_get_neighbors_corner() {
 }
 
 #[test]
-fn test_get_neighbors_bottom_edge() {
+fn get_neighbors_bottom_edge() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     let neighbors = grid.get_neighbors(&coord(1, 0));
     let expected: HashSet<_> = [coord(1, 1), coord(2, 0), coord(0, 0)]
@@ -462,11 +462,29 @@ fn test_get_neighbors_bottom_edge() {
 }
 
 #[test]
-fn test_get_neighbors_side_edge() {
+fn get_neighbors_side_edge() {
     let grid = Grid2D::from_single_vec(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     let neighbors = grid.get_neighbors(&coord(0, 1));
     let expected: HashSet<_> = [coord(0, 2), coord(0, 0), coord(1, 1)]
         .into_iter()
         .collect();
     assert_eq!(neighbors, expected);
+}
+
+// Tests for iter_all
+
+#[test]
+fn iter_all() {
+    let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    let elements: Vec<(Coordinate, i32)> = grid
+        .iter_all()
+        .map(|(coord, &val)| (coord, val))
+        .collect();
+    assert_eq!(elements.len(), 6);
+    assert!(elements.contains(&(coord(0, 0), 1)));
+    assert!(elements.contains(&(coord(1, 0), 2)));
+    assert!(elements.contains(&(coord(2, 0), 3)));
+    assert!(elements.contains(&(coord(0, 1), 4)));
+    assert!(elements.contains(&(coord(1, 1), 5)));
+    assert!(elements.contains(&(coord(2, 1), 6)));
 }

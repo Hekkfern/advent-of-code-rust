@@ -187,7 +187,7 @@ impl<ValueType> Grid2D<ValueType> {
     ///
     /// # Arguments
     ///
-    /// * `coord` - The N-dimensional coordinates
+    /// * `coord` - The coordinates to check.
     ///
     /// # Returns
     ///
@@ -200,6 +200,15 @@ impl<ValueType> Grid2D<ValueType> {
         coords[1] < self.get_width() && coords[0] < self.get_height()
     }
 
+    /// Determines whether the given coordinates are specifically on the border of the grid.
+    ///
+    /// # Arguments
+    ///
+    /// * `coord` - The coordinates to check.
+    ///
+    /// # Returns
+    ///
+    /// True if the point is on the border of the grid, false otherwise.
     pub fn is_on_border(&self, coords: &Coordinate) -> bool {
         ((coords[0] == 0 || coords[0] == self.get_width() - 1) && coords[1] < self.get_height())
             || ((coords[1] == 0 || coords[1] == self.get_height() - 1)
@@ -210,7 +219,7 @@ impl<ValueType> Grid2D<ValueType> {
     ///
     /// # Arguments
     ///
-    /// * `coord` - The N-dimensional coordinates
+    /// * `coord` - The coordinates to check.
     ///
     /// # Returns
     ///
@@ -423,8 +432,10 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// An iterator over references to the values in the grid.
-    pub fn iter(&self) -> ndarray::iter::Iter<ValueType, ndarray::Ix2> {
-        self.data.iter()
+    pub fn iter_all(&self) -> impl Iterator<Item = (Coordinate, &ValueType)> {
+        self.data
+            .indexed_iter()
+            .map(|(coords, value)| (Coordinate::new([coords.1, coords.0]), value))
     }
 
     /// Returns a mutable iterator over all values in the grid.
@@ -432,8 +443,10 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A mutable iterator over references to the values in the grid.
-    pub fn iter_mut(&mut self) -> ndarray::iter::IterMut<ValueType, ndarray::Ix2> {
-        self.data.iter_mut()
+    pub fn iter_mut_all(&mut self) -> impl Iterator<Item = (Coordinate, &mut ValueType)> {
+        self.data
+            .indexed_iter_mut()
+            .map(|(coords, value)| (Coordinate::new([coords.1, coords.0]), value))
     }
 
     /// Attempts to move a position in the grid according to a given direction.
