@@ -483,6 +483,26 @@ impl<ValueType> Grid2D<ValueType> {
         }
         Some(Coordinate::new(new_coords))
     }
+
+    pub fn get_row(&self, index: usize) -> ndarray::ArrayView1<'_, ValueType> {
+        assert!(index < self.get_height(), "Row index out of bounds");
+        self.data.row(index)
+    }
+
+    pub fn get_row_mut(&mut self, index: usize) -> ndarray::ArrayViewMut1<'_, ValueType> {
+        assert!(index < self.get_height(), "Row index out of bounds");
+        self.data.row_mut(index)
+    }
+
+    pub fn get_column(&self, index: usize) -> ndarray::ArrayView1<'_, ValueType> {
+        assert!(index < self.get_width(), "Column index out of bounds");
+        self.data.column(index)
+    }
+
+    pub fn get_column_mut(&mut self, index: usize) -> ndarray::ArrayViewMut1<'_, ValueType> {
+        assert!(index < self.get_width(), "Column index out of bounds");
+        self.data.column_mut(index)
+    }
 }
 
 /// Index operation for grids using Point coordinates.

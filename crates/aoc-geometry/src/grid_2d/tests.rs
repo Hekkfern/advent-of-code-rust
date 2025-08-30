@@ -471,15 +471,36 @@ fn get_neighbors_side_edge() {
     assert_eq!(neighbors, expected);
 }
 
+// Tests for set
+
+#[test]
+fn set_value() {
+    let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    {
+        assert!(grid.set(&coord(0, 0), &10));
+        assert_eq!(grid.get(&coord(0, 0)), Some(&10));
+        assert_eq!(grid[&coord(0, 0)], 10);
+    }
+    {
+        grid[&coord(1, 0)] = 20;
+        assert_eq!(grid.get(&coord(1, 0)), Some(&20));
+        assert_eq!(grid[&coord(1, 0)], 20);
+    }
+}
+
+#[test]
+fn set_out_of_bounds() {
+    let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    assert!(!grid.set(&coord(17, 3), &10));
+}
+
 // Tests for iter_all
 
 #[test]
 fn iter_all() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let elements: Vec<(Coordinate, i32)> = grid
-        .iter_all()
-        .map(|(coord, &val)| (coord, val))
-        .collect();
+    let elements: Vec<(Coordinate, i32)> =
+        grid.iter_all().map(|(coord, &val)| (coord, val)).collect();
     assert_eq!(elements.len(), 6);
     assert!(elements.contains(&(coord(0, 0), 1)));
     assert!(elements.contains(&(coord(1, 0), 2)));
@@ -487,4 +508,43 @@ fn iter_all() {
     assert!(elements.contains(&(coord(0, 1), 4)));
     assert!(elements.contains(&(coord(1, 1), 5)));
     assert!(elements.contains(&(coord(2, 1), 6)));
+}
+
+// Tests for get_row
+
+#[test]
+fn get_row() {
+    let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    let row_0: Vec<&i32> = grid.get_row(0).into_iter().collect();
+    assert_eq!(row_0, vec![&1, &2, &3]);
+}
+
+#[test]
+fn get_row_mut() {
+    let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    for val in grid.get_row_mut(0) {
+        *val += 10;
+    }
+    assert_eq!(grid.get(&coord(0, 0)), Some(&11));
+    assert_eq!(grid.get(&coord(1, 0)), Some(&12));
+    assert_eq!(grid.get(&coord(2, 0)), Some(&13));
+}
+
+// Tests for get_row
+
+#[test]
+fn get_column() {
+    let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    let row_0: Vec<&i32> = grid.get_column(1).into_iter().collect();
+    assert_eq!(row_0, vec![&2, &5]);
+}
+
+#[test]
+fn get_column_mut() {
+    let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    for val in grid.get_column_mut(1) {
+        *val += 10;
+    }
+    assert_eq!(grid.get(&coord(1, 0)), Some(&12));
+    assert_eq!(grid.get(&coord(1, 1)), Some(&15));
 }
