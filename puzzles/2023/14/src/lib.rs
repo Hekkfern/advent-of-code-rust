@@ -39,6 +39,13 @@ pub struct Part2Parameters {
     pub input_data: &'static str,
 }
 
+fn execute_one_cycle(rocks: &mut Rocks) {
+    rocks.shift_north();
+    rocks.shift_west();
+    rocks.shift_south();
+    rocks.shift_east();
+}
+
 /// Solves Part 2 of the puzzle
 ///
 /// # Arguments
@@ -49,6 +56,7 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let mut rocks = parse_input(params.input_data);
+    aoc_utils::cache::loop_cache::run(&mut rocks, 1_000_000_000, |r| execute_one_cycle(r));
+    rocks.calculate_load().to_string()
 }

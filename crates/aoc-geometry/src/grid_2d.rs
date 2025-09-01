@@ -19,7 +19,7 @@ const COL_INDEX: usize = 1;
 /// # Type Parameters
 ///
 /// * `ValueType` - The type of values stored in the grid
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct Grid2D<ValueType> {
     /// The underlying data storage for the grid. It stores data in column-major order, meaning the
     /// coordinates are (x, y) or (col, row).
@@ -499,7 +499,10 @@ impl<ValueType> Grid2D<ValueType> {
         self.data.column(index).into_iter()
     }
 
-    pub fn get_column_mut(&mut self, index: usize) -> impl DoubleEndedIterator<Item = &mut ValueType> {
+    pub fn get_column_mut(
+        &mut self,
+        index: usize,
+    ) -> impl DoubleEndedIterator<Item = &mut ValueType> {
         assert!(index < self.get_width(), "Column index out of bounds");
         self.data.column_mut(index).into_iter()
     }

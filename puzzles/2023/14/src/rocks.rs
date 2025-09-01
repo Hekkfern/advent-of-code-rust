@@ -1,6 +1,6 @@
 use aoc_geometry::grid_2d::Grid2D;
 
-#[derive(Eq, PartialEq, Hash, Debug)]
+#[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum GridCell {
     Empty,
     RoundedRock,
@@ -25,7 +25,7 @@ impl From<char> for GridCell {
     }
 }
 
-#[derive(Eq, PartialEq, Hash, Debug)]
+#[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub struct Rocks {
     grid: Grid2D<GridCell>,
 }
@@ -38,7 +38,7 @@ impl Rocks {
     // Shared helper to shift a mutable line of GridCell
     fn shift_line(line: &mut [&mut GridCell]) {
         let mut dst = 0;
-        let mut src = 0;
+        let mut src;
         while dst < line.len() {
             // Find next empty space
             while dst < line.len() && *line[dst] != GridCell::Empty {
@@ -89,7 +89,7 @@ impl Rocks {
     pub fn shift_west(&mut self) {
         let height = self.grid.get_height();
         for row in 0..height {
-            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).rev().collect();
+            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }
@@ -97,7 +97,7 @@ impl Rocks {
     pub fn shift_east(&mut self) {
         let height = self.grid.get_height();
         for row in 0..height {
-            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).collect();
+            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).rev().collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }
