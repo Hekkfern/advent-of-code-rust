@@ -515,7 +515,7 @@ fn iter_all() {
 #[test]
 fn get_row() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let row_0: Vec<&i32> = grid.get_row(0).into_iter().collect();
+    let row_0: Vec<&i32> = grid.get_row(0).collect();
     assert_eq!(row_0, vec![&1, &2, &3]);
 }
 
@@ -535,7 +535,7 @@ fn get_row_mut() {
 #[test]
 fn get_column() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let row_0: Vec<&i32> = grid.get_column(1).into_iter().collect();
+    let row_0: Vec<&i32> = grid.get_column(1).collect();
     assert_eq!(row_0, vec![&2, &5]);
 }
 

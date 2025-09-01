@@ -484,24 +484,24 @@ impl<ValueType> Grid2D<ValueType> {
         Some(Coordinate::new(new_coords))
     }
 
-    pub fn get_row(&self, index: usize) -> ndarray::ArrayView1<'_, ValueType> {
+    pub fn get_row(&self, index: usize) -> impl DoubleEndedIterator<Item = &ValueType> {
         assert!(index < self.get_height(), "Row index out of bounds");
-        self.data.row(index)
+        self.data.row(index).into_iter()
     }
 
-    pub fn get_row_mut(&mut self, index: usize) -> ndarray::ArrayViewMut1<'_, ValueType> {
+    pub fn get_row_mut(&mut self, index: usize) -> impl DoubleEndedIterator<Item = &mut ValueType> {
         assert!(index < self.get_height(), "Row index out of bounds");
-        self.data.row_mut(index)
+        self.data.row_mut(index).into_iter()
     }
 
-    pub fn get_column(&self, index: usize) -> ndarray::ArrayView1<'_, ValueType> {
+    pub fn get_column(&self, index: usize) -> impl DoubleEndedIterator<Item = &ValueType> {
         assert!(index < self.get_width(), "Column index out of bounds");
-        self.data.column(index)
+        self.data.column(index).into_iter()
     }
 
-    pub fn get_column_mut(&mut self, index: usize) -> ndarray::ArrayViewMut1<'_, ValueType> {
+    pub fn get_column_mut(&mut self, index: usize) -> impl DoubleEndedIterator<Item = &mut ValueType> {
         assert!(index < self.get_width(), "Column index out of bounds");
-        self.data.column_mut(index)
+        self.data.column_mut(index).into_iter()
     }
 }
 
