@@ -6,6 +6,7 @@ use crate::tile_type::TileType;
 use aoc_geometry::{CardinalDirection2D, Vector};
 use aoc_geometry::{Grid2D, GridCoordinate2D};
 use std::collections::HashSet;
+use rayon::prelude::*;
 
 type TileGrid = Grid2D<TileType>;
 
@@ -169,7 +170,7 @@ fn get_list_of_starting_beams(tile_grid: &TileGrid) -> Vec<Beam> {
 pub fn solve_part2(params: Part2Parameters) -> String {
     let tile_grid = parse_input(params.input_data);
     get_list_of_starting_beams(&tile_grid)
-        .iter()
+        .par_iter()
         .map(|beam| -> u64 {
             let mut analyzed_beams = HashSet::new();
             analyzed_beams.insert(beam.clone());

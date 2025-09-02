@@ -310,6 +310,7 @@ dependencies = [
  "assertables",
  "include_dir",
  "pretty_assertions",
+ "rayon",
 ]
 
 [[package]]
