@@ -6,7 +6,7 @@ use crate::PositionStatus;
 use crate::Vector;
 use std::collections::HashSet;
 
-type Coordinate = Point<usize, 2>;
+pub type GridCoordinate2D = Point<usize, 2>;
 
 const DIMENSIONS: usize = 2;
 const ROW_INDEX: usize = 0;
@@ -145,7 +145,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A reference to the element at the specified position, or `None` if out of bounds.
-    pub fn get(&self, coords: &Coordinate) -> Option<&ValueType> {
+    pub fn get(&self, coords: &GridCoordinate2D) -> Option<&ValueType> {
         self.data.get((coords[1], coords[0]))
     }
 
@@ -158,7 +158,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A mutable reference to the element at the specified position, or `None` if out of bounds.
-    pub fn get_mut(&mut self, coords: &Coordinate) -> Option<&mut ValueType> {
+    pub fn get_mut(&mut self, coords: &GridCoordinate2D) -> Option<&mut ValueType> {
         self.data.get_mut((coords[1], coords[0]))
     }
 
@@ -172,7 +172,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// `true` if the value was set successfully, `false` if coordinates are out of bounds.
-    pub fn set(&mut self, coords: &Coordinate, value: &ValueType) -> bool
+    pub fn set(&mut self, coords: &GridCoordinate2D, value: &ValueType) -> bool
     where
         ValueType: Clone,
     {
@@ -196,7 +196,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Notes
     ///
     /// * This function is the inverse of `is_outside()`.
-    pub fn contains(&self, coords: &Coordinate) -> bool {
+    pub fn contains(&self, coords: &GridCoordinate2D) -> bool {
         coords[1] < self.get_width() && coords[0] < self.get_height()
     }
 
@@ -209,7 +209,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// True if the point is on the border of the grid, false otherwise.
-    pub fn is_on_border(&self, coords: &Coordinate) -> bool {
+    pub fn is_on_border(&self, coords: &GridCoordinate2D) -> bool {
         ((coords[0] == 0 || coords[0] == self.get_width() - 1) && coords[1] < self.get_height())
             || ((coords[1] == 0 || coords[1] == self.get_height() - 1)
                 && coords[0] < self.get_width())
@@ -228,7 +228,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Notes
     ///
     /// * This function is the inverse of `contains()`.
-    pub fn is_outside(&self, coords: &Coordinate) -> bool {
+    pub fn is_outside(&self, coords: &GridCoordinate2D) -> bool {
         !self.contains(coords)
     }
 
@@ -246,7 +246,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// - `Inside`: coordinates are within the grid and not on any border
     /// - `OnBorder`: coordinates are on the edge/border of the grid
     /// - `Outside`: coordinates are outside the grid bounds
-    pub fn position_status(&self, coords: &Coordinate) -> PositionStatus {
+    pub fn position_status(&self, coords: &GridCoordinate2D) -> PositionStatus {
         if self.is_outside(coords) {
             PositionStatus::Outside
         } else if self.is_on_border(coords) {
@@ -287,13 +287,13 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// The coordinates of the first occurrence, or `None` if not found.
-    pub fn find_first(&self, value: &ValueType) -> Option<Coordinate>
+    pub fn find_first(&self, value: &ValueType) -> Option<GridCoordinate2D>
     where
         ValueType: PartialEq,
     {
         for ((row, col), v) in self.data.indexed_iter() {
             if v == value {
-                return Some(Coordinate::new([col, row]));
+                return Some(GridCoordinate2D::new([col, row]));
             }
         }
         None
@@ -308,7 +308,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A vector of coordinates for each occurrence of the value.
-    pub fn find_all(&self, value: &ValueType) -> Vec<Coordinate>
+    pub fn find_all(&self, value: &ValueType) -> Vec<GridCoordinate2D>
     where
         ValueType: PartialEq,
     {
@@ -316,7 +316,7 @@ impl<ValueType> Grid2D<ValueType> {
             .indexed_iter()
             .filter_map(|((row, col), v)| {
                 if v == value {
-                    Some(Coordinate::new([col, row]))
+                    Some(GridCoordinate2D::new([col, row]))
                 } else {
                     None
                 }
@@ -324,7 +324,7 @@ impl<ValueType> Grid2D<ValueType> {
             .collect()
     }
 
-    pub fn subgrid(&self, start: &Coordinate, end: &Coordinate) -> Self
+    pub fn subgrid(&self, start: &GridCoordinate2D, end: &GridCoordinate2D) -> Self
     where
         ValueType: Clone,
     {
@@ -347,7 +347,7 @@ impl<ValueType> Grid2D<ValueType> {
     pub fn expand(
         &mut self,
         new_dimensions: &[usize; DIMENSIONS],
-        start: &Coordinate,
+        start: &GridCoordinate2D,
         default_value: &ValueType,
     ) where
         ValueType: Clone,
@@ -384,7 +384,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A list of valid neighboring coordinates.
-    pub fn get_neighbors(&self, coords: &Coordinate) -> HashSet<Coordinate> {
+    pub fn get_neighbors(&self, coords: &GridCoordinate2D) -> HashSet<GridCoordinate2D> {
         let mut neighbors = HashSet::new();
         let directions = [
             Vector::<i8, 2>::new([0, 1]),
@@ -432,10 +432,10 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// An iterator over references to the values in the grid.
-    pub fn iter_all(&self) -> impl Iterator<Item = (Coordinate, &ValueType)> {
+    pub fn iter_all(&self) -> impl Iterator<Item = (GridCoordinate2D, &ValueType)> {
         self.data
             .indexed_iter()
-            .map(|(coords, value)| (Coordinate::new([coords.1, coords.0]), value))
+            .map(|(coords, value)| (GridCoordinate2D::new([coords.1, coords.0]), value))
     }
 
     /// Returns a mutable iterator over all values in the grid.
@@ -443,10 +443,10 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// A mutable iterator over references to the values in the grid.
-    pub fn iter_mut_all(&mut self) -> impl Iterator<Item = (Coordinate, &mut ValueType)> {
+    pub fn iter_mut_all(&mut self) -> impl Iterator<Item = (GridCoordinate2D, &mut ValueType)> {
         self.data
             .indexed_iter_mut()
-            .map(|(coords, value)| (Coordinate::new([coords.1, coords.0]), value))
+            .map(|(coords, value)| (GridCoordinate2D::new([coords.1, coords.0]), value))
     }
 
     /// Attempts to move a position in the grid according to a given direction.
@@ -459,7 +459,7 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// `Some(new_coords)` if the move is valid, or `None` if out of bounds.
-    pub fn try_move(&self, position: &Coordinate, direction: &Vector<i8, 2>) -> Option<Coordinate> {
+    pub fn try_move(&self, position: &GridCoordinate2D, direction: &Vector<i8, 2>) -> Option<GridCoordinate2D> {
         assert!(self.contains(position), "Current position is out of bounds");
         assert!(
             direction.is_normalized() && direction.is_axis(),
@@ -481,7 +481,7 @@ impl<ValueType> Grid2D<ValueType> {
             }
             new_coords[1] = yi as usize;
         }
-        Some(Coordinate::new(new_coords))
+        Some(GridCoordinate2D::new(new_coords))
     }
 
     pub fn get_row(&self, index: usize) -> impl DoubleEndedIterator<Item = &ValueType> {
@@ -509,7 +509,7 @@ impl<ValueType> Grid2D<ValueType> {
 }
 
 /// Index operation for grids using Point coordinates.
-impl<ValueType> std::ops::Index<&Coordinate> for Grid2D<ValueType> {
+impl<ValueType> std::ops::Index<&GridCoordinate2D> for Grid2D<ValueType> {
     type Output = ValueType;
 
     /// Gets the element at the specified coordinates.
@@ -517,19 +517,19 @@ impl<ValueType> std::ops::Index<&Coordinate> for Grid2D<ValueType> {
     /// # Panics
     ///
     /// Panics if the coordinates are out of bounds.
-    fn index(&self, coords: &Coordinate) -> &Self::Output {
+    fn index(&self, coords: &GridCoordinate2D) -> &Self::Output {
         self.get(coords).expect("Index out of bounds")
     }
 }
 
 /// Mutable index operation for grids using Point coordinates.
-impl<ValueType> std::ops::IndexMut<&Coordinate> for Grid2D<ValueType> {
+impl<ValueType> std::ops::IndexMut<&GridCoordinate2D> for Grid2D<ValueType> {
     /// Gets a mutable reference to the element at the specified coordinates.
     ///
     /// # Panics
     ///
     /// Panics if the coordinates are out of bounds.
-    fn index_mut(&mut self, coords: &Coordinate) -> &mut Self::Output {
+    fn index_mut(&mut self, coords: &GridCoordinate2D) -> &mut Self::Output {
         self.get_mut(coords).expect("Index out of bounds")
     }
 }

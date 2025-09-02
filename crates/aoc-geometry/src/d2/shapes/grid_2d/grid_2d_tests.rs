@@ -3,8 +3,8 @@ use assertables::assert_some;
 use pretty_assertions::assert_eq;
 use std::collections::HashSet;
 
-fn coord(x: usize, y: usize) -> Coordinate {
-    Coordinate::new([x, y])
+fn coord(x: usize, y: usize) -> GridCoordinate2D {
+    GridCoordinate2D::new([x, y])
 }
 
 // Tests for from_default_value
@@ -499,7 +499,7 @@ fn set_out_of_bounds() {
 #[test]
 fn iter_all() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let elements: Vec<(Coordinate, i32)> =
+    let elements: Vec<(GridCoordinate2D, i32)> =
         grid.iter_all().map(|(coord, &val)| (coord, val)).collect();
     assert_eq!(elements.len(), 6);
     assert!(elements.contains(&(coord(0, 0), 1)));
