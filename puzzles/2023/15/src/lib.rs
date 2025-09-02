@@ -67,17 +67,18 @@ pub fn solve_part2(params: Part2Parameters) -> String {
     book.resize_with(NUM_BOXES, Vec::new);
     // fill book based on input data
     params.input_data.trim().split(',').for_each(|s| {
-        let symbol_position = s.find(|c| "=-".contains(c)).unwrap();
-        let label = &s[..symbol_position];
-        let lens_box = book.get_mut(calculate_hash(label) as usize).unwrap();
-        match s.chars().nth(symbol_position).unwrap() {
+        let (label, op, arg) = {
+            let mut chars = s.chars();
+            let pos = s.find(|c| c == '=' || c == '-').unwrap();
+            let label = &s[..pos];
+            let op = chars.nth(pos).unwrap();
+            let arg = s.get(pos + 1..);
+            (label, op, arg)
+        };
+        let lens_box = &mut book[calculate_hash(label) as usize];
+        match op {
             '=' => {
-                let focal_length = s
-                    .chars()
-                    .nth(symbol_position + 1)
-                    .unwrap()
-                    .to_digit(10)
-                    .unwrap() as u8;
+                let focal_length = arg.unwrap().parse::<u8>().unwrap();
                 match lens_box.iter_mut().find(|lens| lens.get_label() == label) {
                     Some(lens) => lens.set_focal_length(focal_length),
                     None => lens_box.push(Lens::new(label, focal_length)),
