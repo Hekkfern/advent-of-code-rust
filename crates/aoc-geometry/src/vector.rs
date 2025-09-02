@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+mod vector_tests;
 
 use crate::point::Point;
 use crate::point_coordinate::PointCoordinate;

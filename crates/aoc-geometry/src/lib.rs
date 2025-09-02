@@ -1,5 +1,5 @@
 pub mod bounding_box;
-pub mod direction;
+pub mod axis_direction;
 pub mod grid_2d;
 pub mod hypercube;
 pub mod line;

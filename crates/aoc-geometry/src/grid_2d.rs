@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+mod grid_2d_tests;
 
 use crate::point::Point;
 use crate::position_status::PositionStatus;

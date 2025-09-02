@@ -1,7 +1,7 @@
 #[cfg(test)]
-mod tests;
+mod point_tests;
 
-use crate::direction::Direction;
+use crate::axis_direction::AxisDirection;
 use crate::point_coordinate::PointCoordinate;
 use crate::vector::Vector;
 use crate::vector_coordinate::VectorCoordinate;
@@ -49,12 +49,12 @@ impl<T: PointCoordinate, const N: usize> Point<T, N> {
         Self { coordinates }
     }
 
-    pub fn extremes(sides: [Direction; N]) -> Self {
+    pub fn extremes(sides: [AxisDirection; N]) -> Self {
         let mut coords = [T::zero(); N];
         for i in 0..N {
             coords[i] = match sides[i] {
-                Direction::Positive => T::max_value(),
-                Direction::Negative => T::min_value(),
+                AxisDirection::Positive => T::max_value(),
+                AxisDirection::Negative => T::min_value(),
             }
         }
         Point::new(coords)

@@ -134,14 +134,14 @@ fn new_with_extreme_values() {
 
 #[test]
 fn extremes_all_positive() {
-    let point = Point::<i32, DIMENSIONS>::extremes([Direction::Positive; DIMENSIONS]);
+    let point = Point::<i32, DIMENSIONS>::extremes([AxisDirection::Positive; DIMENSIONS]);
     assert!(!point.is_origin());
     assert_all!(point.get_coordinates().iter(), |x| x == &i32::MAX);
 }
 
 #[test]
 fn extremes_all_negative() {
-    let point = Point::<i32, DIMENSIONS>::extremes([Direction::Negative; DIMENSIONS]);
+    let point = Point::<i32, DIMENSIONS>::extremes([AxisDirection::Negative; DIMENSIONS]);
     assert!(!point.is_origin());
     assert_all!(point.get_coordinates().iter(), |x| x == &i32::MIN);
 }
@@ -149,9 +149,9 @@ fn extremes_all_negative() {
 #[test]
 fn extremes_mixed_values() {
     let point = Point::<i32, DIMENSIONS>::extremes([
-        Direction::Positive,
-        Direction::Negative,
-        Direction::Positive,
+        AxisDirection::Positive,
+        AxisDirection::Negative,
+        AxisDirection::Positive,
     ]);
     assert!(!point.is_origin());
     assert_eq!(point.get(0), &i32::MAX);

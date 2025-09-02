@@ -1,4 +1,4 @@
-use crate::direction::Direction;
+use crate::axis_direction::AxisDirection;
 use crate::point::Point;
 use crate::point_coordinate::PointCoordinate;
 use crate::position_status::PositionStatus;
@@ -156,14 +156,14 @@ impl<T: PointCoordinate, const N: usize> BoundingBox<T, N> {
     pub fn is_outside_for_axis_and_direction(
         &self,
         index: usize,
-        direction: Direction,
+        direction: AxisDirection,
         point: &Point<T, N>,
     ) -> bool {
         assert!(index < N, "Axis index out of bounds");
         let coordinate = *point.get(index);
         match direction {
-            Direction::Positive => coordinate > self.maximums[index],
-            Direction::Negative => coordinate < self.minimums[index],
+            AxisDirection::Positive => coordinate > self.maximums[index],
+            AxisDirection::Negative => coordinate < self.minimums[index],
         }
     }
 

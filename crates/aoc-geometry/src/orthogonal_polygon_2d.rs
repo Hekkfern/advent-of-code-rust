@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+mod orthogonal_polygon_2d_tests;
 
 use crate::orthogonal_line::OrthogonalLine;
 use crate::point::Point;

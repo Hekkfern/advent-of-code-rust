@@ -1,4 +1,4 @@
-use crate::direction::Direction;
+use crate::axis_direction::AxisDirection;
 use crate::point::Point;
 use crate::point_coordinate::PointCoordinate;
 use crate::vector::Vector;
@@ -146,9 +146,9 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
 
         // Determine direction (1 or -1) along the axis
         let direction = if start.get(axis) <= end.get(axis) {
-            Direction::Positive
+            AxisDirection::Positive
         } else {
-            Direction::Negative
+            AxisDirection::Negative
         };
 
         OrthogonalLineIterator {
@@ -169,7 +169,7 @@ pub struct OrthogonalLineIterator<T: PointCoordinate, const N: usize> {
     current: Point<T, N>,
     end: Point<T, N>,
     axis: usize,
-    direction: Direction,
+    direction: AxisDirection,
     finished: bool,
 }
 
@@ -191,7 +191,7 @@ impl<T: PointCoordinate, const N: usize> Iterator for OrthogonalLineIterator<T, 
 
         // Move one unit in the direction along the axis
         let mut next_coordinates = *self.current.get_coordinates();
-        if self.direction == Direction::Positive {
+        if self.direction == AxisDirection::Positive {
             next_coordinates[self.axis] = next_coordinates[self.axis] + T::one();
         } else {
             next_coordinates[self.axis] = next_coordinates[self.axis] - T::one();
