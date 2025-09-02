@@ -1,6 +1,6 @@
 mod rocks;
 
-use aoc_geometry::grid_2d::Grid2D;
+use aoc_geometry::Grid2D;
 use rocks::{GridCell, Rocks};
 
 fn parse_input(input: &str) -> Rocks {

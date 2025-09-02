@@ -1,10 +1,10 @@
 #[cfg(test)]
 mod point_tests;
 
-use crate::axis_direction::AxisDirection;
-use crate::point_coordinate::PointCoordinate;
-use crate::vector::Vector;
-use crate::vector_coordinate::VectorCoordinate;
+use crate::AxisDirection;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 use num_traits::cast::cast;
 use std::collections::HashSet;
 

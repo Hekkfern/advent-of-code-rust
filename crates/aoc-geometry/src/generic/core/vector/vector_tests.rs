@@ -1,5 +1,5 @@
 use super::*;
-use crate::point::Point;
+use crate::Point;
 use assertables::{assert_none, assert_some};
 use pretty_assertions::assert_eq;
 

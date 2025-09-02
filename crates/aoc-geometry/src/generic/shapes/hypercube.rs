@@ -1,9 +1,9 @@
-use crate::bounding_box::BoundingBox;
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::position_status::PositionStatus;
-use crate::vector::{Vector, VectorType};
-use crate::vector_coordinate::VectorCoordinate;
+use crate::BoundingBox;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::PositionStatus;
+use crate::{Vector, VectorType};
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 use std::collections::HashSet;
 
 /// A hypercube in N-dimensional space with coordinates of type T.

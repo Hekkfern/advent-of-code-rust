@@ -1,7 +1,7 @@
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::vector::Vector;
-use crate::vector_coordinate::VectorCoordinate;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_LINE: usize = 2;
 

@@ -1,7 +1,7 @@
-use crate::axis_direction::AxisDirection;
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::position_status::PositionStatus;
+use crate::AxisDirection;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::PositionStatus;
 
 /// A multidimensional bounding box that tracks the minimum and maximum coordinates across all dimensions.
 ///

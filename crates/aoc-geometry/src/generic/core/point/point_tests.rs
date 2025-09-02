@@ -1,5 +1,5 @@
 use super::*;
-use crate::vector::Vector;
+use crate::Vector;
 use assertables::{assert_all, assert_none, assert_some};
 use pretty_assertions::assert_eq;
 

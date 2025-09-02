@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod vector_tests;
 
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::vector_coordinate::VectorCoordinate;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 use num_traits::cast::cast;
 
 /// Classification of vector types based on their properties.

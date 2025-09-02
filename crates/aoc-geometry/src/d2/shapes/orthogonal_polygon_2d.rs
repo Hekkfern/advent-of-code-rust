@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod orthogonal_polygon_2d_tests;
 
-use crate::orthogonal_line::OrthogonalLine;
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::vector::Vector;
-use crate::vector_coordinate::VectorCoordinate;
+use crate::OrthogonalLine;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 use num_traits::cast::cast;
 
 const DIMENSIONS: usize = 2;

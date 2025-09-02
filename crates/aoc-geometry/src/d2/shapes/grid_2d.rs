@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod grid_2d_tests;
 
-use crate::point::Point;
-use crate::position_status::PositionStatus;
-use crate::vector::Vector;
+use crate::Point;
+use crate::PositionStatus;
+use crate::Vector;
 use std::collections::HashSet;
 
 type Coordinate = Point<usize, 2>;

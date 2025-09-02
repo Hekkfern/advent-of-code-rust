@@ -1,7 +1,7 @@
 mod galaxy_map;
 
-use aoc_geometry::point::Point;
-use aoc_geometry::vector::Vector;
+use aoc_geometry::Point;
+use aoc_geometry::Vector;
 use galaxy_map::GalaxyMap;
 use itertools::Itertools;
 

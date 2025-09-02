@@ -1,8 +1,8 @@
-use crate::axis_direction::AxisDirection;
-use crate::point::Point;
-use crate::point_coordinate::PointCoordinate;
-use crate::vector::Vector;
-use crate::vector_coordinate::VectorCoordinate;
+use crate::AxisDirection;
+use crate::Point;
+use crate::generic::core::point_coordinate::PointCoordinate;
+use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE: usize = 2;
 
@@ -117,7 +117,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         }
         panic!("Line is not aligned with any axis, all coordinates are zero.");
     }
-    
+
     pub fn contains_point(&self, point: &Point<T, N>) -> bool {
         let axis = self.get_axis();
         // Check if the point matches the fixed coordinates

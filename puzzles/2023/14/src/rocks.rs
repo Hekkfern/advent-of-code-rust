@@ -1,4 +1,4 @@
-use aoc_geometry::grid_2d::Grid2D;
+use aoc_geometry::Grid2D;
 
 #[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum GridCell {

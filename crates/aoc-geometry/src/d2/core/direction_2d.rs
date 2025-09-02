@@ -1,4 +1,4 @@
-use crate::vector::Vector;
+use crate::Vector;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Direction2D {

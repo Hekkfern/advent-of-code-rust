@@ -1,10 +1,10 @@
 mod pipe_type;
 
 use crate::pipe_type::PipeType;
-use aoc_geometry::grid_2d::Grid2D;
-use aoc_geometry::orthogonal_polygon_2d::OrthogonalPolygon2D;
-use aoc_geometry::point::Point;
-use aoc_geometry::vector::Vector;
+use aoc_geometry::Grid2D;
+use aoc_geometry::OrthogonalPolygon2D;
+use aoc_geometry::Point;
+use aoc_geometry::Vector;
 
 type Field = Grid2D<PipeType>;
 type VectorDirection = Vector<i8, 2>;

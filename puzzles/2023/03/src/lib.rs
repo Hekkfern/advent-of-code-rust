@@ -1,7 +1,7 @@
 use crate::part::Part;
 use crate::symbol::Symbol;
-use aoc_geometry::point::Point;
-use aoc_geometry::vector::Vector;
+use aoc_geometry::Point;
+use aoc_geometry::Vector;
 use rayon::prelude::*;
 
 mod part;

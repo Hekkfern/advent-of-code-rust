@@ -1,4 +1,4 @@
-use aoc_geometry::point::Point;
+use aoc_geometry::Point;
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct Part {
