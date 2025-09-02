@@ -10,3 +10,5 @@ pub mod position_status;
 pub mod vector;
 mod vector_coordinate;
 pub mod orthogonal_polygon_2d;
+pub mod cardinal_direction_2d;
+pub mod direction_2d;
