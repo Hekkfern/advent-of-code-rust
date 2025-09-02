@@ -130,6 +130,33 @@ pub struct Part2Parameters {
     pub input_data: &'static str,
 }
 
+fn get_list_of_starting_beams(tile_grid: &TileGrid) -> Vec<Beam> {
+    let mut beams = Vec::new();
+    let width = tile_grid.get_width();
+    let height = tile_grid.get_height();
+    for x in 0..width {
+        beams.push(Beam::new(
+            aoc_geometry::Point::new([x, height - 1]),
+            CardinalDirection2D::Down,
+        ));
+        beams.push(Beam::new(
+            aoc_geometry::Point::new([x, 0]),
+            CardinalDirection2D::Up,
+        ));
+    }
+    for y in 0..height {
+        beams.push(Beam::new(
+            aoc_geometry::Point::new([0, y]),
+            CardinalDirection2D::Right,
+        ));
+        beams.push(Beam::new(
+            aoc_geometry::Point::new([width - 1, y]),
+            CardinalDirection2D::Left,
+        ));
+    }
+    beams
+}
+
 /// Solves Part 2 of the puzzle
 ///
 /// # Arguments
@@ -140,6 +167,18 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let tile_grid = parse_input(params.input_data);
+    get_list_of_starting_beams(&tile_grid)
+        .iter()
+        .map(|beam| -> u64 {
+            let mut analyzed_beams = HashSet::new();
+            analyzed_beams.insert(beam.clone());
+            let mut energized_tiles = HashSet::new();
+            energized_tiles.insert(*beam.get_coordinates());
+            process_recursively(&tile_grid, beam, &mut energized_tiles, &mut analyzed_beams);
+            energized_tiles.len() as u64
+        })
+        .max()
+        .unwrap()
+        .to_string()
 }
