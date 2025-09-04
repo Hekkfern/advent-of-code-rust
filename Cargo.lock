@@ -325,6 +325,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2023-18"
+version = "1.0.0"
+dependencies = [
+ "aoc-geometry",
+ "aoc-utils",
+ "assertables",
+ "include_dir",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "aoc-2024-01"
 version = "1.0.0"
 dependencies = [

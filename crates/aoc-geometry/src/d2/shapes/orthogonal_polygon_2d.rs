@@ -3,8 +3,8 @@ mod orthogonal_polygon_2d_tests;
 
 use crate::OrthogonalLine;
 use crate::Point;
-use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::Vector;
+use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
 use num_traits::cast::cast;
 
@@ -72,10 +72,14 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
                     .skip(1)
                     .take(perimeter_points.len()),
             )
-            .fold((T::zero(), T::zero()), |(left, right), (a, b)| {
-                (left + a[0] * b[1], right + b[0] * a[1])
+            .fold((0, 0), |(left, right): (i128, i128), (a, b)| {
+                (
+                    left + cast::<T, i128>(a[0]).unwrap() * cast::<T, i128>(b[1]).unwrap(),
+                    right + cast::<T, i128>(b[0]).unwrap() * cast::<T, i128>(a[1]).unwrap(),
+                )
             });
-        (cast::<T, f64>(left_sum).unwrap() - cast::<T, f64>(right_sum).unwrap()).abs() * 0.5
+
+        cast::<i128, f64>(left_sum - right_sum).unwrap().abs() * 0.5
     }
 
     /// Determines whether the specified point is outside the shape.
@@ -181,10 +185,9 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     /// The number of intrinsic points inside the shape.
     pub fn number_of_intrinsic_points(&self) -> u64 {
         let boundary_points = self.get_boundary_points();
-        let boundary_count = boundary_points.len() as u64;
         let area = Self::calculate_arbitrary_polygon_area(&boundary_points);
         // Using Pick's Theorem: A = I + B/2 - 1  =>  I = A - B/2 + 1
-        (area - (boundary_count as f64 * 0.5) + 1.0) as u64
+        (area - (boundary_points.len() as f64 * 0.5) + 1.0) as u64
     }
 
     fn get_boundary_points(&self) -> Vec<Point<T, DIMENSIONS>> {
