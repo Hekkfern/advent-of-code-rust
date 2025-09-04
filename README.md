@@ -89,14 +89,21 @@ git clone git@github.com:Hekkfern/advent-of-code-rust.git
 
 ### Run a puzzle solution
 
+To run the solution for the Part 1 of a puzzle:
+
 ```bash
-cargo build --release -p aoc_<year>_<day> -- --part <part>
+cargo run --release --bin aoc_<year>_<day>_p1
+```
+
+or, to run the solution for the Part 2 of a puzzle:
+
+```bash
+cargo run --release --bin aoc_<year>_<day>_p2
 ```
 
 where:
 * <year> is the year (format 20XX) of the puzzle.
 * <day> is the day (from 1 to 25) of the puzzle.
-* <part> is the part number to run, `1` for Part 1 and `2` for Part 2.
 
 ### Run the unit tests for one of the puzzles
 
