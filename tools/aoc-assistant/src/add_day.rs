@@ -137,15 +137,16 @@ fn generate_tests_files(
         ("long_day", format!("{day:0>2}")),
     ]);
     let template_content =
-        match std::fs::read_to_string(templates_path.join("tests/solution_tests.rs.template")) {
+        match std::fs::read_to_string(templates_path.join("tests/aoc_XXXX_YY_tests.rs.template")) {
             Ok(content) => content,
             Err(_) => return Err(Error::MissingTemplate),
         };
     let template = leon::Template::parse(&template_content).unwrap();
-    let mut file = match std::fs::File::create(tests_path.join("solution_tests.rs")) {
-        Ok(file) => file,
-        Err(_) => return Err(Error::IoError),
-    };
+    let mut file =
+        match std::fs::File::create(tests_path.join(format!("aoc_{year}_{day:0>2}_tests.rs"))) {
+            Ok(file) => file,
+            Err(_) => return Err(Error::IoError),
+        };
     template
         .render_into(&mut file, &template_values)
         .map_err(|_| Error::IoError)?;
