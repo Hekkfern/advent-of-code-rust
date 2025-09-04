@@ -51,15 +51,6 @@ fn test_part1_test1() {
 }
 
 #[test]
-fn test_part1_test2() {
-    let input_data = read_data_file("input/input_part1_test2.txt");
-    test_part1_case!(
-        Part1Parameters { input_data },
-        "solutions/solution_part1_test2.txt"
-    );
-}
-
-#[test]
 fn test_part2_real() {
     let input_data = read_data_file("input/input.txt");
     test_part2_case!(

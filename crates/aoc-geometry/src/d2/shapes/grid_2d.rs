@@ -197,7 +197,7 @@ impl<ValueType> Grid2D<ValueType> {
     ///
     /// * This function is the inverse of `is_outside()`.
     pub fn contains(&self, coords: &GridCoordinate2D) -> bool {
-        coords[1] < self.get_width() && coords[0] < self.get_height()
+        coords[0] < self.get_width() && coords[1] < self.get_height()
     }
 
     /// Determines whether the given coordinates are specifically on the border of the grid.
@@ -459,7 +459,11 @@ impl<ValueType> Grid2D<ValueType> {
     /// # Returns
     ///
     /// `Some(new_coords)` if the move is valid, or `None` if out of bounds.
-    pub fn try_move(&self, position: &GridCoordinate2D, direction: &Vector<i8, 2>) -> Option<GridCoordinate2D> {
+    pub fn try_move(
+        &self,
+        position: &GridCoordinate2D,
+        direction: &Vector<i8, 2>,
+    ) -> Option<GridCoordinate2D> {
         assert!(self.contains(position), "Current position is out of bounds");
         assert!(
             direction.is_normalized() && direction.is_axis(),
