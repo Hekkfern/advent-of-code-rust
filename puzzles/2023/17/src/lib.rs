@@ -51,6 +51,7 @@ fn get_next_steps(
 }
 
 fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -> u32 {
+    assert!(min_steps <= max_steps, "min_steps must be less than or equal to max_steps");
     let destination = GridCoordinate2D::new([grid.get_width() - 1, 0]);
     let origin = GridCoordinate2D::new([0, grid.get_height() - 1]);
     let starting_through_east = State {
@@ -76,7 +77,7 @@ fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -
             direction: s.direction,
             steps: s.steps,
         };
-        if !best.contains_key(&node) || best[&node] > s.heat_loss {
+        if best.get(&node).map_or(true, |&b| s.heat_loss < b) {
             best.insert(node, s.heat_loss);
             pq.push(s);
         }
