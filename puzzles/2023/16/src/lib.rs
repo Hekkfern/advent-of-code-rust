@@ -5,8 +5,8 @@ use crate::beam::Beam;
 use crate::tile_type::TileType;
 use aoc_geometry::{CardinalDirection2D, Vector};
 use aoc_geometry::{Grid2D, GridCoordinate2D};
-use std::collections::HashSet;
 use rayon::prelude::*;
+use std::collections::HashSet;
 
 type TileGrid = Grid2D<TileType>;
 
@@ -68,8 +68,7 @@ fn move_around_grid(
     coords: &GridCoordinate2D,
     direction: &CardinalDirection2D,
 ) -> Option<GridCoordinate2D> {
-    let v: Vector<i8, 2> = direction.clone().into();
-    tile_grid.try_move(&coords, &v)
+    tile_grid.try_move(&coords, &direction.to_vector())
 }
 
 fn process_recursively(

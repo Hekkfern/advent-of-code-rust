@@ -1,4 +1,5 @@
 use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const DIMENSIONS: usize = 2;
 
@@ -28,15 +29,16 @@ impl CardinalDirection2D {
             CardinalDirection2D::Right => CardinalDirection2D::Up,
         }
     }
-}
 
-impl From<CardinalDirection2D> for Vector<i8, DIMENSIONS> {
-    fn from(dir: CardinalDirection2D) -> Self {
-        match dir {
-            CardinalDirection2D::Up => Vector::new([0, 1]),
-            CardinalDirection2D::Down => Vector::new([0, -1]),
-            CardinalDirection2D::Left => Vector::new([-1, 0]),
-            CardinalDirection2D::Right => Vector::new([1, 0]),
+    pub fn to_vector<T>(&self) -> Vector<T, DIMENSIONS>
+    where
+        T: VectorCoordinate,
+    {
+        match self {
+            CardinalDirection2D::Up => Vector::new([T::zero(), T::one()]),
+            CardinalDirection2D::Down => Vector::new([T::zero(), -T::one()]),
+            CardinalDirection2D::Left => Vector::new([-T::one(), T::zero()]),
+            CardinalDirection2D::Right => Vector::new([T::one(), T::zero()]),
         }
     }
 }

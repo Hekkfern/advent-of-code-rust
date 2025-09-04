@@ -1,4 +1,5 @@
 use crate::Vector;
+use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const DIMENSIONS: usize = 2;
 
@@ -14,17 +15,20 @@ pub enum Direction2D {
     DownRight,
 }
 
-impl From<Direction2D> for Vector<i8, DIMENSIONS> {
-    fn from(dir: Direction2D) -> Self {
-        match dir {
-            Direction2D::Up => Vector::new([0, 1]),
-            Direction2D::UpLeft => Vector::new([-1, 1]),
-            Direction2D::UpRight => Vector::new([1, 1]),
-            Direction2D::Down => Vector::new([0, -1]),
-            Direction2D::DownLeft => Vector::new([-1, 1]),
-            Direction2D::DownRight => Vector::new([1, 1]),
-            Direction2D::Left => Vector::new([-1, 0]),
-            Direction2D::Right => Vector::new([1, 0]),
+impl Direction2D {
+    pub fn to_vector<T>(&self) -> Vector<T, DIMENSIONS>
+    where
+        T: VectorCoordinate,
+    {
+        match self {
+            Direction2D::Up => Vector::new([T::zero(), T::one()]),
+            Direction2D::UpLeft => Vector::new([-T::one(), T::one()]),
+            Direction2D::UpRight => Vector::new([T::one(), T::one()]),
+            Direction2D::Down => Vector::new([T::zero(), -T::one()]),
+            Direction2D::DownLeft => Vector::new([-T::one(), T::one()]),
+            Direction2D::DownRight => Vector::new([T::one(), T::one()]),
+            Direction2D::Left => Vector::new([-T::one(), T::zero()]),
+            Direction2D::Right => Vector::new([T::one(), T::zero()]),
         }
     }
 }
