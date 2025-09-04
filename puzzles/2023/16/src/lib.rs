@@ -3,7 +3,7 @@ mod tile_type;
 
 use crate::beam::Beam;
 use crate::tile_type::TileType;
-use aoc_geometry::{CardinalDirection2D, Vector};
+use aoc_geometry::CardinalDirection2D;
 use aoc_geometry::{Grid2D, GridCoordinate2D};
 use rayon::prelude::*;
 use std::collections::HashSet;

@@ -70,7 +70,7 @@ fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -
 
     /// Helper that adds a given state to the queue if it is better than our best
     /// known for that position, direction and remaining steps
-    fn push_if_better(best: &mut HashMap<Node, u32>, pq: &mut BinaryHeap<State>, s: &State) {
+    fn push_if_better(best: &mut HashMap<Node, u32>, pq: &mut BinaryHeap<State>, s: State) {
         let node = Node {
             position: s.position,
             direction: s.direction,
@@ -78,15 +78,14 @@ fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -
         };
         if !best.contains_key(&node) || best[&node] > s.heat_loss {
             best.insert(node, s.heat_loss);
-            pq.push(s.clone());
+            pq.push(s);
         }
     }
     /* Two starting states, {0,0}, going right and down. Note that steps == 0 and heat_loss == 0 */
-    push_if_better(&mut best, &mut pq, &starting_through_east);
-    push_if_better(&mut best, &mut pq, &starting_through_south);
+    push_if_better(&mut best, &mut pq, starting_through_east);
+    push_if_better(&mut best, &mut pq, starting_through_south);
 
-    while !pq.is_empty() {
-        let current_state = pq.pop().unwrap();
+    while let Some(current_state) = pq.pop() {
         /* If we are at our destination, report the heat_loss, because of the priority queue we
         have a guarantee this is the minimum value */
         if current_state.position == destination {
@@ -94,6 +93,18 @@ fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -
                 continue;
             }
             return current_state.heat_loss;
+        }
+
+        /* check whether this state is already worse than the best known */
+        let current_node = Node {
+            position: current_state.position,
+            direction: current_state.direction,
+            steps: current_state.steps,
+        };
+        if let Some(lowest_heat_loss) = best.get(&current_node) {
+            if current_state.heat_loss > *lowest_heat_loss {
+                continue;
+            }
         }
 
         let next_steps = get_next_steps(grid, &current_state, min_steps, max_steps);
@@ -110,7 +121,7 @@ fn get_least_heat_loss_path(grid: &HeatLossGrid, min_steps: u8, max_steps: u8) -
                 steps: next_steps,
                 heat_loss: next_heat_loss,
             };
-            push_if_better(&mut best, &mut pq, &next_state);
+            push_if_better(&mut best, &mut pq, next_state);
         }
     }
     unreachable!()
