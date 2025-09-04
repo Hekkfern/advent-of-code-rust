@@ -164,25 +164,39 @@ fn generate_src_files(
         src_path.join("lib.rs"),
     )
     .map_err(|_| Error::IoError)?;
-    // Generate "main.rs" file
+    // Generate "bin" folder
+    let bin_path = src_path.join("bin");
+    std::fs::create_dir_all(&bin_path).map_err(|_| Error::IoError)?;
+    // Generate "aoc_p1.rs" and "aoc_p2.rs" files
+    let files = [
+        (
+            "aoc_XXXX_YY_p1.rs.template",
+            format!("aoc_{year}_{day:0>2}_p1.rs"),
+        ),
+        (
+            "aoc_XXXX_YY_p2.rs.template",
+            format!("aoc_{year}_{day:0>2}_p2.rs"),
+        ),
+    ];
     let template_values = HashMap::from([
         ("year", year.to_string()),
-        ("day", day.to_string()),
         ("long_day", format!("{day:0>2}")),
     ]);
-    let template_content =
-        match std::fs::read_to_string(templates_path.join("src/main.rs.template")) {
-            Ok(content) => content,
-            Err(_) => return Err(Error::MissingTemplate),
+    for (template_filename, new_filename) in files.iter() {
+        let template_content =
+            match std::fs::read_to_string(templates_path.join("src/bin").join(template_filename)) {
+                Ok(content) => content,
+                Err(_) => return Err(Error::MissingTemplate),
+            };
+        let template = leon::Template::parse(&template_content).unwrap();
+        let mut file = match std::fs::File::create(bin_path.join(new_filename)) {
+            Ok(file) => file,
+            Err(_) => return Err(Error::IoError),
         };
-    let template = leon::Template::parse(&template_content).unwrap();
-    let mut file = match std::fs::File::create(src_path.join("main.rs")) {
-        Ok(file) => file,
-        Err(_) => return Err(Error::IoError),
-    };
-    template
-        .render_into(&mut file, &template_values)
-        .map_err(|_| Error::IoError)?;
+        template
+            .render_into(&mut file, &template_values)
+            .map_err(|_| Error::IoError)?;
+    }
 
     Ok(())
 }

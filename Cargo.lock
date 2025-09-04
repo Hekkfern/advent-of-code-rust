@@ -397,7 +397,6 @@ dependencies = [
 name = "aoc-utils"
 version = "1.0.0"
 dependencies = [
- "clap",
  "num-integer",
  "serde",
  "serde_json",
