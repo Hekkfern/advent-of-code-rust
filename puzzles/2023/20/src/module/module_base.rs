@@ -5,7 +5,9 @@ use std::any::Any;
 pub trait ModuleTrait: ModuleBaseTrait + Any {
     fn module_type(&self) -> ModuleType;
     fn process(&mut self, input: &Signal) -> Vec<Signal>;
+    #[allow(dead_code)]
     fn as_any(&self) -> &dyn Any;
+    #[allow(dead_code)]
     fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 

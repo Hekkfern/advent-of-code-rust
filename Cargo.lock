@@ -353,6 +353,7 @@ dependencies = [
  "aoc-utils",
  "assertables",
  "include_dir",
+ "num-integer",
  "pretty_assertions",
 ]
 

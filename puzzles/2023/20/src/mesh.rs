@@ -1,9 +1,7 @@
-use crate::module::broadcaster::Broadcaster;
 use crate::module::conjunction::Conjunction;
 use crate::module::module_base::ModuleTrait;
 use crate::module::{ModuleName, ModuleType};
 use crate::signal::Signal;
-use std::any::{Any, TypeId};
 use std::collections::HashMap;
 
 pub struct Mesh {

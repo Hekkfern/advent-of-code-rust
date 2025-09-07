@@ -3,11 +3,11 @@ use crate::module::ModuleName;
 use crate::module::broadcaster::Broadcaster;
 use crate::module::conjunction::Conjunction;
 use crate::module::flip_flop::FlipFlop;
-use crate::module::module_base::ModuleBaseTrait;
 use crate::module::module_base::ModuleTrait;
 use crate::signal::Signal;
 use crate::signal_value::SignalValue;
-use std::collections::VecDeque;
+use num_integer::Integer;
+use std::collections::{HashMap, VecDeque};
 
 mod mesh;
 mod module;
@@ -135,6 +135,44 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let mut mesh = parse_input(params.input_data);
+    /* find the conjunctions connected to the conjunction connected to rx node */
+    let previous_node_to_rx = mesh.get_modules_connected_to(&ModuleName::from("rx"))[0].clone();
+    let more_previous_node_to_rx = mesh.get_modules_connected_to(&previous_node_to_rx);
+    let mut button_presses: u64 = 0;
+    let mut last: HashMap<ModuleName, u64> = HashMap::new();
+    let mut loops: HashMap<ModuleName, u64> = HashMap::new();
+    while loops.len() < more_previous_node_to_rx.len() {
+        let mut signals_queue = VecDeque::<Signal>::new();
+        /* process the button signal */
+        let button_signal = Signal::new(
+            String::from("button"),
+            String::from("broadcaster"),
+            SignalValue::Low,
+        );
+        signals_queue.push_front(button_signal);
+        button_presses += 1;
+        /* process the signals */
+        while let Some(signal_to_process) = signals_queue.pop_front() {
+            let output_signals = mesh.process(&signal_to_process);
+            for output_signal in output_signals {
+                /* check if we have reached one of the nodes we are tracking */
+                if previous_node_to_rx == *output_signal.destination()
+                    && output_signal.value() == SignalValue::High
+                {
+                    if last.contains_key(&*output_signal.origin()) {
+                        loops.insert(
+                            output_signal.origin().clone(),
+                            button_presses - last[&*output_signal.origin()],
+                        );
+                    }
+                    last.insert(output_signal.origin().clone(), button_presses);
+                }
+                /* add the signal to the queue */
+                signals_queue.push_back(output_signal);
+            }
+        }
+    }
+    let result = loops.values().fold(1, |accum, value| accum.lcm(value));
+    result.to_string()
 }

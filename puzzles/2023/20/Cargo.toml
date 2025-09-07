@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 include_dir.workspace = true
+num-integer.workspace = true
 aoc-utils = { path = "../../../crates/aoc-utils" }
 
 [dev-dependencies]
