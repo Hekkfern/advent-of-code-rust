@@ -14,7 +14,7 @@ num-integer = "0.1.46"
 assertables = "9.8.2"
 pretty_assertions = "1.4.1"
 ndarray = "0.16.1"
-clap = "4.5.46"
+clap = "4.5.47"
 include_dir = "0.7.4"
 leon = "3.0.2"
 reqwest = { version = "0.12.23", features = ["blocking"] }
@@ -25,3 +25,4 @@ visdom = { version = "1.0.3", features = ["destroy"] }
 rayon = "1.11.0"
 regex = "1.11.2"
 itertools = "0.14.0"
+bitvec = "1.0.1"
