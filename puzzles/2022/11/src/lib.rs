@@ -98,6 +98,11 @@ fn inspect_and_throw_all(
 ) -> HashMap<MonkeyId, u32> {
     let mut monkey_inspections: HashMap<MonkeyId, u32> =
         monkeys.keys().map(|&id| (id, 0)).collect();
+    let divisor_product = if !relief_enabled {
+        monkeys.values().map(|x| x.divisor()).product()
+    } else {
+        0
+    };
     for id in 0..monkeys.len() as MonkeyId {
         let cloned_monkey = monkeys.get(&id).unwrap().clone();
         let mut inspection_count: u32 = 0;
@@ -106,7 +111,7 @@ fn inspect_and_throw_all(
             if relief_enabled {
                 item_value /= 3;
             } else {
-                item_value %= cloned_monkey.divisor();
+                item_value %= divisor_product;
             }
             let target = if item_value % cloned_monkey.divisor() == 0 {
                 cloned_monkey.target_true()
@@ -131,10 +136,10 @@ pub struct Part1Parameters {
     pub input_data: &'static str,
 }
 
-fn calculate_monkey_business(monkey_inspections: &HashMap<MonkeyId, u32>) -> u32 {
+fn calculate_monkey_business(monkey_inspections: &HashMap<MonkeyId, u32>) -> u64 {
     let mut inspections = monkey_inspections.values().copied().collect::<Vec<_>>();
     let (result, _, _) = inspections.select_nth_unstable_by(2, |a, b| b.cmp(a)); // descending order
-    result[0] * result[1]
+    result[0] as u64 * result[1] as u64
 }
 
 /// Solves Part 1 of the puzzle
@@ -181,6 +186,17 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    const NUMBER_OF_ROUNDS: u32 = 10_000;
+    let mut monkeys = parse_input(&params.input_data);
+    let mut monkey_inspections: HashMap<MonkeyId, u32> =
+        monkeys.keys().map(|&id| (id, 0)).collect();
+
+    for _round in 0..NUMBER_OF_ROUNDS {
+        let inspections = inspect_and_throw_all(&mut monkeys, false);
+        for (id, count) in inspections {
+            *monkey_inspections.entry(id).or_insert(0) += count;
+        }
+    }
+
+    calculate_monkey_business(&monkey_inspections).to_string()
 }

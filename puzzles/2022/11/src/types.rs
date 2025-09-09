@@ -1,1 +1,1 @@
-pub type WorryLevel = u32;
+pub type WorryLevel = u64;
