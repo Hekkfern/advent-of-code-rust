@@ -144,6 +144,9 @@ fn add_day(year: u32, day: u32, session_key: &str, force: bool) -> bool {
                 eprintln!("Error: Missing template files for the new puzzle.")
             }
             Error::InvalidSessionKey => eprintln!("Error: Invalid session key provided."),
+            Error::GetStatementError => {
+                eprintln!("Error: Failed while generating puzzle description.")
+            }
         }
         return false;
     };

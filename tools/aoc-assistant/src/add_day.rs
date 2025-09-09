@@ -1,3 +1,4 @@
+use crate::get_statement;
 use aoc_utils::path_utils;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -16,6 +17,7 @@ pub enum Error {
     IoError,
     MissingTemplate,
     InvalidSessionKey,
+    GetStatementError,
 }
 
 fn get_template_path() -> PathBuf {
@@ -37,7 +39,12 @@ pub fn add_new_day(params: AddDayParameters) -> Result<(), Error> {
     generate_solutions_folder(&puzzle_path)?;
     generate_src_folder(&templates_path, &puzzle_path, params.year, params.day)?;
     generate_tests_folder(&templates_path, &puzzle_path, params.year, params.day)?;
-
+    // also, get statement
+    get_statement::get_puzzle_statement(get_statement::GetStatementParameters {
+        year: params.year,
+        day: params.day,
+        session_key: params.session_key,
+    }).or_else(|_| Err(Error::GetStatementError))?;
     Ok(())
 }
 
