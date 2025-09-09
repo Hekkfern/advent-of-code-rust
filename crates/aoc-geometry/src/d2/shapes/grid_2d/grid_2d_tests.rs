@@ -515,14 +515,21 @@ fn iter_all() {
 #[test]
 fn get_row() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let row_0: Vec<&i32> = grid.get_row(0).collect();
-    assert_eq!(row_0, vec![&1, &2, &3]);
+    let row_0: Vec<_> = grid.get_row(0).collect();
+    assert_eq!(row_0, vec![(0, &1), (1, &2), (2, &3)]);
+}
+
+#[test]
+fn get_row_rev() {
+    let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    let row_0: Vec<_> = grid.get_row(0).rev().collect();
+    assert_eq!(row_0, vec![(2, &3), (1, &2), (0, &1)]);
 }
 
 #[test]
 fn get_row_mut() {
     let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    for val in grid.get_row_mut(0) {
+    for (_, val) in grid.get_row_mut(0) {
         *val += 10;
     }
     assert_eq!(grid.get(&coord(0, 0)), Some(&11));
@@ -535,14 +542,20 @@ fn get_row_mut() {
 #[test]
 fn get_column() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let row_0: Vec<&i32> = grid.get_column(1).collect();
-    assert_eq!(row_0, vec![&2, &5]);
+    let row_0: Vec<_> = grid.get_column(1).collect();
+    assert_eq!(row_0, vec![(0, &2), (1, &5)]);
+}
+
+fn get_column_rev() {
+    let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
+    let row_0: Vec<_> = grid.get_column(1).collect();
+    assert_eq!(row_0, vec![(1, &5), (0, &2)]);
 }
 
 #[test]
 fn get_column_mut() {
     let mut grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    for val in grid.get_column_mut(1) {
+    for (_, val) in grid.get_column_mut(1) {
         *val += 10;
     }
     assert_eq!(grid.get(&coord(1, 0)), Some(&12));

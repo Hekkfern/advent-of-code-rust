@@ -73,7 +73,7 @@ impl Rocks {
     pub fn shift_north(&mut self) {
         let width = self.grid.get_width();
         for col in 0..width {
-            let mut mut_refs: Vec<_> = self.grid.get_column_mut(col).rev().collect();
+            let mut mut_refs: Vec<_> = self.grid.get_column_mut(col).map(|x| x.1).rev().collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }
@@ -81,7 +81,7 @@ impl Rocks {
     pub fn shift_south(&mut self) {
         let width = self.grid.get_width();
         for col in 0..width {
-            let mut mut_refs: Vec<_> = self.grid.get_column_mut(col).collect();
+            let mut mut_refs: Vec<_> = self.grid.get_column_mut(col).map(|x| x.1).collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }
@@ -89,7 +89,7 @@ impl Rocks {
     pub fn shift_west(&mut self) {
         let height = self.grid.get_height();
         for row in 0..height {
-            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).collect();
+            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).map(|x| x.1).collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }
@@ -97,7 +97,7 @@ impl Rocks {
     pub fn shift_east(&mut self) {
         let height = self.grid.get_height();
         for row in 0..height {
-            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).rev().collect();
+            let mut mut_refs: Vec<_> = self.grid.get_row_mut(row).map(|x| x.1).rev().collect();
             Self::shift_line(mut_refs.as_mut_slice());
         }
     }

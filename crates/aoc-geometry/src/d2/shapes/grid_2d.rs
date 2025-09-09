@@ -488,27 +488,30 @@ impl<ValueType> Grid2D<ValueType> {
         Some(GridCoordinate2D::new(new_coords))
     }
 
-    pub fn get_row(&self, index: usize) -> impl DoubleEndedIterator<Item = &ValueType> {
+    pub fn get_row(&self, index: usize) -> impl DoubleEndedIterator<Item = (usize, &ValueType)> {
         assert!(index < self.get_height(), "Row index out of bounds");
-        self.data.row(index).into_iter()
+        self.data.row(index).into_iter().enumerate()
     }
 
-    pub fn get_row_mut(&mut self, index: usize) -> impl DoubleEndedIterator<Item = &mut ValueType> {
+    pub fn get_row_mut(
+        &mut self,
+        index: usize,
+    ) -> impl DoubleEndedIterator<Item = (usize, &mut ValueType)> {
         assert!(index < self.get_height(), "Row index out of bounds");
-        self.data.row_mut(index).into_iter()
+        self.data.row_mut(index).into_iter().enumerate()
     }
 
-    pub fn get_column(&self, index: usize) -> impl DoubleEndedIterator<Item = &ValueType> {
+    pub fn get_column(&self, index: usize) -> impl DoubleEndedIterator<Item = (usize, &ValueType)> {
         assert!(index < self.get_width(), "Column index out of bounds");
-        self.data.column(index).into_iter()
+        self.data.column(index).into_iter().enumerate()
     }
 
     pub fn get_column_mut(
         &mut self,
         index: usize,
-    ) -> impl DoubleEndedIterator<Item = &mut ValueType> {
+    ) -> impl DoubleEndedIterator<Item = (usize, &mut ValueType)> {
         assert!(index < self.get_width(), "Column index out of bounds");
-        self.data.column_mut(index).into_iter()
+        self.data.column_mut(index).into_iter().enumerate()
     }
 }
 
