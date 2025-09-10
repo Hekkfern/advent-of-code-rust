@@ -139,7 +139,29 @@ pub struct Part2Parameters {
 }
 
 fn descend_hill(map: &Map) -> u32 {
-    todo!()
+    let mut best_cost = u32::MAX;
+    let mut queue = VecDeque::<(Position, u32)>::new();
+    queue.push_back((*map.get_destination(), 0));
+    let mut costs = HashMap::<Position, u32>::new();
+    costs.insert(*map.get_destination(), 0);
+
+    while let Some((current_pos, current_cost)) = queue.pop_front() {
+        if current_pos.get_height() == 0 {
+            best_cost = std::cmp::min(current_cost, best_cost);
+            // this is the end of this path
+            continue;
+        }
+        let next_positions = get_next_positions(map, &current_pos, ClimbingDirection::Down);
+        for next_pos in next_positions {
+            let next_cost = current_cost + 1;
+            // Check if the path, due to this movement, is not longer than the shortest known path.
+            if !costs.contains_key(&next_pos) || next_cost < *costs.get(&next_pos).unwrap() {
+                costs.insert(next_pos, next_cost);
+                queue.push_back((next_pos, next_cost));
+            }
+        }
+    }
+    best_cost
 }
 
 /// Solves Part 2 of the puzzle

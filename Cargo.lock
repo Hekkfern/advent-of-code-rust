@@ -258,6 +258,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2022-13"
+version = "1.0.0"
+dependencies = [
+ "aoc-utils",
+ "assertables",
+ "include_dir",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "aoc-2023-01"
 version = "1.0.0"
 dependencies = [
