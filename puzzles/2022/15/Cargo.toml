@@ -1,0 +1,15 @@
+[package]
+name = "aoc-2022-15"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+include_dir.workspace = true
+regex.workspace = true
+aoc-utils = { path = "../../../crates/aoc-utils" }
+aoc-geometry = { path = "../../../crates/aoc-geometry" }
+aoc-intervals = { path = "../../../crates/aoc-intervals" }
+
+[dev-dependencies]
+pretty_assertions.workspace = true
+assertables.workspace = true

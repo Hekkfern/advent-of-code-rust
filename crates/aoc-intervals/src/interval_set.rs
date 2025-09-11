@@ -57,7 +57,7 @@ impl<T: IntervalValue> IntervalSet<T> {
     /// # Arguments
     ///
     /// * `interval` - The interval to add.
-    pub fn add(&mut self, interval: Interval<T>) {
+    pub fn add_interval(&mut self, interval: Interval<T>) {
         self.intervals.insert(interval);
         self.reduce();
     }
@@ -70,7 +70,7 @@ impl<T: IntervalValue> IntervalSet<T> {
     ///
     /// * `value` - The value to add as a single-value interval.
     pub fn add_value(&mut self, value: T) {
-        self.add(Interval::from_boundaries(value, value));
+        self.add_interval(Interval::from_boundaries(value, value));
     }
 
     /// Removes a specific value, splitting intervals as necessary.

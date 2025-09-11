@@ -31,7 +31,7 @@ impl RangeMap {
         // If there are no sections, return the interval as-is
         if self.sections.is_empty() {
             let mut result = IntervalSet::new();
-            result.add(*interval);
+            result.add_interval(*interval);
             return result;
         }
 
@@ -54,7 +54,7 @@ impl RangeMap {
         while length > 0 {
             if section_idx >= sections.len() {
                 // No more mappings, add the rest as-is
-                result.add(Interval::from_size(start, length));
+                result.add_interval(Interval::from_size(start, length));
                 break;
             }
             let section = sections[section_idx];
@@ -64,7 +64,7 @@ impl RangeMap {
             if start < map_start {
                 // No conversion for this part
                 let actual_length = std::cmp::min(length, map_start - start);
-                result.add(Interval::from_size(start, actual_length));
+                result.add_interval(Interval::from_size(start, actual_length));
                 start += actual_length;
                 length -= actual_length;
             } else if (start - map_start) >= map_length {
@@ -78,7 +78,7 @@ impl RangeMap {
                     length,
                 );
                 let dest_start = section.convert(start).unwrap();
-                result.add(Interval::from_size(dest_start, actual_length));
+                result.add_interval(Interval::from_size(dest_start, actual_length));
                 start += actual_length;
                 length -= actual_length;
             }

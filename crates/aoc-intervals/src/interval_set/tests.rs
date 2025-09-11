@@ -103,8 +103,8 @@ fn add_to_empty_set() {
     let mut set = IntervalSet::new();
     let interval1 = Interval::from_boundaries(5, 10);
     let interval2 = Interval::from_boundaries(20, 30);
-    set.add(interval1);
-    set.add(interval2);
+    set.add_interval(interval1);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 2);
@@ -117,7 +117,7 @@ fn add_non_overlapping_interval() {
     let interval1 = Interval::from_boundaries(1, 5);
     let mut set = IntervalSet::from_vec(vec![interval1]);
     let interval2 = Interval::from_boundaries(10, 15);
-    set.add(interval2);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 2);
@@ -130,7 +130,7 @@ fn add_overlapping_interval() {
     let interval1 = Interval::from_boundaries(1, 10);
     let mut set = IntervalSet::from_vec(vec![interval1]);
     let interval2 = Interval::from_boundaries(5, 15);
-    set.add(interval2);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
@@ -142,7 +142,7 @@ fn add_contiguous_interval() {
     let interval1 = Interval::from_boundaries(1, 5);
     let mut set = IntervalSet::from_vec(vec![interval1]);
     let interval2 = Interval::from_boundaries(6, 10);
-    set.add(interval2);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
@@ -154,7 +154,7 @@ fn add_subsumed_interval() {
     let interval1 = Interval::from_boundaries(1, 20);
     let mut set = IntervalSet::from_vec(vec![interval1]);
     let interval2 = Interval::from_boundaries(5, 15);
-    set.add(interval2);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
@@ -166,7 +166,7 @@ fn add_subsuming_interval() {
     let interval1 = Interval::from_boundaries(5, 15);
     let mut set = IntervalSet::from_vec(vec![interval1]);
     let interval2 = Interval::from_boundaries(1, 20);
-    set.add(interval2);
+    set.add_interval(interval2);
     assert!(!set.is_empty());
     let intervals = set.get();
     assert_eq!(intervals.len(), 1);
@@ -386,8 +386,8 @@ fn remove_partial_overlap_right() {
 #[test]
 fn remove_completely_subsuming() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
-    set.add(Interval::from_boundaries(15, 20));
+    set.add_interval(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(15, 20));
     let remove_interval = Interval::from_boundaries(1, 25);
     set.remove_interval(&remove_interval);
 
@@ -597,7 +597,7 @@ fn overlaps_interval_empty_set() {
 #[test]
 fn overlaps_interval_true() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(1, 10));
     let interval = Interval::from_boundaries(5, 15);
 
     assert!(set.overlaps_interval(&interval));
@@ -606,7 +606,7 @@ fn overlaps_interval_true() {
 #[test]
 fn overlaps_interval_false() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(1, 5));
     let interval = Interval::from_boundaries(10, 15);
 
     assert!(!set.overlaps_interval(&interval));
@@ -623,8 +623,8 @@ fn contains_empty_set() {
 #[test]
 fn contains_true() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(20, 30));
+    set.add_interval(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(20, 30));
 
     assert!(set.contains(5));
     assert!(set.contains(1));
@@ -635,8 +635,8 @@ fn contains_true() {
 #[test]
 fn contains_false() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(20, 30));
+    set.add_interval(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(20, 30));
 
     assert!(!set.contains(15));
     assert!(!set.contains(0));
@@ -654,16 +654,16 @@ fn count_empty_set() {
 #[test]
 fn count_single_interval() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(5, 10));
     assert_eq!(set.count(), 6);
 }
 
 #[test]
 fn count_multiple_intervals() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(10, 15));
-    set.add(Interval::from_boundaries(20, 25));
+    set.add_interval(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(10, 15));
+    set.add_interval(Interval::from_boundaries(20, 25));
 
     assert_eq!(set.count(), 5 + 6 + 6); // 17 total values
 }
@@ -671,8 +671,8 @@ fn count_multiple_intervals() {
 #[test]
 fn count_after_merge() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(6, 10)); // Contiguous, should merge
+    set.add_interval(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(6, 10)); // Contiguous, should merge
 
     assert_eq!(set.count(), 10);
 }
@@ -689,8 +689,8 @@ fn extract_empty_set() {
 #[test]
 fn extract_no_overlap() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(20, 25));
+    set.add_interval(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(20, 25));
 
     let result = set.extract(10, 15);
     assert!(result.is_empty());
@@ -699,7 +699,7 @@ fn extract_no_overlap() {
 #[test]
 fn extract_partial_overlap() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 20));
+    set.add_interval(Interval::from_boundaries(1, 20));
 
     let result = set.extract(5, 15);
     assert_eq!(result.count(), 11); // [5, 15]
@@ -712,9 +712,9 @@ fn extract_partial_overlap() {
 #[test]
 fn extract_multiple_intervals() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(15, 25));
-    set.add(Interval::from_boundaries(30, 40));
+    set.add_interval(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(15, 25));
+    set.add_interval(Interval::from_boundaries(30, 40));
 
     let result = set.extract(5, 35);
     assert_eq!(result.count(), 6 + 11 + 6); // [5, 10], [15, 25], [30, 35]
@@ -725,7 +725,7 @@ fn extract_multiple_intervals() {
 #[test]
 fn extract_exact_boundaries() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 15));
+    set.add_interval(Interval::from_boundaries(5, 15));
 
     let result = set.extract(5, 15);
     assert_eq!(result.count(), 11);
@@ -744,8 +744,8 @@ fn get_interval_for_empty_set() {
 #[test]
 fn get_interval_for_not_contained() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(20, 30));
+    set.add_interval(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(20, 30));
 
     assert!(set.get_interval_for(15).is_none());
 }
@@ -755,8 +755,8 @@ fn get_interval_for_contained() {
     let mut set = IntervalSet::new();
     let interval1 = Interval::from_boundaries(1, 10);
     let interval2 = Interval::from_boundaries(20, 30);
-    set.add(interval1);
-    set.add(interval2);
+    set.add_interval(interval1);
+    set.add_interval(interval2);
 
     assert_eq!(set.get_interval_for(5), Some(interval1));
     assert_eq!(set.get_interval_for(25), Some(interval2));
@@ -778,7 +778,7 @@ fn intersect_empty_set() {
 #[test]
 fn intersect_no_overlap() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(1, 5));
     let interval = Interval::from_boundaries(10, 15);
     let result = set.intersect(&interval);
 
@@ -788,8 +788,8 @@ fn intersect_no_overlap() {
 #[test]
 fn intersect_partial_overlap() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 10));
-    set.add(Interval::from_boundaries(20, 30));
+    set.add_interval(Interval::from_boundaries(1, 10));
+    set.add_interval(Interval::from_boundaries(20, 30));
     let interval = Interval::from_boundaries(5, 25);
     let result = set.intersect(&interval);
 
@@ -801,7 +801,7 @@ fn intersect_partial_overlap() {
 #[test]
 fn intersect_complete_overlap() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 15));
+    set.add_interval(Interval::from_boundaries(5, 15));
     let interval = Interval::from_boundaries(1, 20);
     let result = set.intersect(&interval);
 
@@ -821,7 +821,7 @@ fn is_empty_new_set() {
 #[test]
 fn is_empty_after_add() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(5, 10));
     assert!(!set.is_empty());
 }
 
@@ -829,7 +829,7 @@ fn is_empty_after_add() {
 fn is_empty_after_remove_all() {
     let mut set = IntervalSet::new();
     let interval = Interval::from_boundaries(5, 10);
-    set.add(interval);
+    set.add_interval(interval);
     set.remove_interval(&interval);
     assert!(set.is_empty());
 }
@@ -846,7 +846,7 @@ fn iter_empty_set() {
 #[test]
 fn iter_single_interval() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(5, 10));
     let count = set.iter().count();
     assert_eq!(count, 1);
 }
@@ -854,9 +854,9 @@ fn iter_single_interval() {
 #[test]
 fn iter_multiple_intervals() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 5));
-    set.add(Interval::from_boundaries(10, 15));
-    set.add(Interval::from_boundaries(20, 25));
+    set.add_interval(Interval::from_boundaries(1, 5));
+    set.add_interval(Interval::from_boundaries(10, 15));
+    set.add_interval(Interval::from_boundaries(20, 25));
 
     let count = set.iter().count();
     assert_eq!(count, 3);
@@ -870,7 +870,7 @@ fn iter_multiple_intervals() {
 #[test]
 fn test_i64_type() {
     let mut set: IntervalSet<i64> = IntervalSet::new();
-    set.add(Interval::from_boundaries(-1000000i64, 1000000i64));
+    set.add_interval(Interval::from_boundaries(-1000000i64, 1000000i64));
 
     assert_eq!(set.count(), 2000001);
     assert!(set.contains(0i64));
@@ -883,7 +883,7 @@ fn test_i64_type() {
 #[test]
 fn edge_case_maximum_boundaries() {
     let mut set: IntervalSet<i8> = IntervalSet::new();
-    set.add(Interval::from_boundaries(i8::MIN + 1i8, i8::MAX));
+    set.add_interval(Interval::from_boundaries(i8::MIN + 1i8, i8::MAX));
 
     assert_eq!(set.count(), 255);
     assert!(set.contains(0i8));
@@ -912,7 +912,7 @@ fn display_empty_set() {
 #[test]
 fn display_single_interval() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(5, 10));
     let display_str = format!("{}", set);
     assert_eq!(display_str, "[5, 10]");
 }
@@ -920,8 +920,8 @@ fn display_single_interval() {
 #[test]
 fn display_multiple_intervals() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 3));
-    set.add(Interval::from_boundaries(7, 9));
+    set.add_interval(Interval::from_boundaries(1, 3));
+    set.add_interval(Interval::from_boundaries(7, 9));
     let display_str = format!("{}", set);
     // The order depends on the hash set iteration, but should contain both intervals
     assert!(display_str.contains("[1, 3]"));
@@ -934,14 +934,14 @@ fn display_multiple_intervals() {
 #[test]
 fn clone_and_equality() {
     let mut set1 = IntervalSet::new();
-    set1.add(Interval::from_boundaries(1, 10));
-    set1.add(Interval::from_boundaries(20, 30));
+    set1.add_interval(Interval::from_boundaries(1, 10));
+    set1.add_interval(Interval::from_boundaries(20, 30));
 
     let set2 = set1.clone();
     assert_eq!(set1, set2);
 
     let mut set3 = IntervalSet::new();
-    set3.add(Interval::from_boundaries(1, 10));
+    set3.add_interval(Interval::from_boundaries(1, 10));
     assert_ne!(set1, set3);
 }
 
@@ -957,7 +957,7 @@ fn fmt_empty_set() {
 #[test]
 fn fmt_single_interval() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(5, 10));
+    set.add_interval(Interval::from_boundaries(5, 10));
     let formatted = format!("{}", set);
     assert_eq!(formatted, "[5, 10]");
 }
@@ -965,8 +965,8 @@ fn fmt_single_interval() {
 #[test]
 fn fmt_multiple_intervals() {
     let mut set = IntervalSet::new();
-    set.add(Interval::from_boundaries(1, 3));
-    set.add(Interval::from_boundaries(7, 9));
+    set.add_interval(Interval::from_boundaries(1, 3));
+    set.add_interval(Interval::from_boundaries(7, 9));
     let formatted = format!("{}", set);
     assert_eq!(formatted, "[1, 3],[7, 9]");
 }

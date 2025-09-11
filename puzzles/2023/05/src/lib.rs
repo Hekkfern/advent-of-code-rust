@@ -99,7 +99,7 @@ fn parse_ranged_seeds(line: &str) -> IntervalSet<i64> {
         .collect();
     assert_eq!(nums.len() % 2, 0, "Expected an even number of seed values");
     for pair in nums.chunks(2) {
-        intervals.add(Interval::from_size(pair[0], pair[1]));
+        intervals.add_interval(Interval::from_size(pair[0], pair[1]));
     }
     intervals
 }
