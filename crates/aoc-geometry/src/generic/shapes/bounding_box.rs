@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod bounding_box_tests;
+
 use crate::AxisDirection;
 use crate::Point;
 use crate::generic::core::point_coordinate::PointCoordinate;
