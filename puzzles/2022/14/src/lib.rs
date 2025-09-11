@@ -1,7 +1,7 @@
 mod constrained_sand_map;
 mod infinite_sand_map;
 
-use aoc_geometry::{Point, Vector};
+use aoc_geometry::Point;
 
 // -----------------------------------------------------------
 // ------------------------ Common ---------------------------

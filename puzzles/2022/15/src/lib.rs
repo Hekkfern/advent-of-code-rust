@@ -6,6 +6,7 @@ use aoc_intervals::interval::Interval;
 use aoc_intervals::interval_set::IntervalSet;
 use regex::Regex;
 use std::collections::HashSet;
+
 // -----------------------------------------------------------
 // ------------------------ Common ---------------------------
 // -----------------------------------------------------------

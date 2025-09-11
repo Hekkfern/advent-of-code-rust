@@ -338,40 +338,6 @@ impl<ValueType> Grid2D<ValueType> {
         Self { data: sub_data }
     }
 
-    /// Resizes the grid to new, bigger dimensions, filling new spaces with a default value.
-    ///
-    /// # Arguments
-    ///
-    /// * `new_dimensions` - The new dimensions for the grid. It must be equal to or larger than the current dimensions.
-    /// * `default_value` - The value to fill new cells with
-    pub fn expand(
-        &mut self,
-        new_dimensions: &[usize; DIMENSIONS],
-        start: &GridCoordinate2D,
-        default_value: &ValueType,
-    ) where
-        ValueType: Clone,
-    {
-        assert!(
-            new_dimensions
-                .iter()
-                .zip(self.data.shape())
-                .all(|(&new_dim, &old_dim)| new_dim >= old_dim),
-            "All dimensions must be equal or greater than the old ones"
-        );
-        let mut new_data = ndarray::Array2::from_elem(*new_dimensions, default_value.clone());
-        let min_dims = self.data.shape();
-        for i in 0..DIMENSIONS {
-            let min_size = min_dims[i].min(new_dimensions[i]);
-            for j in 0..min_size {
-                new_data
-                    .slice_mut(ndarray::s![.., j])
-                    .assign(&self.data.slice(ndarray::s![.., j]));
-            }
-        }
-        self.data = new_data;
-    }
-
     /// Gets all valid neighboring coordinates for a given point.
     ///
     /// This method returns all coordinates that are adjacent to the given point
@@ -398,33 +364,6 @@ impl<ValueType> Grid2D<ValueType> {
             }
         }
         neighbors
-    }
-
-    /// Fills the entire grid with a single value.
-    ///
-    /// # Arguments
-    ///
-    /// * `value` - The value to fill the grid with
-    pub fn fill(&mut self, value: &ValueType)
-    where
-        ValueType: Clone,
-    {
-        self.data.fill(value.clone());
-    }
-
-    /// Applies a function to transform all elements in the grid.
-    ///
-    /// # Arguments
-    ///
-    /// * `f` - A function that takes a value and returns a transformed value
-    pub fn map<F, U>(&self, f: F) -> Grid2D<U>
-    where
-        ValueType: Clone,
-        F: Fn(&ValueType) -> U,
-        U: Clone,
-    {
-        let new_data = self.data.mapv(|v| f(&v));
-        Grid2D { data: new_data }
     }
 
     /// Returns an iterator over all values in the grid.
