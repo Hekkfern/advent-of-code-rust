@@ -5,6 +5,7 @@ pub use d2::core::cardinal_direction_2d::CardinalDirection2D;
 pub use d2::core::direction_2d::Direction2D;
 pub use d2::shapes::grid_2d::{Grid2D, GridCoordinate2D};
 pub use d2::shapes::orthogonal_polygon_2d::OrthogonalPolygon2D;
+pub use d2::shapes::square_diamond_2d::SquareDiamond2D;
 pub use generic::core::axis_direction::AxisDirection;
 pub use generic::core::point::Point;
 pub use generic::core::vector::{Vector, VectorType};

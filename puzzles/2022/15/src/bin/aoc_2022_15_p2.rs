@@ -4,6 +4,7 @@ fn main() {
     solve_part(1, || {
         aoc_2022_15::solve_part2(aoc_2022_15::Part2Parameters {
             input_data: include_str!("../../data/input/input.txt"),
+            max_grid_size: 4_000_000,
         })
     });
 }

@@ -67,7 +67,10 @@ fn test_part1_test1() {
 fn test_part2_real() {
     let input_data = read_data_file("input/input.txt");
     test_part2_case!(
-        Part2Parameters { input_data },
+        Part2Parameters {
+            input_data,
+            max_grid_size: 4_000_000
+        },
         "solutions/solution_part2.txt"
     );
 }
@@ -76,7 +79,10 @@ fn test_part2_real() {
 fn test_part2_test1() {
     let input_data = read_data_file("input/input_part2_test1.txt");
     test_part2_case!(
-        Part2Parameters { input_data },
+        Part2Parameters {
+            input_data,
+            max_grid_size: 20
+        },
         "solutions/solution_part2_test1.txt"
     );
 }

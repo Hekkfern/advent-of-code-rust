@@ -1,7 +1,7 @@
 mod sensor_info;
 
 use crate::sensor_info::SensorInfo;
-use aoc_geometry::Point;
+use aoc_geometry::{Point, SquareDiamond2D};
 use aoc_intervals::interval::Interval;
 use aoc_intervals::interval_set::IntervalSet;
 use regex::Regex;
@@ -90,6 +90,41 @@ pub fn solve_part1(params: Part1Parameters) -> String {
 /// Parameters for solving Part 2 of the puzzle.
 pub struct Part2Parameters {
     pub input_data: &'static str,
+    pub max_grid_size: i32,
+}
+
+fn calculate_tuning_frequency(p: Point<i32, 2>) -> u64 {
+    (p[0] as u64 * 4_000_000) + p[1] as u64
+}
+
+fn search_for_distress_beacon(
+    sensor_info_list: &Vec<SensorInfo>,
+    max_grid_size: i32,
+) -> Point<i32, 2> {
+    for sensor_info in sensor_info_list {
+        let diamond = SquareDiamond2D::from_center_and_perimeter_point(
+            sensor_info.sensor_position(),
+            sensor_info.beacon_position(),
+        );
+        for position in diamond.step_around_outside_border() {
+            if position[0] >= 0
+                && position[0] <= max_grid_size
+                && position[1] >= 0
+                && position[1] <= max_grid_size
+                && sensor_info_list.iter().all(|s| {
+                    let v = aoc_geometry::Vector::<i64, 2>::from_points(
+                        s.sensor_position(),
+                        &position,
+                    )
+                    .unwrap();
+                    v.manhattan_distance() > s.distance()
+                })
+            {
+                return position;
+            }
+        }
+    }
+    unreachable!();
 }
 
 /// Solves Part 2 of the puzzle
@@ -102,6 +137,7 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let sensors: Vec<SensorInfo> = params.input_data.lines().map(parse_input_line).collect();
+    let distress_beacon_position = search_for_distress_beacon(&sensors, params.max_grid_size);
+    calculate_tuning_frequency(distress_beacon_position).to_string()
 }
