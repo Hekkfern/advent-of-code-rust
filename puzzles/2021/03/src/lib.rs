@@ -88,7 +88,7 @@ fn filter(
                     indices = Interval::from_boundaries(first_one_idx as i32, indices.get_max());
                 }
                 false => {
-                    indices = Interval::from_boundaries(indices.get_min(), first_one_idx as i32);
+                    indices = Interval::from_boundaries(indices.get_min(), first_one_idx as i32 - 1);
                 }
             }
             if indices.has_one_value() {
