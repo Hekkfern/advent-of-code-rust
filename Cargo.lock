@@ -144,6 +144,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2021-03"
+version = "1.0.0"
+dependencies = [
+ "aoc-intervals",
+ "aoc-utils",
+ "assertables",
+ "bitvec",
+ "include_dir",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "aoc-2022-01"
 version = "1.0.0"
 dependencies = [

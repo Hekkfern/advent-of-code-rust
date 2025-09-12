@@ -1,0 +1,14 @@
+[package]
+name = "aoc-2021-03"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+include_dir.workspace = true
+bitvec.workspace = true
+aoc-utils = { path = "../../../crates/aoc-utils" }
+aoc-intervals = { path = "../../../crates/aoc-intervals" }
+
+[dev-dependencies]
+pretty_assertions.workspace = true
+assertables.workspace = true
