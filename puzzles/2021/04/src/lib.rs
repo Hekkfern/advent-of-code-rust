@@ -79,6 +79,20 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    // TODO
-    String::from("")
+    let (numbers, mut boards) = parse_input(params.input_data);
+    let mut completed_boards_indices: Vec<usize> = Vec::with_capacity(boards.len());
+    for &number in &numbers {
+        for (idx, board) in boards.iter_mut().enumerate() {
+            board.mark_number(number);
+            if !completed_boards_indices.contains(&idx) && board.has_bingo() {
+                completed_boards_indices.push(idx);
+            }
+        }
+        if completed_boards_indices.len() == boards.len() {
+            let unmarked_sum = boards[*completed_boards_indices.last().unwrap()].unmarked_sum();
+            let result = unmarked_sum * number as u32;
+            return result.to_string();
+        }
+    }
+    unreachable!()
 }
