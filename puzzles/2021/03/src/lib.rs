@@ -70,32 +70,32 @@ fn filter(
     binary_length: usize,
 ) -> BitVec<u16, Msb0> {
     let mut indices: Interval<i32> = Interval::from_boundaries(0, codes.len() as i32 - 1);
-    loop {
-        for i in 0..binary_length {
-            let first_one_idx = codes
-                .iter()
-                .enumerate()
-                .filter(|(idx, _)| indices.contains(*idx as i32))
-                .find(|(_, code)| code[i])
-                .unwrap()
-                .0 as i32;
-            let bit_criteria = match rating {
-                Rating::Oxygen => first_one_idx <= indices.get_min() + (indices.count() as i32 / 2),
-                Rating::CO2 => !(first_one_idx <= indices.get_min() + (indices.count() as i32 / 2)),
-            };
-            match bit_criteria {
-                true => {
-                    indices = Interval::from_boundaries(first_one_idx, indices.get_max());
-                }
-                false => {
-                    indices = Interval::from_boundaries(indices.get_min(), first_one_idx - 1);
-                }
+    for i in 0..binary_length {
+        let first_one_idx = codes
+            .iter()
+            .enumerate()
+            .filter(|(idx, _)| indices.contains(*idx as i32))
+            .find(|(_, code)| code[i])
+            .unwrap()
+            .0 as i32;
+        let mut bit_criteria = first_one_idx <= indices.get_min() + (indices.count() as i32 / 2);
+        if matches!(rating, Rating::CO2) {
+            // invert for CO2
+            bit_criteria = !bit_criteria;
+        }
+        match bit_criteria {
+            true => {
+                indices = Interval::from_boundaries(first_one_idx, indices.get_max());
             }
-            if indices.has_one_value() {
-                return codes[indices.get_min() as usize].clone();
+            false => {
+                indices = Interval::from_boundaries(indices.get_min(), first_one_idx - 1);
             }
         }
+        if indices.has_one_value() {
+            break;
+        }
     }
+    codes[indices.get_min() as usize].clone()
 }
 
 /// Solves Part 2 of the puzzle
