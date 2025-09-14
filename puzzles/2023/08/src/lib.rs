@@ -6,7 +6,7 @@ use crate::instruction::Instruction;
 use crate::map::Map;
 use crate::network_node::NetworkNode;
 
-fn parse_input(input: &str) -> map::Map {
+fn parse_input(input: &str) -> Map {
     let mut sections = input.trim().split("\n\n");
 
     let instructions_section = sections.next().unwrap();

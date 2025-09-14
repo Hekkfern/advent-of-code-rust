@@ -47,10 +47,10 @@ impl Map {
         let is_initial_node = |node_id: &NodeId| node_id.ends_with("A");
 
         let mut step_result: u64 = 1;
-        let mut instruction_iter = self.instructions.iter().cycle();
         for initial_node_id in self.nodes.keys().filter(|node_id| is_initial_node(node_id)) {
             let mut step_counter: u64 = 0;
             let mut current_node_id: &NodeId = initial_node_id;
+            let mut instruction_iter = self.instructions.iter().cycle();
 
             while !is_final_node(current_node_id) {
                 let instruction = instruction_iter.next().unwrap();
