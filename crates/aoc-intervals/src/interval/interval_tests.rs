@@ -1317,3 +1317,26 @@ fn partial_ord() {
     assert_eq!(a.partial_cmp(&d), Some(std::cmp::Ordering::Equal));
     assert_eq!(a.cmp(&d), std::cmp::Ordering::Equal);
 }
+
+// Tests for Iterator trait
+
+#[test]
+fn iterator_basic_positive() {
+    let interval = Interval::from_boundaries(3, 7);
+    let values: Vec<_> = interval.into_iter().collect();
+    assert_eq!(values, vec![3, 4, 5, 6, 7]);
+}
+
+#[test]
+fn iterator_basic_negative() {
+    let interval = Interval::from_boundaries(-3, 1);
+    let values: Vec<_> = interval.into_iter().collect();
+    assert_eq!(values, vec![-3, -2, -1, 0, 1]);
+}
+
+#[test]
+fn iterator_single_value() {
+    let interval = Interval::from_boundaries(5, 5);
+    let values: Vec<_> = interval.into_iter().collect();
+    assert_eq!(values, vec![5]);
+}

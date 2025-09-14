@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+mod interval_set_tests;
 
 use crate::interval::Interval;
 use crate::interval_value::{IntervalValue, maximum_interval_value, minimum_interval_value};

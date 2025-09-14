@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+mod interval_tests;
 
 use crate::interval_value::{IntervalValue, maximum_interval_value, minimum_interval_value};
 use num_traits::cast::cast;
@@ -632,5 +632,34 @@ impl<T: IntervalValue> PartialOrd for Interval<T> {
 impl<T: IntervalValue> Ord for Interval<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.min.cmp(&other.min)
+    }
+}
+
+impl<T: IntervalValue> IntoIterator for Interval<T> {
+    type Item = T;
+    type IntoIter = IntervalIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntervalIter {
+            current: self.min,
+            end: self.max,
+        }
+    }
+}
+
+pub struct IntervalIter<T: IntervalValue> {
+    current: T,
+    end: T,
+}
+
+impl<T: IntervalValue> Iterator for IntervalIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<T> {
+        if self.current > self.end {
+            return None;
+        }
+        let val = self.current;
+        self.current = self.current + T::one();
+        Some(val)
     }
 }
