@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod orthogonal_line_tests;
+
 use crate::AxisDirection;
 use crate::Point;
 use crate::Vector;
@@ -157,6 +160,48 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
             axis,
             direction,
             finished: false,
+        }
+    }
+
+    /// Checks if this line overlaps with another orthogonal line, in one or more points.
+    ///
+    /// Two lines overlap in one of these situations:
+    /// * they are collinear and share at least one point.
+    /// * they are aligned along different axes and intersect at a single point.
+    ///
+    /// # Arguments
+    ///
+    /// * `other` - The other orthogonal line to check for overlap
+    ///
+    /// # Returns
+    ///
+    /// `true` if the lines overlap, `false` otherwise
+    pub fn overlaps(&self, other: &Self) -> bool {
+        let self_axis = self.get_axis();
+        let other_axis = other.get_axis();
+        if self_axis == other_axis {
+            // Check for collinear overlap
+            other
+                .vertices
+                .iter()
+                .any(|point| self.contains_point(point))
+        } else {
+            // Check for intersection at a single point
+            let self_common_coords: Vec<_> = self.vertices[0]
+                .get_coordinates()
+                .iter()
+                .zip(self.vertices[1].get_coordinates().iter())
+                .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
+                .collect();
+            let other_common_coords: Vec<_> = other.vertices[0]
+                .get_coordinates()
+                .iter()
+                .zip(other.vertices[1].get_coordinates().iter())
+                .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
+                .collect();
+            self_common_coords
+                .iter()
+                .any(|x| other_common_coords.contains(x))
         }
     }
 }
