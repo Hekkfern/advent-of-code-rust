@@ -2,3 +2,4 @@
 fail-fast = false
 retries = 2
 slow-timeout = { period = "5s", terminate-after = 12 }
+global-timeout = "1h"
