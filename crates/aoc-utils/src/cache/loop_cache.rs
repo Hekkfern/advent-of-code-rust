@@ -27,6 +27,7 @@ where
         iteration_action(item);
         cycle_counter += 1;
     }
+    history.push(item.clone());
     if let Some(offset) = history.iter().position(|x| x == item) {
         let offset = offset as u64;
         let cycle_length = cycle_counter - offset;
@@ -79,6 +80,7 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "max_num_iterations must be positive")]
     fn test_run_no_iterations() {
         let mut value = 42;
         run(&mut value, 0, |v| *v += 1);
