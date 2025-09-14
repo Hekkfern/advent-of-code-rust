@@ -2,6 +2,7 @@ use super::*;
 use crate::Point;
 use assertables::{assert_none, assert_some};
 use pretty_assertions::assert_eq;
+use std::ops::{Add, Mul, Neg, Sub};
 
 const DIMENSIONS: usize = 3;
 
@@ -554,7 +555,7 @@ fn add_out_of_bounds() {
 fn subtract_correct() {
     let v1 = v(10, 8, 6);
     let v2 = v(3, 2, 1);
-    let result = v1.subtract(v2);
+    let result = v1.sub(v2);
     assert_some!(result);
     let result = result.unwrap();
     assert_eq!(result.get_coordinates(), &[7, 6, 5]);
@@ -573,7 +574,7 @@ fn subtract_out_of_bounds() {
 #[test]
 fn invert_correct() {
     let vector = v(3, -4, 5);
-    let negated = vector.invert();
+    let negated = vector.neg();
     assert_some!(negated);
     let negated = negated.unwrap();
     assert_eq!(negated.get_coordinates(), &[-3, 4, -5]);
@@ -582,7 +583,7 @@ fn invert_correct() {
 #[test]
 fn invert_zeros() {
     let vector = v(0, 0, 0);
-    let negated = vector.invert();
+    let negated = vector.neg();
     assert_some!(negated);
     let negated = negated.unwrap();
     assert_eq!(negated.get_coordinates(), &[0, 0, 0]);
@@ -591,7 +592,7 @@ fn invert_zeros() {
 #[test]
 fn invert_out_of_bounds() {
     let vector = v(i32::MAX, -4, i32::MIN);
-    let negated = vector.invert();
+    let negated = vector.neg();
     assert_none!(negated);
 }
 
@@ -600,7 +601,7 @@ fn invert_out_of_bounds() {
 #[test]
 fn multiply_by_scalar_with_positive_value() {
     let vector = v(1, -2, 3);
-    let scaled = vector.multiply_by_scalar(2);
+    let scaled = vector.mul(2);
     assert_some!(scaled);
     let scaled = scaled.unwrap();
     assert_eq!(scaled.get_coordinates(), &[2, -4, 6]);
@@ -609,7 +610,7 @@ fn multiply_by_scalar_with_positive_value() {
 #[test]
 fn scalar_multiplication_with_zero() {
     let vector = v(5, -3, 7);
-    let scaled = vector.multiply_by_scalar(0);
+    let scaled = vector.mul(0);
     assert_some!(scaled);
     let scaled = scaled.unwrap();
     assert_eq!(scaled.get_coordinates(), &[0, 0, 0]);
@@ -619,7 +620,7 @@ fn scalar_multiplication_with_zero() {
 #[test]
 fn multiply_by_scalar_with_negative_value() {
     let vector = v(1, -2, 3);
-    let scaled = vector.multiply_by_scalar(-2);
+    let scaled = vector.mul(-2);
     assert_some!(scaled);
     let scaled = scaled.unwrap();
     assert_eq!(scaled.get_coordinates(), &[-2, 4, -6]);
@@ -628,6 +629,6 @@ fn multiply_by_scalar_with_negative_value() {
 #[test]
 fn multiply_by_scalar_out_of_bounds() {
     let vector = v(i32::MIN, -2, 3);
-    let scaled = vector.multiply_by_scalar(2);
+    let scaled = vector.mul(2);
     assert_none!(scaled);
 }

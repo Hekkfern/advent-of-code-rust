@@ -238,38 +238,6 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
         coordinates[index] = self.coordinates[index];
         Vector::new(coordinates)
     }
-
-    pub fn add(self, other: Self) -> Option<Self> {
-        let mut result = [T::zero(); N];
-        for i in 0..N {
-            result[i] = self.coordinates[i].checked_add(&other.coordinates[i])?;
-        }
-        Some(Vector::new(result))
-    }
-
-    pub fn subtract(self, other: Self) -> Option<Self> {
-        let mut result = [T::zero(); N];
-        for i in 0..N {
-            result[i] = self.coordinates[i].checked_sub(&other.coordinates[i])?;
-        }
-        Some(Vector::new(result))
-    }
-
-    pub fn invert(self) -> Option<Self> {
-        let mut coordinates = [T::zero(); N];
-        for i in 0..N {
-            coordinates[i] = self.coordinates[i].checked_neg()?;
-        }
-        Some(Vector::new(coordinates))
-    }
-
-    pub fn multiply_by_scalar(self, scalar: i32) -> Option<Self> {
-        let mut coordinates = [T::zero(); N];
-        for i in 0..N {
-            coordinates[i] = self.coordinates[i].checked_mul(&T::from(scalar)?)?;
-        }
-        Some(Vector::new(coordinates))
-    }
 }
 
 /// Display formatting for vectors.
@@ -292,5 +260,49 @@ impl<T: VectorCoordinate, const N: usize> std::ops::Index<usize> for Vector<T, N
     fn index(&self, index: usize) -> &Self::Output {
         assert!(index < N, "Axis index out of bounds");
         self.get(index)
+    }
+}
+
+impl<T: VectorCoordinate, const N: usize> std::ops::Add for Vector<T, N> {
+    type Output = Option<Self>;
+    fn add(self, other: Self) -> Self::Output {
+        let mut result = [T::zero(); N];
+        for i in 0..N {
+            result[i] = self.coordinates[i].checked_add(&other.coordinates[i])?;
+        }
+        Some(Vector::new(result))
+    }
+}
+
+impl<T: VectorCoordinate, const N: usize> std::ops::Sub for Vector<T, N> {
+    type Output = Option<Self>;
+    fn sub(self, other: Self) -> Self::Output {
+        let mut result = [T::zero(); N];
+        for i in 0..N {
+            result[i] = self.coordinates[i].checked_sub(&other.coordinates[i])?;
+        }
+        Some(Vector::new(result))
+    }
+}
+
+impl<T: VectorCoordinate, const N: usize> std::ops::Neg for Vector<T, N> {
+    type Output = Option<Self>;
+    fn neg(self) -> Self::Output {
+        let mut coordinates = [T::zero(); N];
+        for i in 0..N {
+            coordinates[i] = self.coordinates[i].checked_neg()?;
+        }
+        Some(Vector::new(coordinates))
+    }
+}
+
+impl<T: VectorCoordinate, const N: usize> std::ops::Mul<i32> for Vector<T, N> {
+    type Output = Option<Self>;
+    fn mul(self, scalar: i32) -> Self::Output {
+        let mut coordinates = [T::zero(); N];
+        for i in 0..N {
+            coordinates[i] = self.coordinates[i].checked_mul(&T::from(scalar)?)?;
+        }
+        Some(Vector::new(coordinates))
     }
 }

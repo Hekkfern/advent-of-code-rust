@@ -2,6 +2,7 @@ mod instruction;
 
 use aoc_geometry::{CardinalDirection2D, OrthogonalPolygon2D, Point, Vector};
 use instruction::Instruction;
+use std::ops::Mul;
 
 const DIMENSIONS: usize = 2;
 
@@ -21,7 +22,7 @@ fn solve(instructions: &[Instruction]) -> u64 {
             let movement: Vector<i64, DIMENSIONS> = instruction
                 .direction()
                 .to_vector()
-                .multiply_by_scalar(instruction.steps() as i32)
+                .mul(instruction.steps() as i32)
                 .unwrap();
             *current_point = current_point.move_by(&movement).unwrap();
             Some(*current_point)

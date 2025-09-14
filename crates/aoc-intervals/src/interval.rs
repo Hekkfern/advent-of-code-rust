@@ -625,7 +625,7 @@ impl<T: IntervalValue> std::ops::Shr<i32> for Interval<T> {
 
 impl<T: IntervalValue> PartialOrd for Interval<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(&other))
+        Some(self.cmp(other))
     }
 }
 

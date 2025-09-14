@@ -2,8 +2,8 @@
 mod point_tests;
 
 use crate::AxisDirection;
-use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::Vector;
+use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
 use num_traits::cast::cast;
 use std::collections::HashSet;
@@ -134,7 +134,7 @@ impl<T: PointCoordinate, const N: usize> Point<T, N> {
     /// A new point that is the mirror image of this point across the selected origin
     pub fn mirror(&self, origin: &Point<T, N>) -> Option<Self> {
         let vector = Vector::<i64, N>::from_points(origin, self)?;
-        let mirrored_vector = vector.invert()?;
+        let mirrored_vector = (-vector)?;
         origin.move_by(&mirrored_vector)
     }
 
