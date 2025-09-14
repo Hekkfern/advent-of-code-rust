@@ -80,7 +80,7 @@ pub fn solve_part2(params: Part2Parameters) -> String {
         for i in 1..=num_matching_numbers {
             let copies_to_add = copies[&card.card_id()];
             copies
-                .entry(&card.card_id() + i)
+                .entry(card.card_id() + i)
                 .and_modify(|count| *count += copies_to_add)
                 .or_insert(copies_to_add);
         }

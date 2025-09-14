@@ -59,10 +59,10 @@ pub fn solve_part2(params: Part2Parameters) -> String {
             if n1 == n2 {
                 continue;
             }
-            if let Some(n3) = TARGET_SUM.checked_sub(n1 + n2) {
-                if numbers.contains(&n3) {
-                    return (n1 as u64 * n2 as u64 * n3 as u64).to_string();
-                }
+            if let Some(n3) = TARGET_SUM.checked_sub(n1 + n2)
+                && numbers.contains(&n3)
+            {
+                return (n1 as u64 * n2 as u64 * n3 as u64).to_string();
             }
         }
     }

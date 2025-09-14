@@ -44,7 +44,7 @@ pub fn add_new_day(params: AddDayParameters) -> Result<(), Error> {
         year: params.year,
         day: params.day,
         session_key: params.session_key,
-    }).or_else(|_| Err(Error::GetStatementError))?;
+    }).map_err(|_| Error::GetStatementError)?;
     Ok(())
 }
 
@@ -57,9 +57,9 @@ fn generate_inputs_folder(
     // Generate folder structure
     let inputs_path = puzzle_path.join("data/input");
     std::fs::create_dir_all(&inputs_path).map_err(|_| Error::IoError)?;
-    std::fs::File::create(&inputs_path.join("input_part1_test1.txt"))
+    std::fs::File::create(inputs_path.join("input_part1_test1.txt"))
         .map_err(|_| Error::IoError)?;
-    std::fs::File::create(&inputs_path.join("input_part2_test1.txt"))
+    std::fs::File::create(inputs_path.join("input_part2_test1.txt"))
         .map_err(|_| Error::IoError)?;
     // Download data from server
     let body = get_input_data_from_server(year, day, session_key)?;
@@ -92,7 +92,7 @@ fn generate_src_folder(
     // Generate src folder
     let src_path = puzzle_path.join("src");
     std::fs::create_dir_all(&src_path).map_err(|_| Error::IoError)?;
-    generate_src_files(&templates_path, &src_path, year, day)?;
+    generate_src_files(templates_path, &src_path, year, day)?;
     Ok(())
 }
 
@@ -105,7 +105,7 @@ fn generate_tests_folder(
     // Generate tests folder
     let tests_path = puzzle_path.join("tests");
     std::fs::create_dir_all(&tests_path).map_err(|_| Error::IoError)?;
-    generate_tests_files(&templates_path, &tests_path, year, day)?;
+    generate_tests_files(templates_path, &tests_path, year, day)?;
     Ok(())
 }
 

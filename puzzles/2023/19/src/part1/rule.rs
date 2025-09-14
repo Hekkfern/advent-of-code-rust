@@ -1,5 +1,8 @@
 use crate::part1::part::Part;
 
+pub type GetCategoryFnType = Box<dyn Fn(&Part) -> u32>;
+pub type ConditionFnType = Box<dyn Fn(u32) -> bool>;
+
 #[derive(Eq, PartialEq, Hash, Debug)]
 enum ActionType {
     Accepted,
@@ -16,8 +19,8 @@ pub enum RunResult {
 }
 
 pub struct Rule {
-    get_category_fn: Box<dyn Fn(&Part) -> u32>,
-    condition_fn: Box<dyn Fn(u32) -> bool>,
+    get_category_fn: GetCategoryFnType,
+    condition_fn: ConditionFnType,
     action_type: ActionType,
 }
 
@@ -32,14 +35,14 @@ impl Rule {
             let category_str = &condition_statement[0..1];
             let condition_symbol = &condition_statement[1..2];
             let threshold_value: u32 = condition_statement[2..].parse().unwrap();
-            let category: Box<dyn Fn(&Part) -> u32> = match category_str {
+            let category: GetCategoryFnType = match category_str {
                 "x" => Box::new(|part: &Part| part.x()),
                 "m" => Box::new(|part: &Part| part.m()),
                 "a" => Box::new(|part: &Part| part.a()),
                 "s" => Box::new(|part: &Part| part.s()),
                 _ => unreachable!(),
             };
-            let condition: Box<dyn Fn(u32) -> bool> = match condition_symbol {
+            let condition: ConditionFnType = match condition_symbol {
                 ">" => Box::new(move |value| value > threshold_value),
                 "<" => Box::new(move |value| value < threshold_value),
                 _ => unreachable!(),

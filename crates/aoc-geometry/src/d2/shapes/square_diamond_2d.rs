@@ -15,7 +15,7 @@ impl<T: PointCoordinate> SquareDiamond2D<T> {
         center: &Point<T, DIMENSIONS>,
         perimeter_point: &Point<T, DIMENSIONS>,
     ) -> Self {
-        let v = Vector::<i64, DIMENSIONS>::from_points(&center, &perimeter_point).unwrap();
+        let v = Vector::<i64, DIMENSIONS>::from_points(center, perimeter_point).unwrap();
         Self::from_center_and_distance(center, v.manhattan_distance())
     }
 
@@ -71,7 +71,7 @@ impl<T: PointCoordinate> SquareDiamond2D<T> {
     /// Each point is adjacent to exactly one border point (up, down, left, or right).
     /// The iteration starts at the top vertex and proceeds clockwise around the shape.
     pub fn step_around_outside_border(&self) -> impl Iterator<Item = Point<T, DIMENSIONS>> {
-        let center = self.center.clone();
+        let center = self.center;
         let d = T::from(self.distance + 1).unwrap();
 
         // The diamond's outside border consists of 4 straight lines (top-right, right-bottom, bottom-left, left-top)

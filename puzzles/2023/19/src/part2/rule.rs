@@ -1,6 +1,10 @@
 use crate::part2::part_range::{PartRange, Range};
 use aoc_intervals::interval::Location;
 
+pub type GetCategoryFnType = Box<dyn Fn(&PartRange) -> &Range>;
+pub type SetCategoryFnType = Box<dyn Fn(&mut PartRange, &Range)>;
+pub type ConditionFnType = Box<dyn Fn(&Range) -> (Option<Range>, Option<Range>)>;
+
 #[derive(Eq, PartialEq, Hash, Debug)]
 pub enum ActionType {
     Accepted,
@@ -9,9 +13,9 @@ pub enum ActionType {
 }
 
 pub struct Rule {
-    get_category_fn: Option<Box<dyn Fn(&PartRange) -> &Range>>,
-    set_category_fn: Option<Box<dyn Fn(&mut PartRange, &Range)>>,
-    condition_fn: Option<Box<dyn Fn(&Range) -> (Option<Range>, Option<Range>)>>,
+    get_category_fn: Option<GetCategoryFnType>,
+    set_category_fn: Option<SetCategoryFnType>,
+    condition_fn: Option<ConditionFnType>,
     action_type: ActionType,
 }
 
@@ -26,14 +30,14 @@ impl Rule {
             let category_str = &condition_statement[0..1];
             let condition_symbol = &condition_statement[1..2];
             let threshold_value: i32 = condition_statement[2..].parse().unwrap();
-            let get_category_fn: Box<dyn Fn(&PartRange) -> &Range> = match category_str {
+            let get_category_fn: GetCategoryFnType = match category_str {
                 "x" => Box::new(|part_range: &PartRange| part_range.get_x()),
                 "m" => Box::new(|part_range: &PartRange| part_range.get_m()),
                 "a" => Box::new(|part_range: &PartRange| part_range.get_a()),
                 "s" => Box::new(|part_range: &PartRange| part_range.get_s()),
                 _ => unreachable!(),
             };
-            let set_category_fn: Box<dyn Fn(&mut PartRange, &Range)> = match category_str {
+            let set_category_fn: SetCategoryFnType = match category_str {
                 "x" => Box::new(|part_range: &mut PartRange, new_value: &Range| {
                     part_range.set_x(new_value)
                 }),
@@ -48,46 +52,43 @@ impl Rule {
                 }),
                 _ => unreachable!(),
             };
-            let condition: Box<dyn Fn(&Range) -> (Option<Range>, Option<Range>)> =
-                match condition_symbol {
-                    "<" => Box::new(move |range| {
-                        if range.has_one_value() {
-                            return (None, None);
-                        }
-                        match range.get_location(threshold_value) {
-                            Location::LeftOutside | Location::LeftBoundary => (None, Some(*range)),
-                            Location::RightBoundary => (
-                                Some(Range::from_boundaries(range.get_min(), threshold_value - 1)),
-                                Some(Range::from_boundaries(threshold_value, threshold_value)),
-                            ),
-                            Location::RightOutside => (Some(*range), None),
-                            Location::Within => (
-                                Some(Range::from_boundaries(range.get_min(), threshold_value - 1)),
-                                Some(Range::from_boundaries(threshold_value, range.get_max())),
-                            ),
-                        }
-                    }),
-                    ">" => Box::new(move |range| {
-                        if range.has_one_value() {
-                            return (None, None);
-                        }
-                        match range.get_location(threshold_value) {
-                            Location::LeftOutside => (Some(*range), None),
-                            Location::LeftBoundary => (
-                                Some(Range::from_boundaries(threshold_value + 1, range.get_max())),
-                                Some(Range::from_boundaries(threshold_value, threshold_value)),
-                            ),
-                            Location::RightBoundary | Location::RightOutside => {
-                                (None, Some(*range))
-                            }
-                            Location::Within => (
-                                Some(Range::from_boundaries(threshold_value + 1, range.get_max())),
-                                Some(Range::from_boundaries(range.get_min(), threshold_value)),
-                            ),
-                        }
-                    }),
-                    _ => unreachable!(),
-                };
+            let condition: ConditionFnType = match condition_symbol {
+                "<" => Box::new(move |range| {
+                    if range.has_one_value() {
+                        return (None, None);
+                    }
+                    match range.get_location(threshold_value) {
+                        Location::LeftOutside | Location::LeftBoundary => (None, Some(*range)),
+                        Location::RightBoundary => (
+                            Some(Range::from_boundaries(range.get_min(), threshold_value - 1)),
+                            Some(Range::from_boundaries(threshold_value, threshold_value)),
+                        ),
+                        Location::RightOutside => (Some(*range), None),
+                        Location::Within => (
+                            Some(Range::from_boundaries(range.get_min(), threshold_value - 1)),
+                            Some(Range::from_boundaries(threshold_value, range.get_max())),
+                        ),
+                    }
+                }),
+                ">" => Box::new(move |range| {
+                    if range.has_one_value() {
+                        return (None, None);
+                    }
+                    match range.get_location(threshold_value) {
+                        Location::LeftOutside => (Some(*range), None),
+                        Location::LeftBoundary => (
+                            Some(Range::from_boundaries(threshold_value + 1, range.get_max())),
+                            Some(Range::from_boundaries(threshold_value, threshold_value)),
+                        ),
+                        Location::RightBoundary | Location::RightOutside => (None, Some(*range)),
+                        Location::Within => (
+                            Some(Range::from_boundaries(threshold_value + 1, range.get_max())),
+                            Some(Range::from_boundaries(range.get_min(), threshold_value)),
+                        ),
+                    }
+                }),
+                _ => unreachable!(),
+            };
             Rule {
                 get_category_fn: Some(get_category_fn),
                 set_category_fn: Some(set_category_fn),

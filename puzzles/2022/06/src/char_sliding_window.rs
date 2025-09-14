@@ -30,13 +30,13 @@ impl<const WINDOW_SIZE: usize> CharSlidingWindow<WINDOW_SIZE> {
         self.sliding = self.sliding.bitxor(new_bit);
 
         // remove if exceeded window size
-        if self.chars.len() > WINDOW_SIZE {
-            if let Some(old) = self.chars.pop_front() {
-                let old_idx = (old - b'a') as usize;
-                let mut old_bit = bitarr![u32, Lsb0; 0; ALPHABET_SIZE];
-                old_bit.set(old_idx, true);
-                self.sliding = self.sliding.bitxor(old_bit);
-            }
+        if self.chars.len() > WINDOW_SIZE
+            && let Some(old) = self.chars.pop_front()
+        {
+            let old_idx = (old - b'a') as usize;
+            let mut old_bit = bitarr![u32, Lsb0; 0; ALPHABET_SIZE];
+            old_bit.set(old_idx, true);
+            self.sliding = self.sliding.bitxor(old_bit);
         }
     }
 

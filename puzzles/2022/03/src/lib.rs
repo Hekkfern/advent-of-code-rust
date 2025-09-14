@@ -20,8 +20,7 @@ fn search_common_item_in_rucksack(compartment1: &str, compartment2: &str) -> cha
     /* look for the repeated item in both compartments */
     compartment2
         .chars()
-        .filter(|c| item_types_1.contains(c))
-        .next()
+        .find(|c| item_types_1.contains(c))
         .unwrap()
 }
 
@@ -53,14 +52,13 @@ pub struct Part2Parameters {
     pub input_data: &'static str,
 }
 
-fn search_common_item_in_group(rucksack1: &str, rucksack2: &str,rucksack3:&str) -> char {
+fn search_common_item_in_group(rucksack1: &str, rucksack2: &str, rucksack3: &str) -> char {
     let item_types_1: HashSet<char> = rucksack1.chars().collect();
     let item_types_2: HashSet<char> = rucksack2.chars().collect();
     /* look for the repeated item in all the compartments */
     rucksack3
         .chars()
-        .filter(|c| item_types_1.contains(c) && item_types_2.contains(c))
-        .next()
+        .find(|c| item_types_1.contains(c) && item_types_2.contains(c))
         .unwrap()
 }
 

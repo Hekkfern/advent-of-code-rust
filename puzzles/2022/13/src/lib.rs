@@ -26,7 +26,7 @@ pub fn solve_part1(params: Part1Parameters) -> String {
         .trim()
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|l| serde_json::from_str::<Packet>(&l).unwrap());
+        .map(|l| serde_json::from_str::<Packet>(l).unwrap());
     let mut sum: u32 = 0;
     for i in 1.. {
         let Some(left) = packets.next() else {

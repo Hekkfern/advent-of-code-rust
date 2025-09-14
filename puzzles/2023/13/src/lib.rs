@@ -23,11 +23,7 @@ fn parse_pattern(block: &str) -> Pattern {
 }
 
 fn parse_input(input: &str) -> Vec<Pattern> {
-    input
-        .trim()
-        .split("\n\n")
-        .map(|block| parse_pattern(block))
-        .collect()
+    input.trim().split("\n\n").map(parse_pattern).collect()
 }
 
 /// Parameters for solving Part 1 of the puzzle.

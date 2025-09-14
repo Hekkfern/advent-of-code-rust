@@ -15,7 +15,7 @@ pub struct Part1Parameters {
 ///
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
-    let groups = convert_to_groups_of_numbers::<u32>(&params.input_data);
+    let groups = convert_to_groups_of_numbers::<u32>(params.input_data);
     let max_calories = groups
         .iter()
         .map(|group| group.iter().sum::<u32>())
@@ -39,7 +39,7 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    let groups = convert_to_groups_of_numbers::<u32>(&params.input_data);
+    let groups = convert_to_groups_of_numbers::<u32>(params.input_data);
     let mut group_sums: Vec<u32> = groups
         .iter()
         .map(|group| group.iter().sum::<u32>())

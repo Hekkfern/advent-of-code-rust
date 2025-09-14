@@ -31,7 +31,7 @@ where
     if let Some(offset) = history.iter().position(|x| x == item) {
         let offset = offset as u64;
         let cycle_length = cycle_counter - offset;
-        if max_num_iterations > offset as u64 {
+        if max_num_iterations > offset {
             let idx = offset as usize + ((max_num_iterations - offset) % cycle_length) as usize;
             *item = history[idx].clone();
         } else {

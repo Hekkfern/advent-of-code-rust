@@ -337,14 +337,14 @@ impl<T: IntervalValue> Interval<T> {
                 max: self.max,
             })
         } else if other.min <= self.min && other.max >= self.min && other.max <= self.max {
-            return Some(Interval {
+            Some(Interval {
                 min: self.min,
                 max: other.max,
-            });
+            })
         } else if other.subsumes(self) {
-            return Some(*self);
+            Some(*self)
         } else if self.subsumes(other) {
-            return Some(*other);
+            Some(*other)
         } else {
             None
         }
@@ -625,7 +625,7 @@ impl<T: IntervalValue> std::ops::Shr<i32> for Interval<T> {
 
 impl<T: IntervalValue> PartialOrd for Interval<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.min.cmp(&other.min))
+        Some(self.cmp(&other))
     }
 }
 

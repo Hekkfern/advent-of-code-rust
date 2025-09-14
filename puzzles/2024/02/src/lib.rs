@@ -13,7 +13,7 @@ impl Report {
         }
         let mut diffs = self.levels.windows(2).map(|w| w[1] as i16 - w[0] as i16);
         let first = match diffs.next() {
-            Some(d) if d == 0 => return false,
+            Some(0) => return false,
             Some(d) => d,
             None => return true,
         };

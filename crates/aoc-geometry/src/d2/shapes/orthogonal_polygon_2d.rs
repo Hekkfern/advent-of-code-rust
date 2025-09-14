@@ -61,7 +61,7 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
     /// # Arguments
     ///
     /// * `perimeter_points` - List of all the points forming the perimeter of the polygon, ordered
-    ///                        in a counter-clock-wise or clock-wise sequence.
+    ///   in a counter-clock-wise or clock-wise sequence.
     fn calculate_arbitrary_polygon_area(perimeter_points: &Vec<Point<T, DIMENSIONS>>) -> f64 {
         let (left_sum, right_sum) = perimeter_points
             .iter()

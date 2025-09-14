@@ -1,7 +1,7 @@
 use crate::AxisDirection;
 use crate::Point;
-use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::Vector;
+use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE: usize = 2;
@@ -44,7 +44,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     /// Panics if the two points are identical, as they cannot form a line
     pub fn from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Self {
         assert!(p1 != p2, "Points must be distinct to form a line.");
-        let vector = Vector::<i64, N>::from_points(&p1, &p2);
+        let vector = Vector::<i64, N>::from_points(p1, p2);
         assert!(vector.is_some(), "Vector cannot be created from points.");
         assert!(
             vector.unwrap().is_axis(),
@@ -78,7 +78,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     {
         assert!(!v.is_zero(), "Vector must be non-zero to form a line.");
         assert!(v.is_axis(), "Orthogonal line must be axis-aligned.");
-        let p2 = p1.move_by(&v);
+        let p2 = p1.move_by(v);
         assert!(p2.is_some(), "Other vertex is out of bounds.");
         Self {
             vertices: [*p1, p2.unwrap()],
@@ -129,7 +129,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         // Check if the point's coordinate along the line's axis is within the line segment
         let min_coord = std::cmp::min(self.vertices[0].get(axis), self.vertices[1].get(axis));
         let max_coord = std::cmp::max(self.vertices[0].get(axis), self.vertices[1].get(axis));
-        point.get(axis) >= &min_coord && point.get(axis) <= &max_coord
+        point.get(axis) >= min_coord && point.get(axis) <= max_coord
     }
 
     /// Creates an iterator that yields all points along the line from start to end.

@@ -1,3 +1,10 @@
+fn parse_input(input: &str) -> impl Iterator<Item = u64> {
+    input
+        .trim()
+        .lines()
+        .map(|line| line.trim().parse::<u64>().unwrap())
+}
+
 /// Calculates the fuel required for a given mass.
 ///
 /// # Arguments
@@ -24,13 +31,7 @@ pub struct Part1Parameters {
 ///
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
-    let total_fuel: u64 = params
-        .input_data
-        .trim()
-        .lines()
-        .map(|line| line.trim().parse::<u64>().unwrap())
-        .map(|x| calculate_fuel(x))
-        .sum();
+    let total_fuel: u64 = parse_input(params.input_data).map(calculate_fuel).sum();
     total_fuel.to_string()
 }
 
@@ -68,12 +69,8 @@ fn calculate_total_fuel(mass: u64) -> u64 {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    let total_fuel: u64 = params
-        .input_data
-        .trim()
-        .lines()
-        .map(|line| line.trim().parse::<u64>().unwrap())
-        .map(|x| calculate_total_fuel(x))
+    let total_fuel: u64 = parse_input(params.input_data)
+        .map(calculate_total_fuel)
         .sum();
     total_fuel.to_string()
 }

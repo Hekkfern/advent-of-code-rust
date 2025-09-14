@@ -15,8 +15,8 @@ use std::collections::{HashMap, VecDeque};
 fn parse_height(c: char) -> Height {
     match c {
         'S' => 0,
-        'E' => 'z' as u8 - 'a' as u8,
-        _ => c as u8 - 'a' as u8,
+        'E' => b'z' - b'a',
+        _ => c as u8 - b'a',
     }
 }
 
@@ -68,12 +68,10 @@ fn get_next_positions(
     for delta in deltas {
         if let Some(new_coord) = map.get_grid().try_move(pos.get_point(), &delta) {
             let new_coord_height = *map.get_grid().get(&new_coord).unwrap();
-            if climbing_direction == ClimbingDirection::Up
-                && new_coord_height <= pos.get_height() + 1
-            {
-                next_positions.push(Position::new(new_coord, new_coord_height));
-            } else if climbing_direction == ClimbingDirection::Down
-                && new_coord_height + 1 >= pos.get_height()
+            if (climbing_direction == ClimbingDirection::Up
+                && new_coord_height <= pos.get_height() + 1)
+                || (climbing_direction == ClimbingDirection::Down
+                    && new_coord_height + 1 >= pos.get_height())
             {
                 next_positions.push(Position::new(new_coord, new_coord_height));
             }

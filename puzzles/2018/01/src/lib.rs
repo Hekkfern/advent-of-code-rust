@@ -20,7 +20,7 @@ pub fn solve_part1(params: Part1Parameters) -> String {
         .trim()
         .lines()
         .map(|line| line.trim().parse::<i64>().unwrap())
-        .fold(0, |acc, x| acc + x);
+        .sum();
     freq.to_string()
 }
 

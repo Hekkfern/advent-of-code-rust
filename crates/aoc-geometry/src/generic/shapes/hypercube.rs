@@ -1,9 +1,9 @@
 use crate::BoundingBox;
 use crate::Point;
-use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::PositionStatus;
-use crate::{Vector, VectorType};
+use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
+use crate::{Vector, VectorType};
 use std::collections::HashSet;
 
 /// A hypercube in N-dimensional space with coordinates of type T.
@@ -65,7 +65,7 @@ impl<T: PointCoordinate, const N: usize> HyperCube<T, N> {
     }
 
     pub fn from_opposite_vertices(vertex1: &Point<T, N>, vertex2: &Point<T, N>) -> Self {
-        let diagonal = Vector::<i128, N>::from_points(&vertex1, &vertex2)
+        let diagonal = Vector::<i128, N>::from_points(vertex1, vertex2)
             .expect("Diagonal vector cannot be created");
         HyperCube::from_vertex_and_diagonal(vertex1, &diagonal)
     }

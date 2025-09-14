@@ -16,7 +16,7 @@ pub struct Part1Parameters {
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     // TODO: Use Iterator::map_windows (https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map_windows) when it becomes stable to avoid the allocation of a new vector.
-    let input = convert_to_list_of_numbers::<u32>(&params.input_data);
+    let input = convert_to_list_of_numbers::<u32>(params.input_data);
     let sum: u32 = input
         .windows(2)
         .map(|w| if w[0] < w[1] { 1 } else { 0 })
@@ -39,7 +39,7 @@ pub struct Part2Parameters {
 ///
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
-    let input = convert_to_list_of_numbers::<u32>(&params.input_data);
+    let input = convert_to_list_of_numbers::<u32>(params.input_data);
     let windows1 = input.windows(3);
     let windows2 = input.windows(3).skip(1);
     let sum: u32 = windows1

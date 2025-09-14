@@ -11,21 +11,16 @@ fn parse_input(input: &str, with_jokers: bool) -> Vec<Hand> {
         .lines()
         .map(|line| {
             let mut parts = line.split_whitespace();
-            let cards: Vec<_> = parts
-                .next()
-                .unwrap()
-                .chars()
-                .map(|s| CardType::from(s))
-                .collect();
+            let cards: Vec<_> = parts.next().unwrap().chars().map(CardType::from).collect();
             let bid = parts.next().unwrap().parse::<u32>().unwrap();
             Hand::new(cards.try_into().unwrap(), bid, with_jokers)
         })
         .collect()
 }
 
-fn calculate_winnings(hands: &Vec<Hand>, with_jokers: bool) -> u64 {
+fn calculate_winnings(hands: &[Hand], with_jokers: bool) -> u64 {
     // Sort the hands in ascending order (weakest hand first)
-    let mut sorted_hands = hands.clone();
+    let mut sorted_hands = hands.to_owned();
     sorted_hands.sort_by(|a, b| a.cmp(b, with_jokers));
     // Calculate the total winnings
     sorted_hands

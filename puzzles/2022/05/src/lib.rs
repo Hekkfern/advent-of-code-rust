@@ -14,10 +14,10 @@ fn parse_input_stacks(input: &str) -> Vec<CrateStack> {
         // Each stack is at position 1 + 4*i (i = stack index)
         for (i, stack) in stacks.iter_mut().enumerate() {
             let pos = 1 + i * 4;
-            if let Some(c) = line.chars().nth(pos) {
-                if c.is_ascii_alphabetic() {
-                    stack.push(c);
-                }
+            if let Some(c) = line.chars().nth(pos)
+                && c.is_ascii_alphabetic()
+            {
+                stack.push(c);
             }
         }
     }
@@ -47,7 +47,7 @@ fn generate_result(stacks: Vec<CrateStack>) -> String {
 }
 
 fn get_stack_crates(
-    stacks: &mut Vec<CrateStack>,
+    stacks: &mut [CrateStack],
     origin_idx: usize,
     destination_idx: usize,
 ) -> (&mut CrateStack, &mut CrateStack) {
@@ -69,7 +69,7 @@ pub struct Part1Parameters {
     pub input_data: &'static str,
 }
 
-fn execute_cratemover9000_instruction(stacks: &mut Vec<CrateStack>, instruction: CraneInstruction) {
+fn execute_cratemover9000_instruction(stacks: &mut [CrateStack], instruction: CraneInstruction) {
     let (origin_stack, destination_stack) = get_stack_crates(
         stacks,
         instruction.origin() as usize,
@@ -106,7 +106,7 @@ pub struct Part2Parameters {
     pub input_data: &'static str,
 }
 
-fn execute_cratemover9001_instruction(stacks: &mut Vec<CrateStack>, instruction: CraneInstruction) {
+fn execute_cratemover9001_instruction(stacks: &mut [CrateStack], instruction: CraneInstruction) {
     let (origin_stack, destination_stack) = get_stack_crates(
         stacks,
         instruction.origin() as usize,

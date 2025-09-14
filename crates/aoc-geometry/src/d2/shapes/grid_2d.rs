@@ -8,7 +8,7 @@ use std::collections::HashSet;
 
 pub type GridCoordinate2D = Point<usize, 2>;
 
-#[warn(dead_code)]
+#[allow(dead_code)]
 const DIMENSIONS: usize = 2;
 const ROW_INDEX: usize = 0;
 const COL_INDEX: usize = 1;
