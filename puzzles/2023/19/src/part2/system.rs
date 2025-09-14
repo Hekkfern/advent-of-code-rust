@@ -29,9 +29,9 @@ fn search_accepted(
                 } else {
                     // Get the "true" and "false" chunks
                     let (jump, next) = rule.process(value);
-                    if jump.is_some() {
+                    if let Some(mut jump_value) = jump {
                         //recurse
-                        search_accepted(workflows, accepted, rule.get_action(), &mut jump.unwrap());
+                        search_accepted(workflows, accepted, rule.get_action(), &mut jump_value);
                     }
                     // If the "false" chunk doesn't contain any values, we are done
                     if next.is_none() {

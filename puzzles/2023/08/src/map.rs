@@ -52,7 +52,7 @@ impl Map {
             let mut step_counter: u64 = 0;
             let mut current_node_id: &NodeId = initial_node_id;
 
-            while !is_final_node(&current_node_id) {
+            while !is_final_node(current_node_id) {
                 let instruction = instruction_iter.next().unwrap();
                 current_node_id = self.nodes[current_node_id].navigate(instruction);
                 step_counter += 1;

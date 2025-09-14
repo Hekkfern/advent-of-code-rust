@@ -55,7 +55,7 @@ impl InfiniteSandMap {
     /// `true` if sand can still come out of the origin, `false` otherwise.
     pub fn drop_sand(&mut self) -> bool {
         let origin = Point::new([500, 0]);
-        let mut current_position = origin.clone();
+        let mut current_position = origin;
         loop {
             if let Some(next_position) = self.move_sand(&current_position, Vector::new([0, 1])) {
                 current_position = next_position;

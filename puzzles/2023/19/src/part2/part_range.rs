@@ -25,7 +25,7 @@ impl PartRange {
     }
 
     pub fn set_x(&mut self, new_value: &Range) {
-        self.x = new_value.clone();
+        self.x = *new_value;
     }
 
     pub fn get_m(&self) -> &Range {
@@ -33,7 +33,7 @@ impl PartRange {
     }
 
     pub fn set_m(&mut self, new_value: &Range) {
-        self.m = new_value.clone();
+        self.m = *new_value;
     }
 
     pub fn get_a(&self) -> &Range {
@@ -41,7 +41,7 @@ impl PartRange {
     }
 
     pub fn set_a(&mut self, new_value: &Range) {
-        self.a = new_value.clone();
+        self.a = *new_value;
     }
 
     pub fn get_s(&self) -> &Range {
@@ -49,7 +49,7 @@ impl PartRange {
     }
 
     pub fn set_s(&mut self, new_value: &Range) {
-        self.s = new_value.clone();
+        self.s = *new_value;
     }
 
     pub fn calculate_number_of_combinations(&self) -> u64 {

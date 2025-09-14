@@ -34,7 +34,7 @@ impl Mesh {
                         .filter_map(|(connected_module_name, connected_module)| {
                             if connected_module
                                 .get_destinations()
-                                .contains(&conjunction_name)
+                                .contains(conjunction_name)
                             {
                                 Some(connected_module_name.clone())
                             } else {
@@ -72,7 +72,7 @@ impl Mesh {
         self.modules
             .iter()
             .filter_map(|(name, module)| {
-                if module.get_destinations().contains(&module_name) {
+                if module.get_destinations().contains(module_name) {
                     Some(name.clone())
                 } else {
                     None

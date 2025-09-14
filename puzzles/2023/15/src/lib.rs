@@ -69,7 +69,7 @@ pub fn solve_part2(params: Part2Parameters) -> String {
     params.input_data.trim().split(',').for_each(|s| {
         let (label, op, arg) = {
             let mut chars = s.chars();
-            let pos = s.find(|c| c == '=' || c == '-').unwrap();
+            let pos = s.find(['=', '-']).unwrap();
             let label = &s[..pos];
             let op = chars.nth(pos).unwrap();
             let arg = s.get(pos + 1..);

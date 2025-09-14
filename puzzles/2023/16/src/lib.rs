@@ -14,7 +14,7 @@ fn parse_input(input: &str) -> TileGrid {
     let data = input
         .trim()
         .lines()
-        .map(|line| line.trim().chars().map(|s| TileType::from(s)).collect())
+        .map(|line| line.trim().chars().map(TileType::from).collect())
         .collect();
     let mut grid = TileGrid::from_double_vec(data);
     grid.flip_vertical();
@@ -26,7 +26,7 @@ fn process_beam_in_tile(
     beam_direction: &CardinalDirection2D,
 ) -> Vec<CardinalDirection2D> {
     match tile_type {
-        TileType::EmptySpace => vec![beam_direction.clone()],
+        TileType::EmptySpace => vec![*beam_direction],
         TileType::MirrorSlash => match beam_direction {
             CardinalDirection2D::Up => vec![CardinalDirection2D::Right],
             CardinalDirection2D::Down => vec![CardinalDirection2D::Left],
@@ -68,7 +68,7 @@ fn move_around_grid(
     coords: &GridCoordinate2D,
     direction: &CardinalDirection2D,
 ) -> Option<GridCoordinate2D> {
-    tile_grid.try_move(&coords, &direction.to_vector())
+    tile_grid.try_move(coords, &direction.to_vector())
 }
 
 fn process_recursively(

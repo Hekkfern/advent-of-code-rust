@@ -9,7 +9,7 @@ fn parse_input<F>(input: &str, parse_instruction: F) -> Vec<Instruction>
 where
     F: Fn(&str) -> Instruction,
 {
-    input.lines().map(|line| parse_instruction(line)).collect()
+    input.lines().map(parse_instruction).collect()
 }
 
 fn solve(instructions: &[Instruction]) -> u64 {

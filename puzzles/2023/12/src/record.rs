@@ -13,10 +13,7 @@ pub struct Record {
     contiguous_group_info: Vec<i32>,
 }
 
-fn expand_contiguous_group_info(
-    group_info: &Vec<i32>,
-    repetitions: i32,
-) -> Vec<ExpandedSpringStatus> {
+fn expand_contiguous_group_info(group_info: &[i32], repetitions: i32) -> Vec<ExpandedSpringStatus> {
     let mut result: Vec<ExpandedSpringStatus> = vec![ExpandedSpringStatus::GroupOfOperational];
     (0..repetitions).for_each(|_| {
         group_info.iter().for_each(|&group_size| {
@@ -51,7 +48,7 @@ impl Record {
         let mut dp = vec![vec![0u64; m + 1]; n + 1];
         dp[n][m] = 1;
         for i in (0..n).rev() {
-            let start_j = m.checked_sub(n - i).unwrap_or(0);
+            let start_j = m.saturating_sub(n - i);
             for j in (start_j..m).rev() {
                 let mut value: u64 = 0;
                 if extended_springs[i] != OPERATIONAL_SPRING
@@ -87,7 +84,7 @@ impl Record {
         let mut dp = vec![vec![0u64; m + 1]; n + 1];
         dp[n][m] = 1;
         for i in (0..n).rev() {
-            let start_j = m.checked_sub(n - i).unwrap_or(0);
+            let start_j = m.saturating_sub(n - i);
             for j in (start_j..m).rev() {
                 let mut value: u64 = 0;
                 if extended_springs[i] != OPERATIONAL_SPRING

@@ -61,7 +61,7 @@ fn parse_input_for_part1(input: &str) -> Vec<Race> {
 
     times
         .into_iter()
-        .zip(distances.into_iter())
+        .zip(distances)
         .map(|(time, distance)| Race::new(time, distance))
         .collect()
 }
@@ -77,7 +77,7 @@ fn parse_input_for_part1(input: &str) -> Vec<Race> {
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     let races = parse_input_for_part1(params.input_data);
-    let result: u64 = races.iter().map(|x| count_race_wins(x)).product();
+    let result: u64 = races.iter().map(count_race_wins).product();
     result.to_string()
 }
 

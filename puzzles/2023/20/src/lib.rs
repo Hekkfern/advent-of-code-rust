@@ -22,7 +22,7 @@ fn get_destinations_iter(line: &str) -> impl Iterator<Item = &str> {
     line[line.find("->").unwrap() + 3..].split(", ")
 }
 
-fn add_module_to_mesh(mesh: &mut Mesh, line: &str, mut module: Box<dyn ModuleTrait>) -> () {
+fn add_module_to_mesh(mesh: &mut Mesh, line: &str, mut module: Box<dyn ModuleTrait>) {
     for destination in get_destinations_iter(line) {
         let dest_name = ModuleName::from(destination);
         module.add_destination(&dest_name);
@@ -31,7 +31,7 @@ fn add_module_to_mesh(mesh: &mut Mesh, line: &str, mut module: Box<dyn ModuleTra
 }
 
 /// Parse a line and create the corresponding module. Then, it is added to the mesh.
-fn parse_input_line(mesh: &mut Mesh, line: &str) -> () {
+fn parse_input_line(mesh: &mut Mesh, line: &str) {
     match &line[0..1] {
         "%" => {
             /* it is a flip-flop */
@@ -160,10 +160,10 @@ pub fn solve_part2(params: Part2Parameters) -> String {
                 if previous_node_to_rx == *output_signal.destination()
                     && output_signal.value() == SignalValue::High
                 {
-                    if last.contains_key(&*output_signal.origin()) {
+                    if last.contains_key(output_signal.origin()) {
                         loops.insert(
                             output_signal.origin().clone(),
-                            button_presses - last[&*output_signal.origin()],
+                            button_presses - last[output_signal.origin()],
                         );
                     }
                     last.insert(output_signal.origin().clone(), button_presses);

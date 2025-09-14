@@ -13,15 +13,15 @@ fn parse_input_for_part1(input: &str) -> (BinaryHeap<Reverse<u32>>, BinaryHeap<R
 
     input.lines().for_each(|line| {
         let mut parts = line.split_whitespace();
-        if let Some(num1) = parts.next() {
-            if let Ok(n1) = num1.parse::<u32>() {
-                list1.push(Reverse(n1));
-            }
+        if let Some(num1) = parts.next()
+            && let Ok(n1) = num1.parse::<u32>()
+        {
+            list1.push(Reverse(n1));
         }
-        if let Some(num2) = parts.next() {
-            if let Ok(n2) = num2.parse::<u32>() {
-                list2.push(Reverse(n2));
-            }
+        if let Some(num2) = parts.next()
+            && let Ok(n2) = num2.parse::<u32>()
+        {
+            list2.push(Reverse(n2));
         }
     });
 
@@ -39,9 +39,9 @@ fn parse_input_for_part1(input: &str) -> (BinaryHeap<Reverse<u32>>, BinaryHeap<R
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     let (mut list1, mut list2) = parse_input_for_part1(params.input_data);
-    let mut sum: u32 = 0;
+    let mut sum: u64 = 0;
     while let (Some(Reverse(a)), Some(Reverse(b))) = (list1.pop(), list2.pop()) {
-        sum += (a as i64 - b as i64).abs() as u32;
+        sum += (a as i64 - b as i64).unsigned_abs();
     }
     sum.to_string()
 }
@@ -57,15 +57,15 @@ fn parse_input_for_part2(input: &str) -> (Vec<u32>, HashMap<u32, u32>) {
 
     input.lines().for_each(|line| {
         let mut parts = line.split_whitespace();
-        if let Some(num1) = parts.next() {
-            if let Ok(n1) = num1.parse::<u32>() {
-                list1.push(n1);
-            }
+        if let Some(num1) = parts.next()
+            && let Ok(n1) = num1.parse::<u32>()
+        {
+            list1.push(n1);
         }
-        if let Some(num2) = parts.next() {
-            if let Ok(n2) = num2.parse::<u32>() {
-                list2_freqs.entry(n2).and_modify(|c| *c += 1).or_insert(1);
-            }
+        if let Some(num2) = parts.next()
+            && let Ok(n2) = num2.parse::<u32>()
+        {
+            list2_freqs.entry(n2).and_modify(|c| *c += 1).or_insert(1);
         }
     });
 

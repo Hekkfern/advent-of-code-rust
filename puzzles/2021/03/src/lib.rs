@@ -64,11 +64,7 @@ enum Rating {
     CO2,
 }
 
-fn filter(
-    codes: &Vec<BitVec<u16, Msb0>>,
-    rating: Rating,
-    binary_length: usize,
-) -> BitVec<u16, Msb0> {
+fn filter(codes: &[BitVec<u16, Msb0>], rating: Rating, binary_length: usize) -> BitVec<u16, Msb0> {
     let mut indices: Interval<i32> = Interval::from_boundaries(0, codes.len() as i32 - 1);
     for i in 0..binary_length {
         let first_one_idx = codes

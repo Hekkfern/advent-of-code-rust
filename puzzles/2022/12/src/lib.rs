@@ -23,7 +23,7 @@ fn parse_height(c: char) -> Height {
 fn parse_input(input: &str) -> Map {
     let mut start: Position = Position::default();
     let mut end: Position = Position::default();
-    let heights: Vec<Vec<Height>> = input
+    let heights = input
         .trim()
         .lines()
         .enumerate()
@@ -40,9 +40,9 @@ fn parse_input(input: &str) -> Map {
                     }
                     h
                 })
-                .collect()
+                .collect::<Vec<_>>()
         })
-        .collect();
+        .collect::<Vec<_>>();
     let grid = Grid2D::from_double_vec(heights);
     Map::new(grid, start, end)
 }

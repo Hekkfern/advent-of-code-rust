@@ -153,7 +153,7 @@ fn calculate_monkey_business(monkey_inspections: &HashMap<MonkeyId, u32>) -> u64
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     const NUMBER_OF_ROUNDS: u32 = 20;
-    let mut monkeys = parse_input(&params.input_data);
+    let mut monkeys = parse_input(params.input_data);
     let mut monkey_inspections: HashMap<MonkeyId, u32> =
         monkeys.keys().map(|&id| (id, 0)).collect();
 
@@ -187,7 +187,7 @@ pub struct Part2Parameters {
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
     const NUMBER_OF_ROUNDS: u32 = 10_000;
-    let mut monkeys = parse_input(&params.input_data);
+    let mut monkeys = parse_input(params.input_data);
     let mut monkey_inspections: HashMap<MonkeyId, u32> =
         monkeys.keys().map(|&id| (id, 0)).collect();
 

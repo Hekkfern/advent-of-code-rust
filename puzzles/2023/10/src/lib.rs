@@ -28,11 +28,7 @@ fn parse_input(input: &str) -> (Field, GridPosition) {
     let mut field = Grid2D::from_double_vec(grid_data);
     field.flip_vertical();
     // Adjust the start position accordingly
-    start = Point::new([
-        start.get(0).clone(),
-        (field.get_height() - 1) - start.get(1).clone(),
-    ]);
-
+    start = Point::new([*start.get(0), (field.get_height() - 1) - *start.get(1)]);
     (field, start)
 }
 
@@ -49,7 +45,7 @@ fn get_pipe_translation(pipe: PipeType) -> (VectorDirection, VectorDirection) {
 }
 
 fn get_pipe_type_at(field: &Field, position: &GridPosition) -> PipeType {
-    field.get(&position).unwrap().clone()
+    field.get(position).unwrap().clone()
 }
 
 fn move_across_field(
@@ -57,7 +53,7 @@ fn move_across_field(
     pipe_position: &GridPosition,
     previous_position: &GridPosition,
 ) -> GridPosition {
-    let translation = get_pipe_translation(get_pipe_type_at(&field, &pipe_position));
+    let translation = get_pipe_translation(get_pipe_type_at(field, pipe_position));
     let new_position_1 = pipe_position.move_by(&translation.0).unwrap();
     let new_position_2 = pipe_position.move_by(&translation.1).unwrap();
     if new_position_1 == *previous_position {
@@ -74,15 +70,15 @@ fn get_starting_neighbor(field: &Field, start: &GridPosition) -> GridPosition {
             continue;
         }
         let translation = get_pipe_translation(pipe_type);
-        if let Some(candidate1) = neighbor.move_by(&translation.0) {
-            if candidate1 == *start {
-                return neighbor;
-            }
+        if let Some(candidate1) = neighbor.move_by(&translation.0)
+            && candidate1 == *start
+        {
+            return neighbor;
         }
-        if let Some(candidate2) = neighbor.move_by(&translation.1) {
-            if candidate2 == *start {
-                return neighbor;
-            }
+        if let Some(candidate2) = neighbor.move_by(&translation.1)
+            && candidate2 == *start
+        {
+            return neighbor;
         }
     }
     unreachable!()

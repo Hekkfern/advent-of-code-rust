@@ -30,7 +30,7 @@ fn solve<const ROPE_LENGTH: usize>(input_data: &str) -> u32 {
     input_data.lines().for_each(|line| {
         let instruction = parse_input_line(line);
         for _ in 0..instruction.steps() {
-            rope.move_head(instruction.direction().clone());
+            rope.move_head(*instruction.direction());
             visited_tail_positions.insert(*rope.tail());
         }
     });

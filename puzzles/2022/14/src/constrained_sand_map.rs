@@ -32,16 +32,16 @@ impl ConstrainedSandMap {
 
     fn is_sand_outside(&self, position: &Point<i32, 2>) -> bool {
         self.bounding_box
-            .is_outside_for_axis_and_direction(0, AxisDirection::Positive, &position)
+            .is_outside_for_axis_and_direction(0, AxisDirection::Positive, position)
             || self.bounding_box.is_outside_for_axis_and_direction(
                 0,
                 AxisDirection::Negative,
-                &position,
+                position,
             )
             || self.bounding_box.is_outside_for_axis_and_direction(
                 1,
                 AxisDirection::Positive,
-                &position,
+                position,
             )
     }
 
@@ -69,7 +69,7 @@ impl ConstrainedSandMap {
         loop {
             if let Some(next_position) = self.move_sand(&current_position, Vector::new([0, 1])) {
                 if self.is_sand_outside(&current_position) {
-                   return false;
+                    return false;
                 }
                 current_position = next_position;
                 continue;

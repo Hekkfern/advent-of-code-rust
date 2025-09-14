@@ -96,8 +96,8 @@ fn check_tree_visibility(forest: &TreeHeightMatrix) -> u32 {
     let mut visibility =
         TreeVisibilityMatrix::from_default_value(forest.get_width(), forest.get_height(), &false);
     // check visibilities. add 4 as the 4 corners are always visible
-    check_tree_visibility_vertically(&forest, &mut visibility)
-        + check_tree_visibility_horizontally(&forest, &mut visibility)
+    check_tree_visibility_vertically(forest, &mut visibility)
+        + check_tree_visibility_horizontally(forest, &mut visibility)
         + 4
 }
 
@@ -128,16 +128,12 @@ fn calculate_viewing_distance(
     let height = *forest.get(coord).unwrap();
     let mut distance = 0;
     let mut current_coord = *coord;
-    loop {
-        if let Some(next_coord) = forest.try_move(&current_coord, &direction.to_vector()) {
-            distance += 1;
-            if *forest.get(&next_coord).unwrap() >= height {
-                break;
-            }
-            current_coord = next_coord;
-        } else {
+    while let Some(next_coord) = forest.try_move(&current_coord, &direction.to_vector()) {
+        distance += 1;
+        if *forest.get(&next_coord).unwrap() >= height {
             break;
         }
+        current_coord = next_coord;
     }
     distance
 }

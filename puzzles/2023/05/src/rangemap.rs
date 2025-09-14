@@ -44,9 +44,7 @@ impl RangeMap {
             .iter()
             .position(|s| s.source().get_min() > interval.get_min())
             .unwrap_or(sections.len());
-        if section_idx > 0 {
-            section_idx -= 1;
-        }
+        section_idx = section_idx.saturating_sub(1);
 
         let mut result = IntervalSet::new();
         let mut start = interval.get_min();

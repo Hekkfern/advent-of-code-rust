@@ -549,7 +549,7 @@ fn get_column() {
 #[test]
 fn get_column_rev() {
     let grid: Grid2D<i32> = Grid2D::from_double_vec(vec![vec![1, 2, 3], vec![4, 5, 6]]);
-    let row_0: Vec<_> = grid.get_column(1).collect();
+    let row_0: Vec<_> = grid.get_column(1).rev().collect();
     assert_eq!(row_0, vec![(1, &5), (0, &2)]);
 }
 

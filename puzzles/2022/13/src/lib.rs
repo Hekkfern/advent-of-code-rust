@@ -64,7 +64,7 @@ pub fn solve_part2(params: Part2Parameters) -> String {
         .trim()
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|l| serde_json::from_str(&l).unwrap())
+        .map(|l| serde_json::from_str(l).unwrap())
         .collect();
     let div1: Packet = serde_json::from_str("[[2]]").unwrap();
     let div2: Packet = serde_json::from_str("[[6]]").unwrap();

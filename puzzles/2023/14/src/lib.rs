@@ -7,7 +7,7 @@ fn parse_input(input: &str) -> Rocks {
     let data = input
         .trim()
         .lines()
-        .map(|line| line.trim().chars().map(|s| GridCell::from(s)).collect())
+        .map(|line| line.trim().chars().map(GridCell::from).collect())
         .collect();
     let mut grid = Grid2D::from_double_vec(data);
     grid.flip_vertical();
@@ -57,6 +57,6 @@ fn execute_one_cycle(rocks: &mut Rocks) {
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
     let mut rocks = parse_input(params.input_data);
-    aoc_utils::cache::loop_cache::run(&mut rocks, 1_000_000_000, |r| execute_one_cycle(r));
+    aoc_utils::cache::loop_cache::run(&mut rocks, 1_000_000_000, execute_one_cycle);
     rocks.calculate_load().to_string()
 }

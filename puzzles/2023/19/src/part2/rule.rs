@@ -10,7 +10,7 @@ pub enum ActionType {
 
 pub struct Rule {
     get_category_fn: Option<Box<dyn Fn(&PartRange) -> &Range>>,
-    set_category_fn: Option<Box<dyn Fn(&mut PartRange, &Range) -> ()>>,
+    set_category_fn: Option<Box<dyn Fn(&mut PartRange, &Range)>>,
     condition_fn: Option<Box<dyn Fn(&Range) -> (Option<Range>, Option<Range>)>>,
     action_type: ActionType,
 }
@@ -33,7 +33,7 @@ impl Rule {
                 "s" => Box::new(|part_range: &PartRange| part_range.get_s()),
                 _ => unreachable!(),
             };
-            let set_category_fn: Box<dyn Fn(&mut PartRange, &Range) -> ()> = match category_str {
+            let set_category_fn: Box<dyn Fn(&mut PartRange, &Range)> = match category_str {
                 "x" => Box::new(|part_range: &mut PartRange, new_value: &Range| {
                     part_range.set_x(new_value)
                 }),
@@ -105,7 +105,9 @@ impl Rule {
     }
 
     pub fn has_condition(&self) -> bool {
-        self.get_category_fn.is_some() && self.set_category_fn.is_some()  && self.condition_fn.is_some()
+        self.get_category_fn.is_some()
+            && self.set_category_fn.is_some()
+            && self.condition_fn.is_some()
     }
 
     pub fn get_action(&self) -> &ActionType {

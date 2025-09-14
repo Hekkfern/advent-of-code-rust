@@ -12,9 +12,8 @@ fn parse_map(block: &str) -> RangeMap {
     for line in block.lines().skip(1) {
         // skip the title
         let nums: Vec<i64> = line
-            .trim()
             .split_whitespace()
-            .filter_map(|s| s.parse::<i64>().ok())
+            .map(|s| s.parse::<i64>().unwrap())
             .collect();
         assert_eq!(nums.len(), 3);
         map.add_section(nums[0], nums[1], nums[2]);
@@ -37,7 +36,7 @@ fn parse_input_for_part1(input: &str) -> (Vec<i64>, Instructions) {
     let mut sections = input.trim().split("\n\n");
     let seeds_line = sections.next().unwrap().trim();
     let seeds = parse_individual_seeds(seeds_line.trim_start_matches("seeds: "));
-    let maps: Vec<RangeMap> = sections.map(|block| parse_map(block)).collect();
+    let maps: Vec<RangeMap> = sections.map(parse_map).collect();
     assert_eq!(maps.len(), 7, "Expected 7 mapping blocks");
     let instructions = Instructions::new(
         maps[0].clone(),
@@ -108,7 +107,7 @@ fn parse_input_for_part2(input: &str) -> (IntervalSet<i64>, Instructions) {
     let mut sections = input.trim().split("\n\n");
     let seeds_line = sections.next().unwrap().trim();
     let intervals = parse_ranged_seeds(seeds_line.trim_start_matches("seeds: "));
-    let maps: Vec<RangeMap> = sections.map(|block| parse_map(block)).collect();
+    let maps: Vec<RangeMap> = sections.map(parse_map).collect();
     assert_eq!(maps.len(), 7, "Expected 7 mapping blocks");
     let instructions = Instructions::new(
         maps[0].clone(),
@@ -125,7 +124,7 @@ fn parse_input_for_part2(input: &str) -> (IntervalSet<i64>, Instructions) {
 fn convert_seed_range(range_map: &RangeMap, seed_range: &IntervalSet<i64>) -> IntervalSet<i64> {
     let mut result = IntervalSet::new();
     for interval in seed_range.get().iter() {
-        result = result.join(&range_map.convert_interval(&interval));
+        result = result.join(&range_map.convert_interval(interval));
     }
     result
 }
