@@ -8,6 +8,7 @@ use std::collections::HashSet;
 
 pub type GridCoordinate2D = Point<usize, 2>;
 
+#[warn(dead_code)]
 const DIMENSIONS: usize = 2;
 const ROW_INDEX: usize = 0;
 const COL_INDEX: usize = 1;
@@ -351,19 +352,16 @@ impl<ValueType> Grid2D<ValueType> {
     ///
     /// A list of valid neighboring coordinates.
     pub fn get_neighbors(&self, coords: &GridCoordinate2D) -> HashSet<GridCoordinate2D> {
-        let mut neighbors = HashSet::new();
         let directions = [
             Vector::<i8, 2>::new([0, 1]),
             Vector::<i8, 2>::new([0, -1]),
             Vector::<i8, 2>::new([1, 0]),
             Vector::<i8, 2>::new([-1, 0]),
         ];
-        for dir in directions.iter() {
-            if let Some(neighbor) = self.try_move(coords, dir) {
-                neighbors.insert(neighbor);
-            }
-        }
-        neighbors
+        directions
+            .iter()
+            .filter_map(|direction| self.try_move(coords, direction))
+            .collect()
     }
 
     /// Returns an iterator over all values in the grid.
@@ -409,22 +407,13 @@ impl<ValueType> Grid2D<ValueType> {
             "Direction must be normalized and along an axis"
         );
         // Calculate new coordinates based on the direction
-        let mut new_coords = [0usize; DIMENSIONS];
+        if let Some(new_coords) = position.move_by(direction)
+            && self.contains(&new_coords)
         {
-            let xi = position[0] as isize + direction[0] as isize;
-            if xi < 0 || xi >= self.get_width() as isize {
-                return None;
-            }
-            new_coords[0] = xi as usize;
+            Some(new_coords)
+        } else {
+            None
         }
-        {
-            let yi = position[1] as isize + direction[1] as isize;
-            if yi < 0 || yi >= self.get_height() as isize {
-                return None;
-            }
-            new_coords[1] = yi as usize;
-        }
-        Some(GridCoordinate2D::new(new_coords))
     }
 
     pub fn get_row(&self, index: usize) -> impl DoubleEndedIterator<Item = (usize, &ValueType)> {
