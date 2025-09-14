@@ -359,7 +359,7 @@ impl<ValueType> Grid2D<ValueType> {
             Vector::<i8, 2>::new([-1, 0]),
         ];
         for dir in directions.iter() {
-            if let Some(neighbor) = coords.move_by(dir) {
+            if let Some(neighbor) = self.try_move(coords, dir) {
                 neighbors.insert(neighbor);
             }
         }

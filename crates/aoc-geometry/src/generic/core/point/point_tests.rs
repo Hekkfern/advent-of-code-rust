@@ -159,12 +159,12 @@ fn extremes_mixed_values() {
     assert_eq!(point.get(2), &i32::MAX);
 }
 
-// Tests for get_neighbours
+// Tests for get_neighbors
 
 #[test]
-fn get_neighbours_positive_coordinates() {
+fn get_neighbors_positive_coordinates() {
     let point = p(1, 1, 1);
-    let neighbours = point.get_neighbours();
+    let neighbours = point.get_neighbors();
 
     assert_eq!(neighbours.len(), 6);
     assert!(neighbours.contains(&p(2, 1, 1)));
@@ -176,9 +176,9 @@ fn get_neighbours_positive_coordinates() {
 }
 
 #[test]
-fn get_neighbours_mixed_coordinates() {
+fn get_neighbors_mixed_coordinates() {
     let point = p(-1, 0, 2);
-    let neighbours = point.get_neighbours();
+    let neighbours = point.get_neighbors();
 
     assert_eq!(neighbours.len(), 6);
     assert!(neighbours.contains(&p(0, 0, 2)));
@@ -190,9 +190,9 @@ fn get_neighbours_mixed_coordinates() {
 }
 
 #[test]
-fn get_neighbours_space_boundaries() {
+fn get_neighbors_space_boundaries() {
     let point = p(i32::MAX, 0, 2);
-    let neighbours = point.get_neighbours();
+    let neighbours = point.get_neighbors();
 
     assert_eq!(neighbours.len(), 5);
     assert!(neighbours.contains(&p(i32::MAX - 1, 0, 2)));

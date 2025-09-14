@@ -104,7 +104,7 @@ impl<T: PointCoordinate, const N: usize> Point<T, N> {
     /// # Returns
     ///
     /// A vector containing up to 2×N neighboring points.
-    pub fn get_neighbours(&self) -> HashSet<Self> {
+    pub fn get_neighbors(&self) -> HashSet<Self> {
         let mut neighbours = HashSet::with_capacity(2 * N);
         for i in 0..N {
             // Try incrementing

@@ -64,7 +64,7 @@ fn move_across_field(
 }
 
 fn get_starting_neighbor(field: &Field, start: &GridPosition) -> GridPosition {
-    for neighbor in start.get_neighbours() {
+    for neighbor in field.get_neighbors(start) {
         let pipe_type = get_pipe_type_at(field, &neighbor);
         if matches!(pipe_type, PipeType::None) {
             continue;
