@@ -70,30 +70,29 @@ pub struct Part2Parameters {
 
 const LIT_CRT_CHARACTER: char = '#';
 const DARK_CRT_CHARACTER: char = '.';
-const CRT_ROW_LENGTH: usize = 40;
+const CRT_WIDTH: u8 = 40;
+const CRT_HEIGHT: u8 = 6;
 
 type CrtScreen = Vec<Vec<char>>;
 
-fn draw(crt_screen: &mut CrtScreen, row_idx: u8, crt_pixel_position: u32, register_value: u32) {
-    let is_lit =
-        crt_pixel_position >= (register_value - 1) && crt_pixel_position <= (register_value + 1);
-    crt_screen[row_idx as usize].push(if is_lit {
-        LIT_CRT_CHARACTER
-    } else {
-        DARK_CRT_CHARACTER
-    });
+fn draw(
+    crt_screen: &mut CrtScreen,
+    crt_screen_row_idx: u8,
+    crt_screen_column_idx: u8,
+    register_value: i32,
+) {
+    let col_idx = crt_screen_column_idx as i32;
+    let is_lit = col_idx >= (register_value - 1) && col_idx <= (register_value + 1);
+    if is_lit {
+        crt_screen[crt_screen_row_idx as usize][crt_screen_column_idx as usize] = LIT_CRT_CHARACTER;
+    }
 }
 
-fn move_crt_pointer(
-    crt_screen: &mut CrtScreen,
-    crt_pixel_position: &mut u32,
-    crt_screen_row_idx: &mut u8,
-) {
-    *crt_pixel_position += 1;
-    if *crt_pixel_position >= CRT_ROW_LENGTH as u32 {
-        *crt_pixel_position = 0;
+fn move_crt_pointer(crt_screen_column_idx: &mut u8, crt_screen_row_idx: &mut u8) {
+    *crt_screen_column_idx += 1;
+    if *crt_screen_column_idx >= CRT_WIDTH {
+        *crt_screen_column_idx = 0;
         *crt_screen_row_idx += 1;
-        crt_screen.push(vec![]);
     }
 }
 
@@ -108,9 +107,10 @@ fn move_crt_pointer(
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
     let mut register_value: i32 = STARTING_REGISTER_VALUE;
-    let mut crt_pixel_position: u32 = 0;
-    let mut crt_screen: CrtScreen = vec![vec![]];
+    let mut crt_screen: CrtScreen =
+        vec![vec![DARK_CRT_CHARACTER; CRT_WIDTH as usize]; CRT_HEIGHT as usize];
     let mut crt_screen_row_index: u8 = 0;
+    let mut crt_screen_column_index: u8 = 0;
     params.input_data.trim().lines().for_each(|line| {
         let instruction = InstructionType::from(line.trim());
         match instruction {
@@ -118,38 +118,28 @@ pub fn solve_part2(params: Part2Parameters) -> String {
                 draw(
                     &mut crt_screen,
                     crt_screen_row_index,
-                    crt_pixel_position,
-                    register_value as u32,
+                    crt_screen_column_index,
+                    register_value,
                 );
-                move_crt_pointer(
-                    &mut crt_screen,
-                    &mut crt_pixel_position,
-                    &mut crt_screen_row_index,
-                );
+                move_crt_pointer(&mut crt_screen_column_index, &mut crt_screen_row_index);
             }
             InstructionType::Addx(value) => {
                 for _ in 0..cycles_per_instruction(&instruction) {
                     draw(
                         &mut crt_screen,
                         crt_screen_row_index,
-                        crt_pixel_position,
-                        register_value as u32,
+                        crt_screen_column_index,
+                        register_value,
                     );
-                    move_crt_pointer(
-                        &mut crt_screen,
-                        &mut crt_pixel_position,
-                        &mut crt_screen_row_index,
-                    );
+                    move_crt_pointer(&mut crt_screen_column_index, &mut crt_screen_row_index);
                 }
                 register_value += value;
             }
         }
     });
-    crt_screen.pop();
-    let result = crt_screen
+    crt_screen
         .iter()
         .map(|line| line.iter().collect::<String>())
         .collect::<Vec<String>>()
-        .join("\n");
-    result
+        .join("\n")
 }
