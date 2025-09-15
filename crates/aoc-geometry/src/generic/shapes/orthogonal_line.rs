@@ -58,6 +58,19 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         }
     }
 
+    /// Attempts to create a new orthogonal line from two distinct points.
+    ///
+    /// This function is similar to `from_points`, but returns `None` instead of panicking
+    /// if the points are identical or if the vector formed by the points is neither axis-aligned.
+    ///
+    /// # Arguments
+    ///
+    /// * `p1` - The first point (start of the line)
+    /// * `p2` - The second point (end of the line)
+    ///
+    /// # Returns
+    ///
+    /// `Some(Line)` if the points form a valid orthogonal line, `None` otherwise
     pub fn try_from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Option<Self> {
         if p1 == p2 {
             return None;
