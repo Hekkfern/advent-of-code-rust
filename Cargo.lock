@@ -591,6 +591,7 @@ name = "aoc-geometry"
 version = "1.0.0"
 dependencies = [
  "assertables",
+ "itertools",
  "ndarray",
  "num-integer",
  "num-traits",

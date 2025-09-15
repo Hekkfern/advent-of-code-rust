@@ -128,6 +128,15 @@ impl<T: PointCoordinate, const N: usize> Line<T, N> {
     pub fn is_axis(&self) -> bool {
         self.inherent_vector().is_axis()
     }
+
+    /// Checks if this is a diagonal line (two coordinates are equal in absolute value).
+    ///
+    /// # Returns
+    ///
+    /// `true` if exactly two coordinates are equal in absolute value, `false` otherwise.
+    pub fn is_diagonal(&self) -> bool {
+        self.inherent_vector().is_diagonal()
+    }
 }
 
 /// Display formatting for lines.

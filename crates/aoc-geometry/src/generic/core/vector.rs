@@ -4,6 +4,7 @@ mod vector_tests;
 use crate::Point;
 use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
+use itertools::Itertools;
 use num_traits::cast::cast;
 
 /// Classification of vector types based on their properties.
@@ -18,6 +19,8 @@ pub enum VectorType {
     Zero,
     /// An axis-aligned vector where only one coordinate is non-zero.
     Axis,
+    /// A diagonal vector where at least two coordinates have the same absolute value.
+    Diagonal,
 }
 
 /// A vector in N-dimensional space with coordinates of type T.
@@ -205,16 +208,30 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
         self.coordinates.iter().filter(|&&x| x != T::zero()).count() == 1
     }
 
+    /// Checks if this is a diagonal vector (at least two coordinates have the same absolute value).
+    ///
+    /// # Returns
+    ///
+    /// `true` if at least two coordinates have the same absolute value, `false` otherwise.
+    pub fn is_diagonal(&self) -> bool {
+        self.coordinates
+            .iter()
+            .combinations(2)
+            .any(|pair| pair[0].abs() == pair[1].abs())
+    }
+
     /// Determines the type of this vector based on its properties.
     ///
     /// # Returns
     ///
-    /// A `Type` enum indicating whether the vector is Zero, Axis, or Arbitrary.
+    /// A `Type` enum indicating whether the vector is Zero, Axis, Diagonal or Arbitrary.
     pub fn is(&self) -> VectorType {
         if self.is_zero() {
             VectorType::Zero
         } else if self.is_axis() {
             VectorType::Axis
+        } else if self.is_diagonal() {
+            VectorType::Diagonal
         } else {
             VectorType::Arbitrary
         }
