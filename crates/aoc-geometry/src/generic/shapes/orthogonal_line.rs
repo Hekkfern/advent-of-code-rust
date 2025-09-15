@@ -58,6 +58,19 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         }
     }
 
+    pub fn try_from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Option<Self> {
+        if p1 == p2 {
+            return None;
+        }
+        let vector = Vector::<i64, N>::from_points(p1, p2)?;
+        if !vector.is_axis() {
+            return None;
+        }
+        Some(Self {
+            vertices: [*p1, *p2],
+        })
+    }
+
     /// Creates a new line from a starting point and a direction vector.
     ///
     /// The line will start at the given point and extend in the direction
