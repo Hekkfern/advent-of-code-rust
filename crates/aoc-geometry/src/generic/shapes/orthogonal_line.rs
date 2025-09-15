@@ -204,6 +204,65 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
                 .any(|x| other_common_coords.contains(x))
         }
     }
+
+    /// Gets the common points between two orthogonal lines.
+    ///
+    /// If the lines are collinear, returns all points along the overlapping segment.
+    /// If they are perpendicular and intersect, returns the intersection point.
+    /// If they do not overlap, returns an empty vector.
+    ///
+    /// # Arguments
+    /// * `line1` - The first orthogonal line
+    /// * `line2` - The second orthogonal line
+    ///
+    /// # Returns
+    /// A vector of overlapping points, which may be empty
+    pub fn intersect(&self, other: &Self) -> Vec<Point<T, N>> {
+        let axis1 = self.get_axis();
+        let axis2 = other.get_axis();
+        let vertices1 = self.get_vertexes();
+        let vertices2 = other.get_vertexes();
+
+        if axis1 == axis2 {
+            // Collinear case: check for overlap segment
+            let fixed_axis = if axis1 == 0 { 1 } else { 0 };
+            let fixed_coord_1 = *vertices1[0].get(fixed_axis);
+            let fixed_coord_2 = *vertices2[0].get(fixed_axis);
+            if fixed_coord_1 != fixed_coord_2 {
+                return vec![];
+            }
+            let start1 = *vertices1[0].get(axis1);
+            let end1 = *vertices1[1].get(axis1);
+            let start2 = *vertices2[0].get(axis2);
+            let end2 = *vertices2[1].get(axis2);
+            let min_overlap = std::cmp::max(std::cmp::min(start1, end1), std::cmp::min(start2, end2));
+            let max_overlap = std::cmp::min(std::cmp::max(start1, end1), std::cmp::max(start2, end2));
+            if min_overlap > max_overlap {
+                return vec![];
+            }
+            let mut points = Vec::new();
+            let mut coord = min_overlap;
+            while coord <= max_overlap {
+                let mut coords = [T::zero(); N];
+                coords[axis1] = coord;
+                coords[fixed_axis] = fixed_coord_1;
+                points.push(Point::<T, N>::new(coords));
+                coord = coord + T::one();
+            }
+            points
+        } else {
+            // Perpendicular case: check for intersection
+            let mut coords = [T::zero(); N];
+            coords[axis1] = *vertices2[0].get(axis1);
+            coords[axis2] = *vertices1[0].get(axis2);
+            let intersection = Point::<T, N>::new(coords);
+            if self.contains_point(&intersection) && other.contains_point(&intersection) {
+                vec![intersection]
+            } else {
+                vec![]
+            }
+        }
+    }
 }
 
 /// Iterator for points along an orthogonal line.
