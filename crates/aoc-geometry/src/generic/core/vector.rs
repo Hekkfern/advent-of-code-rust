@@ -99,8 +99,8 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
     {
         let mut coordinates = [T::zero(); N];
         for i in 0..N {
-            coordinates[i] =
-                cast::<U, T>(destination[i])?.checked_sub(&cast::<U, T>(origin[i])?)?;
+            let c = cast::<U, i128>(destination[i])?.checked_sub(cast::<U, i128>(origin[i])?)?;
+            coordinates[i] = cast::<i128, T>(c)?;
         }
         Some(Vector { coordinates })
     }
