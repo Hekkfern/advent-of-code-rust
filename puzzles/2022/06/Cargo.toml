@@ -3,6 +3,16 @@ name = "aoc-2022-06"
 version = "1.0.0"
 edition = "2024"
 
+[[bin]]
+name = "aoc_2022_06_p1"
+path = "src/bin/aoc_2022_06_p1.rs"
+test = false
+
+[[bin]]
+name = "aoc_2022_06_p2"
+path = "src/bin/aoc_2022_06_p2.rs"
+test = false
+
 [dependencies]
 include_dir.workspace = true
 bitvec.workspace = true

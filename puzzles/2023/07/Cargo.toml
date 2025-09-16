@@ -3,6 +3,16 @@ name = "aoc-2023-07"
 version = "1.0.0"
 edition = "2024"
 
+[[bin]]
+name = "aoc_2023_07_p1"
+path = "src/bin/aoc_2023_07_p1.rs"
+test = false
+
+[[bin]]
+name = "aoc_2023_07_p2"
+path = "src/bin/aoc_2023_07_p2.rs"
+test = false
+
 [dependencies]
 include_dir.workspace = true
 aoc-utils = { path = "../../../crates/aoc-utils" }
