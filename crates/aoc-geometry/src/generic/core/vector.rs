@@ -225,7 +225,7 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
     /// # Returns
     ///
     /// A `Type` enum indicating whether the vector is Zero, Axis, Diagonal or Arbitrary.
-    pub fn is(&self) -> VectorType {
+    pub fn is_type(&self) -> VectorType {
         if self.is_zero() {
             VectorType::Zero
         } else if self.is_axis() {
@@ -254,6 +254,34 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
         let mut coordinates = [T::zero(); N];
         coordinates[index] = self.coordinates[index];
         Vector::new(coordinates)
+    }
+
+    pub fn is_collinear(&self, other: &Self) -> bool {
+        if self.is_zero() || other.is_zero() {
+            return true;
+        }
+        let mut ratio: Option<f32> = None;
+        for i in 0..N {
+            let a = self.coordinates[i];
+            let b = other.coordinates[i];
+
+            if a == T::zero() && b == T::zero() {
+                continue;
+            } else if a == T::zero() || b == T::zero() {
+                return false;
+            } else {
+                let current_ratio = cast::<T, f32>(a).unwrap() / (&cast::<T, f32>(b).unwrap());
+                if let Some(existing_ratio) = ratio {
+                    if current_ratio != existing_ratio {
+                        return false;
+                    }
+                } else {
+                    ratio = Some(current_ratio);
+                }
+            }
+        }
+
+        true
     }
 }
 

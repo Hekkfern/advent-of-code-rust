@@ -472,23 +472,25 @@ fn is_axis_multiple_non_zero() {
     assert!(!non_axis_all.is_axis());
 }
 
-// Tests for is (vector type)
+// Tests for is_type
 
 #[test]
-fn is_positive_values() {
+fn is_type_positive_values() {
     let zero = v(0, 0, 0);
     let axis = v(0, 0, 1);
+    let diagonal = v(0, 2, 2);
     let arbitrary = v(1, 2, 3);
 
-    assert_eq!(zero.is(), VectorType::Zero);
-    assert_eq!(axis.is(), VectorType::Axis);
-    assert_eq!(arbitrary.is(), VectorType::Arbitrary);
+    assert_eq!(zero.is_type(), VectorType::Zero);
+    assert_eq!(axis.is_type(), VectorType::Axis);
+    assert_eq!(diagonal.is_type(), VectorType::Diagonal);
+    assert_eq!(arbitrary.is_type(), VectorType::Arbitrary);
 }
 
 #[test]
-fn is_negative_values() {
+fn is_type_negative_values() {
     let arbitrary_mixed = v(-1, 2, 0);
-    assert_eq!(arbitrary_mixed.is(), VectorType::Arbitrary);
+    assert_eq!(arbitrary_mixed.is_type(), VectorType::Arbitrary);
 }
 
 // Tests for Index trait
@@ -631,4 +633,27 @@ fn multiply_by_scalar_out_of_bounds() {
     let vector = v(i32::MIN, -2, 3);
     let scaled = vector.mul(2);
     assert_none!(scaled);
+}
+
+// Tests for is_collinear
+
+#[test]
+fn is_collinear_true_positive() {
+    let v1 = v(2, 4, 6);
+    let v2 = v(1, 2, 3);
+    assert!(Vector::is_collinear(&v1, &v2));
+}
+
+#[test]
+fn is_collinear_true_negative() {
+    let v1 = v(2, 4, 6);
+    let v2 = v(-1, -2, -3);
+    assert!(Vector::is_collinear(&v1, &v2));
+}
+
+#[test]
+fn is_collinear_false() {
+    let v1 = v(2, 4, 6);
+    let v2 = v(1, 2, 4);
+    assert!(!Vector::is_collinear(&v1, &v2));
 }

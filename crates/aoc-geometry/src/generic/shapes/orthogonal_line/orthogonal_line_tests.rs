@@ -1,4 +1,5 @@
 use super::*;
+use assertables::{assert_none, assert_some};
 use pretty_assertions::assert_eq;
 
 fn p(x: i32, y: i32) -> Point<i32, 2> {
@@ -12,7 +13,7 @@ fn from_points() {
     let p1 = p(1, 2);
     let p2 = p(4, 2);
     let line = OrthogonalLine::from_points(&p1, &p2);
-    assert_eq!(line.length(), 3);
+    assert_eq!(line.length(), 4);
     assert_eq!(line.get_vertexes(), &[p1, p2]);
 }
 
@@ -28,12 +29,21 @@ fn from_points_reversed() {
     let p1 = p(4, 2);
     let p2 = p(1, 2);
     let line = OrthogonalLine::from_points(&p1, &p2);
+    assert_eq!(line.length(), 4);
+    assert_eq!(line.get_vertexes(), &[p1, p2]);
+}
+
+#[test]
+fn from_points_diagonal() {
+    let p1 = p(1, 1);
+    let p2 = p(3, 3);
+    let line = OrthogonalLine::from_points(&p1, &p2);
     assert_eq!(line.length(), 3);
     assert_eq!(line.get_vertexes(), &[p1, p2]);
 }
 
 #[test]
-#[should_panic(expected = "Orthogonal line must be axis-aligned.")]
+#[should_panic(expected = "Orthogonal line must be axis-aligned or diagonal.")]
 fn from_points_no_orthogonal() {
     let p1 = p(1, 7);
     let p2 = p(4, 2);
@@ -60,34 +70,107 @@ fn from_point_and_vector_zero_vector() {
 }
 
 #[test]
-#[should_panic(expected = "Orthogonal line must be axis-aligned.")]
-fn from_point_and_vector_no_orthogonal() {
+fn from_point_and_vector_diagonal() {
     let p1 = p(1, 2);
     let v = Vector::<i32, 2>::new([3, 3]);
+    let line = OrthogonalLine::from_point_and_vector(&p1, &v);
+    assert_eq!(line.get_vertexes()[0], p1);
+    assert_eq!(line.get_vertexes()[1], p(4, 5));
+}
+
+#[test]
+#[should_panic(expected = "Orthogonal line must be axis-aligned or diagonal.")]
+fn from_point_and_vector_no_orthogonal() {
+    let p1 = p(1, 2);
+    let v = Vector::<i32, 2>::new([7, 3]);
     let _line = OrthogonalLine::from_point_and_vector(&p1, &v);
 }
 
 // Tests for get_axis
 
 #[test]
-fn get_axis() {
+fn get_axis_horitzontal() {
     let p1 = p(1, 2);
     let p2 = p(4, 2);
     let line = OrthogonalLine::from_points(&p1, &p2);
-    assert_eq!(line.get_axis(), 0);
+    let axis = line.get_axis();
+    assert_some!(axis);
+    let axis = axis.unwrap();
+    assert_eq!(axis, 0);
+}
+
+#[test]
+fn get_axis_vertical() {
     let p3 = p(1, 2);
     let p4 = p(1, 5);
-    let line2 = OrthogonalLine::from_points(&p3, &p4);
-    assert_eq!(line2.get_axis(), 1);
+    let line = OrthogonalLine::from_points(&p3, &p4);
+    let axis = line.get_axis();
+    assert_some!(axis);
+    let axis = axis.unwrap();
+    assert_eq!(axis, 1);
+}
+
+#[test]
+fn get_axis_diagonal() {
+    let p3 = p(1, 1);
+    let p4 = p(3, 3);
+    let line = OrthogonalLine::from_points(&p3, &p4);
+    let axis = line.get_axis();
+    assert_none!(axis);
 }
 
 // Tests for contains_point
 
 #[test]
-fn contains_point() {
+fn contains_point_horizontal() {
     let p1 = p(1, 2);
     let p2 = p(4, 2);
     let line = OrthogonalLine::from_points(&p1, &p2);
+    let inside = p(2, 2);
+    let outside_not_aligned = p(2, 3);
+    let outside_aligned = p(7, 2);
+    assert!(line.contains_point(&inside));
+    assert!(line.contains_point(&p1));
+    assert!(line.contains_point(&p2));
+    assert!(!line.contains_point(&outside_not_aligned));
+    assert!(!line.contains_point(&outside_aligned));
+}
+
+#[test]
+fn contains_point_vertical() {
+    let p1 = p(2, 1);
+    let p2 = p(2, 4);
+    let line = OrthogonalLine::from_points(&p1, &p2);
+    let inside = p(2, 2);
+    let outside_not_aligned = p(3, 2);
+    let outside_aligned = p(2, 7);
+    assert!(line.contains_point(&inside));
+    assert!(line.contains_point(&p1));
+    assert!(line.contains_point(&p2));
+    assert!(!line.contains_point(&outside_not_aligned));
+    assert!(!line.contains_point(&outside_aligned));
+}
+
+#[test]
+fn contains_point_diagonal() {
+    let p1 = p(0, 0);
+    let p2 = p(4, -4);
+    let line = OrthogonalLine::from_points(&p1, &p2);
+    let inside = p(1, -1);
+    let outside_not_aligned = p(3, 2);
+    let outside_aligned = p(-2, 2);
+    assert!(line.contains_point(&inside));
+    assert!(line.contains_point(&p1));
+    assert!(line.contains_point(&p2));
+    assert!(!line.contains_point(&outside_not_aligned));
+    assert!(!line.contains_point(&outside_aligned));
+}
+
+#[test]
+fn contains_point_reversed_line() {
+    let p1 = p(1, 2);
+    let p2 = p(4, 2);
+    let line = OrthogonalLine::from_points(&p2, &p1);
     let inside = p(2, 2);
     let outside_not_aligned = p(2, 3);
     let outside_aligned = p(7, 2);
@@ -126,7 +209,7 @@ fn overlaps_same_axis_overlapping() {
 }
 
 #[test]
-fn overlaps_same_axis_no_overlapping_same_coord() {
+fn overlaps_same_axis_no_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(7, 2), &p(9, 2));
     assert!(!l1.overlaps(&l2));
@@ -134,7 +217,7 @@ fn overlaps_same_axis_no_overlapping_same_coord() {
 }
 
 #[test]
-fn overlaps_same_axis_no_overlapping_diff_coord() {
+fn overlaps_same_axis_parallel() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(1, 3), &p(4, 3));
     assert!(!l1.overlaps(&l2));
@@ -142,7 +225,7 @@ fn overlaps_same_axis_no_overlapping_diff_coord() {
 }
 
 #[test]
-fn overlaps_other_axis_overlapping() {
+fn overlaps_perpendicular_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(2, 1), &p(2, 5));
     assert!(l1.overlaps(&l2));
@@ -150,9 +233,25 @@ fn overlaps_other_axis_overlapping() {
 }
 
 #[test]
-fn overlaps_other_axis_no_overlapping() {
+fn overlaps_perpendicular_no_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(3, 7), &p(3, 9));
+    assert!(!l1.overlaps(&l2));
+    assert!(!l2.overlaps(&l1));
+}
+
+#[test]
+fn overlaps_diagonal_overlapping() {
+    let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
+    let l2 = OrthogonalLine::from_points(&p(2, 1), &p(4, 3));
+    assert!(l1.overlaps(&l2));
+    assert!(l2.overlaps(&l1));
+}
+
+#[test]
+fn overlaps_diagonal_no_overlapping() {
+    let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
+    let l2 = OrthogonalLine::from_points(&p(5, 1), &p(7, 3));
     assert!(!l1.overlaps(&l2));
     assert!(!l2.overlaps(&l1));
 }
@@ -187,7 +286,7 @@ fn intersect_same_axis_overlapping() {
 }
 
 #[test]
-fn intersect_same_axis_no_overlapping_same_coord() {
+fn intersect_same_axis_no_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(7, 2), &p(9, 2));
     let intersect1 = l1.intersect(&l2);
@@ -197,7 +296,7 @@ fn intersect_same_axis_no_overlapping_same_coord() {
 }
 
 #[test]
-fn intersect_same_axis_no_overlapping_diff_coord() {
+fn intersect_same_axis_parallel() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(1, 3), &p(4, 3));
     let intersect1 = l1.intersect(&l2);
@@ -207,7 +306,7 @@ fn intersect_same_axis_no_overlapping_diff_coord() {
 }
 
 #[test]
-fn intersect_other_axis_overlapping() {
+fn intersect_perpendicular_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(2, 1), &p(2, 5));
     let intersect1 = l1.intersect(&l2);
@@ -217,9 +316,29 @@ fn intersect_other_axis_overlapping() {
 }
 
 #[test]
-fn intersect_other_axis_no_overlapping() {
+fn intersect_perpendicular_no_overlapping() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(3, 7), &p(3, 9));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
+#[test]
+fn intersect_diagonal_overlapping() {
+    let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
+    let l2 = OrthogonalLine::from_points(&p(2, 1), &p(4, 3));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![p(3, 2)]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
+#[test]
+fn intersect_diagonal_no_overlapping() {
+    let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
+    let l2 = OrthogonalLine::from_points(&p(5, 1), &p(7, 3));
     let intersect1 = l1.intersect(&l2);
     assert_eq!(intersect1, vec![]);
     let intersect2 = l2.intersect(&l1);

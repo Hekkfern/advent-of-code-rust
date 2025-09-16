@@ -35,7 +35,7 @@ impl<T: PointCoordinate, const N: usize> HyperCube<T, N> {
         U: VectorCoordinate,
     {
         assert_eq!(
-            diagonal.is(),
+            diagonal.is_type(),
             VectorType::Arbitrary,
             "Diagonal vector must have all its coordinates with non-zero values."
         );

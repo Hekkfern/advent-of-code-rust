@@ -1,13 +1,19 @@
 #[cfg(test)]
 mod orthogonal_line_tests;
 
-use crate::AxisDirection;
 use crate::Point;
 use crate::Vector;
 use crate::generic::core::point_coordinate::PointCoordinate;
 use crate::generic::core::vector_coordinate::VectorCoordinate;
 
 const NUM_OF_VERTEXES_IN_ORTHOGONAL_LINE: usize = 2;
+
+pub enum OrthogonalLineType {
+    /// An axis-aligned vector where only one coordinate is non-zero. It tells which axis it is aligned with.
+    Axis(usize),
+    /// A diagonal vector where at least two coordinates have the same absolute value.
+    Diagonal,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct OrthogonalLine<T: PointCoordinate, const N: usize> {
@@ -44,14 +50,17 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     ///
     /// # Panics
     ///
-    /// Panics if the two points are identical, as they cannot form a line
+    /// Panics if:
+    /// * the two points are identical, as they cannot form a line
+    /// * the vector formed by the points is neither axis-aligned nor diagonal
     pub fn from_points(p1: &Point<T, N>, p2: &Point<T, N>) -> Self {
         assert!(p1 != p2, "Points must be distinct to form a line.");
         let vector = Vector::<i64, N>::from_points(p1, p2);
         assert!(vector.is_some(), "Vector cannot be created from points.");
+        let vector = vector.unwrap();
         assert!(
-            vector.unwrap().is_axis(),
-            "Orthogonal line must be axis-aligned."
+            vector.is_axis() || vector.is_diagonal(),
+            "Orthogonal line must be axis-aligned or diagonal."
         );
         Self {
             vertices: [*p1, *p2],
@@ -61,7 +70,8 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     /// Attempts to create a new orthogonal line from two distinct points.
     ///
     /// This function is similar to `from_points`, but returns `None` instead of panicking
-    /// if the points are identical or if the vector formed by the points is neither axis-aligned.
+    /// if the points are identical or if the vector formed by the points is neither axis-aligned
+    /// nor diagonal.
     ///
     /// # Arguments
     ///
@@ -76,7 +86,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
             return None;
         }
         let vector = Vector::<i64, N>::from_points(p1, p2)?;
-        if !vector.is_axis() {
+        if !vector.is_axis() || !vector.is_diagonal() {
             return None;
         }
         Some(Self {
@@ -106,11 +116,28 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
         U: VectorCoordinate,
     {
         assert!(!v.is_zero(), "Vector must be non-zero to form a line.");
-        assert!(v.is_axis(), "Orthogonal line must be axis-aligned.");
+        assert!(
+            v.is_axis() || v.is_diagonal(),
+            "Orthogonal line must be axis-aligned or diagonal."
+        );
         let p2 = p1.move_by(v);
         assert!(p2.is_some(), "Other vertex is out of bounds.");
         Self {
             vertices: [*p1, p2.unwrap()],
+        }
+    }
+
+    /// Determines the type of the orthogonal line.
+    ///
+    /// # Returns
+    ///
+    /// An `OrthogonalLineType` indicating whether the line is axis-aligned or diagonal.
+    pub fn is_type(&self) -> OrthogonalLineType {
+        let vector = self.inherent_vector();
+        if vector.is_axis() {
+            OrthogonalLineType::Axis(self.get_axis().unwrap())
+        } else {
+            OrthogonalLineType::Diagonal
         }
     }
 
@@ -120,7 +147,13 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     ///
     /// The length.
     pub fn length(&self) -> u64 {
-        self.inherent_vector().manhattan_distance()
+        *self
+            .inherent_vector()
+            .absolute_coordinates()
+            .iter()
+            .max()
+            .unwrap()
+            + 1
     }
 
     /// Returns the two points that define the line.
@@ -136,29 +169,38 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     ///
     /// # Returns
     ///
-    /// The index of the axis (0-based, and less than N) that the line is aligned with.
-    pub fn get_axis(&self) -> usize {
+    /// If `self.is_axis() == true`, it returns the index of the axis (0-based, and less than N)
+    /// that the line is aligned with. `None` otherwise.
+    pub fn get_axis(&self) -> Option<usize> {
         let vector = self.inherent_vector();
-        for i in 0..N {
-            if *vector.get(i) != 0 {
-                return i;
-            }
+        if !vector.is_axis() {
+            return None;
         }
-        panic!("Line is not aligned with any axis, all coordinates are zero.");
+        vector
+            .get_coordinates()
+            .iter()
+            .position(|&coord| coord != 0)
     }
 
     pub fn contains_point(&self, point: &Point<T, N>) -> bool {
-        let axis = self.get_axis();
-        // Check if the point matches the fixed coordinates
-        for i in 0..N {
-            if i != axis && self.vertices[0].get(i) != point.get(i) {
-                return false;
-            }
+        if self.vertices.contains(&point) {
+            return true;
         }
-        // Check if the point's coordinate along the line's axis is within the line segment
-        let min_coord = std::cmp::min(self.vertices[0].get(axis), self.vertices[1].get(axis));
-        let max_coord = std::cmp::max(self.vertices[0].get(axis), self.vertices[1].get(axis));
-        point.get(axis) >= min_coord && point.get(axis) <= max_coord
+        let inherent_vector = self.inherent_vector();
+        let point_vector = Vector::<i128, N>::from_points(&self.vertices[0], point).unwrap();
+        if !point_vector.is_axis() && !point_vector.is_diagonal() {
+            return false;
+        }
+        if !inherent_vector.is_collinear(&point_vector) {
+            return false;
+        }
+        // Check if point is between the two endpoints for all coordinates
+        self.vertices[0]
+            .get_coordinates()
+            .iter()
+            .zip(self.vertices[1].get_coordinates().iter())
+            .zip(point.get_coordinates().iter())
+            .all(|((&a, &b), &p)| (a <= p && p <= b) || (b <= p && p <= a))
     }
 
     /// Creates an iterator that yields all points along the line from start to end.
@@ -169,22 +211,15 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     ///
     /// An iterator that yields `Point<T, N>` values
     pub fn iter(&self) -> OrthogonalLineIterator<T, N> {
-        let axis = self.get_axis();
         let start = self.vertices[0];
         let end = self.vertices[1];
-
-        // Determine direction (1 or -1) along the axis
-        let direction = if start.get(axis) <= end.get(axis) {
-            AxisDirection::Positive
-        } else {
-            AxisDirection::Negative
-        };
 
         OrthogonalLineIterator {
             current: start,
             end,
-            axis,
-            direction,
+            direction: Vector::<i8, N>::from_points(&start, &end)
+                .unwrap()
+                .normalize(),
             finished: false,
         }
     }
@@ -203,32 +238,55 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     ///
     /// `true` if the lines overlap, `false` otherwise
     pub fn overlaps(&self, other: &Self) -> bool {
-        let self_axis = self.get_axis();
-        let other_axis = other.get_axis();
-        if self_axis == other_axis {
-            // Check for collinear overlap
-            other
-                .vertices
-                .iter()
-                .any(|point| self.contains_point(point))
-        } else {
-            // Check for intersection at a single point
-            let self_common_coords: Vec<_> = self.vertices[0]
-                .get_coordinates()
-                .iter()
-                .zip(self.vertices[1].get_coordinates().iter())
-                .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
-                .collect();
-            let other_common_coords: Vec<_> = other.vertices[0]
-                .get_coordinates()
-                .iter()
-                .zip(other.vertices[1].get_coordinates().iter())
-                .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
-                .collect();
-            self_common_coords
-                .iter()
-                .any(|x| other_common_coords.contains(x))
+        let line_type_1 = self.is_type();
+        let line_type_2 = other.is_type();
+        match (line_type_1, line_type_2) {
+            (OrthogonalLineType::Axis(axis1), OrthogonalLineType::Axis(axis2))
+                if axis1 == axis2 =>
+            {
+                // Check for collinear overlap
+                other
+                    .vertices
+                    .iter()
+                    .any(|point| self.contains_point(point))
+            }
+            (OrthogonalLineType::Axis(_), OrthogonalLineType::Axis(_)) => {
+                // Check for intersection at a single point
+                let self_common_coords: Vec<_> = self.vertices[0]
+                    .get_coordinates()
+                    .iter()
+                    .zip(self.vertices[1].get_coordinates().iter())
+                    .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
+                    .collect();
+                let other_common_coords: Vec<_> = other.vertices[0]
+                    .get_coordinates()
+                    .iter()
+                    .zip(other.vertices[1].get_coordinates().iter())
+                    .filter_map(|(x, y)| if x == y { Some(*x) } else { None })
+                    .collect();
+                self_common_coords
+                    .iter()
+                    .any(|x| other_common_coords.contains(x))
+            }
+            (OrthogonalLineType::Diagonal, OrthogonalLineType::Diagonal)
+            | (OrthogonalLineType::Axis(_), OrthogonalLineType::Diagonal)
+            | (OrthogonalLineType::Diagonal, OrthogonalLineType::Axis(_)) => {
+                self.iter().any(|p| other.contains_point(&p))
+            }
         }
+    }
+
+    /// Gets the fixed coordinates of the line, i.e., the coordinates that do not change along the line.
+    /// The coordinate along the axis the line is aligned with will be `0`.
+    fn extract_fixed_coordinates(&self) -> [T; N] {
+        let mut fixed_coords = [T::zero(); N];
+        let axis = self.get_axis().unwrap();
+        for i in 0..N {
+            if i != axis {
+                fixed_coords[i] = *self.vertices[0].get(i);
+            }
+        }
+        fixed_coords
     }
 
     /// Gets the common points between two orthogonal lines.
@@ -244,48 +302,59 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     /// # Returns
     /// A vector of overlapping points, which may be empty
     pub fn intersect(&self, other: &Self) -> Vec<Point<T, N>> {
-        let axis1 = self.get_axis();
-        let axis2 = other.get_axis();
-        let vertices1 = self.get_vertexes();
-        let vertices2 = other.get_vertexes();
-
-        if axis1 == axis2 {
-            // Collinear case: check for overlap segment
-            let fixed_axis = if axis1 == 0 { 1 } else { 0 };
-            let fixed_coord_1 = *vertices1[0].get(fixed_axis);
-            let fixed_coord_2 = *vertices2[0].get(fixed_axis);
-            if fixed_coord_1 != fixed_coord_2 {
-                return vec![];
+        let line_type_1 = self.is_type();
+        let line_type_2 = other.is_type();
+        match (line_type_1, line_type_2) {
+            (OrthogonalLineType::Axis(axis1), OrthogonalLineType::Axis(axis2))
+                if axis1 == axis2 =>
+            {
+                let fixed_coord_1 = self.extract_fixed_coordinates();
+                let fixed_coord_2 = other.extract_fixed_coordinates();
+                if fixed_coord_1 != fixed_coord_2 {
+                    return vec![];
+                }
+                let start1 = *self.vertices[0].get(axis1);
+                let end1 = *self.vertices[1].get(axis1);
+                let start2 = *other.vertices[0].get(axis2);
+                let end2 = *other.vertices[1].get(axis2);
+                let min_overlap =
+                    std::cmp::max(std::cmp::min(start1, end1), std::cmp::min(start2, end2));
+                let max_overlap =
+                    std::cmp::min(std::cmp::max(start1, end1), std::cmp::max(start2, end2));
+                if min_overlap > max_overlap {
+                    return vec![];
+                }
+                // get points
+                let mut intersection_vertex1 = fixed_coord_1;
+                intersection_vertex1[axis1] = min_overlap;
+                let mut intersection_vertex2 = fixed_coord_1;
+                intersection_vertex2[axis1] = max_overlap;
+                let intersection_line = OrthogonalLine::from_points(
+                    &Point::<T, N>::new(intersection_vertex1),
+                    &Point::<T, N>::new(intersection_vertex2),
+                );
+                intersection_line.iter().collect()
             }
-            let start1 = *vertices1[0].get(axis1);
-            let end1 = *vertices1[1].get(axis1);
-            let start2 = *vertices2[0].get(axis2);
-            let end2 = *vertices2[1].get(axis2);
-            let min_overlap = std::cmp::max(std::cmp::min(start1, end1), std::cmp::min(start2, end2));
-            let max_overlap = std::cmp::min(std::cmp::max(start1, end1), std::cmp::max(start2, end2));
-            if min_overlap > max_overlap {
-                return vec![];
-            }
-            let mut points = Vec::new();
-            let mut coord = min_overlap;
-            while coord <= max_overlap {
+            (OrthogonalLineType::Axis(axis1), OrthogonalLineType::Axis(axis2)) => {
+                // Perpendicular case: check for intersection
                 let mut coords = [T::zero(); N];
-                coords[axis1] = coord;
-                coords[fixed_axis] = fixed_coord_1;
-                points.push(Point::<T, N>::new(coords));
-                coord = coord + T::one();
+                coords[axis1] = *other.vertices[0].get(axis1);
+                coords[axis2] = *self.vertices[0].get(axis2);
+                let intersection = Point::<T, N>::new(coords);
+                if self.contains_point(&intersection) && other.contains_point(&intersection) {
+                    vec![Point::<T, N>::new(coords)]
+                } else {
+                    vec![]
+                }
             }
-            points
-        } else {
-            // Perpendicular case: check for intersection
-            let mut coords = [T::zero(); N];
-            coords[axis1] = *vertices2[0].get(axis1);
-            coords[axis2] = *vertices1[0].get(axis2);
-            let intersection = Point::<T, N>::new(coords);
-            if self.contains_point(&intersection) && other.contains_point(&intersection) {
-                vec![intersection]
-            } else {
-                vec![]
+            (OrthogonalLineType::Diagonal, OrthogonalLineType::Diagonal)
+            | (OrthogonalLineType::Axis(_), OrthogonalLineType::Diagonal)
+            | (OrthogonalLineType::Diagonal, OrthogonalLineType::Axis(_)) => {
+                if let Some(intersection) = self.iter().find(|p| other.contains_point(p)) {
+                    vec![intersection]
+                } else {
+                    vec![]
+                }
             }
         }
     }
@@ -298,8 +367,7 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
 pub struct OrthogonalLineIterator<T: PointCoordinate, const N: usize> {
     current: Point<T, N>,
     end: Point<T, N>,
-    axis: usize,
-    direction: AxisDirection,
+    direction: Vector<i8, N>,
     finished: bool,
 }
 
@@ -320,13 +388,7 @@ impl<T: PointCoordinate, const N: usize> Iterator for OrthogonalLineIterator<T, 
         }
 
         // Move one unit in the direction along the axis
-        let mut next_coordinates = *self.current.get_coordinates();
-        if self.direction == AxisDirection::Positive {
-            next_coordinates[self.axis] = next_coordinates[self.axis] + T::one();
-        } else {
-            next_coordinates[self.axis] = next_coordinates[self.axis] - T::one();
-        }
-        self.current = Point::new(next_coordinates);
+        self.current = self.current.move_by(&self.direction).unwrap();
 
         Some(current_point)
     }
