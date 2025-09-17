@@ -167,6 +167,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "aoc-2021-05"
+version = "1.0.0"
+dependencies = [
+ "aoc-geometry",
+ "aoc-utils",
+ "assertables",
+ "include_dir",
+ "itertools",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "aoc-2022-01"
 version = "1.0.0"
 dependencies = [
