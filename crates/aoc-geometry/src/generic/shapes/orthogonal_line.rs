@@ -213,13 +213,13 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
     pub fn iter(&self) -> OrthogonalLineIterator<T, N> {
         let start = self.vertices[0];
         let end = self.vertices[1];
-
+        let v = Vector::<i128, N>::from_points(&start, &end)
+            .unwrap()
+            .normalize();
         OrthogonalLineIterator {
             current: start,
             end,
-            direction: Vector::<i8, N>::from_points(&start, &end)
-                .unwrap()
-                .normalize(),
+            direction: v.convert().unwrap(),
             finished: false,
         }
     }
@@ -322,18 +322,23 @@ impl<T: PointCoordinate, const N: usize> OrthogonalLine<T, N> {
                 let max_overlap =
                     std::cmp::min(std::cmp::max(start1, end1), std::cmp::max(start2, end2));
                 if min_overlap > max_overlap {
-                    return vec![];
+                    vec![]
+                } else if min_overlap == max_overlap {
+                    let mut coords = fixed_coord_1;
+                    coords[axis1] = min_overlap;
+                    vec![Point::<T, N>::new(coords)]
+                } else {
+                    // get points
+                    let mut intersection_vertex1 = fixed_coord_1;
+                    intersection_vertex1[axis1] = min_overlap;
+                    let mut intersection_vertex2 = fixed_coord_1;
+                    intersection_vertex2[axis1] = max_overlap;
+                    let intersection_line = OrthogonalLine::from_points(
+                        &Point::<T, N>::new(intersection_vertex1),
+                        &Point::<T, N>::new(intersection_vertex2),
+                    );
+                    intersection_line.iter().collect()
                 }
-                // get points
-                let mut intersection_vertex1 = fixed_coord_1;
-                intersection_vertex1[axis1] = min_overlap;
-                let mut intersection_vertex2 = fixed_coord_1;
-                intersection_vertex2[axis1] = max_overlap;
-                let intersection_line = OrthogonalLine::from_points(
-                    &Point::<T, N>::new(intersection_vertex1),
-                    &Point::<T, N>::new(intersection_vertex2),
-                );
-                intersection_line.iter().collect()
             }
             (OrthogonalLineType::Axis(axis1), OrthogonalLineType::Axis(axis2)) => {
                 // Perpendicular case: check for intersection

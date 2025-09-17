@@ -657,3 +657,21 @@ fn is_collinear_false() {
     let v2 = v(1, 2, 4);
     assert!(!Vector::is_collinear(&v1, &v2));
 }
+
+// Tests for convert
+
+#[test]
+fn convert_i32_to_i64_success() {
+    let vector_i32: Vector<i32, DIMENSIONS> = v(1, -2, 3);
+    let vector_i64 = vector_i32.convert::<i64>();
+    assert_some!(vector_i64);
+    let vector_i64 = vector_i64.unwrap();
+    assert_eq!(vector_i64.get_coordinates(), &[1, -2, 3]);
+}
+
+#[test]
+fn convert_i32_to_i8_failure() {
+    let vector_i32 = v(300, -2, 3);
+    let vector_i64 = vector_i32.convert::<i8>();
+    assert_none!(vector_i64);
+}

@@ -296,6 +296,16 @@ fn intersect_same_axis_no_overlapping() {
 }
 
 #[test]
+fn intersect_same_axis_single_common_point() {
+    let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
+    let l2 = OrthogonalLine::from_points(&p(4, 2), &p(9, 2));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![p(4, 2)]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
+#[test]
 fn intersect_same_axis_parallel() {
     let l1 = OrthogonalLine::from_points(&p(1, 2), &p(4, 2));
     let l2 = OrthogonalLine::from_points(&p(1, 3), &p(4, 3));

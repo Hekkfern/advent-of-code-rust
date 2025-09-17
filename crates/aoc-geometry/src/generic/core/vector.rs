@@ -256,6 +256,17 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
         Vector::new(coordinates)
     }
 
+    /// Checks if this vector is collinear with another vector.
+    ///
+    /// Two vectors are collinear if they lie on the same line, which means one is a scalar multiple of the other.
+    ///
+    /// # Arguments
+    ///
+    /// * `other` - The other vector to compare with
+    ///
+    /// # Returns
+    ///
+    /// `true` if the vectors are collinear, `false` otherwise.
     pub fn is_collinear(&self, other: &Self) -> bool {
         if self.is_zero() || other.is_zero() {
             return true;
@@ -282,6 +293,17 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
         }
 
         true
+    }
+
+    pub fn convert<U>(&self) -> Option<Vector<U, N>>
+    where
+        U: VectorCoordinate,
+    {
+        let mut coords = [U::zero(); N];
+        for i in 0..N {
+            coords[i] = cast(self.coordinates[i])?;
+        }
+        Some(Vector::new(coords))
     }
 }
 
