@@ -258,7 +258,8 @@ impl<T: VectorCoordinate, const N: usize> Vector<T, N> {
 
     /// Checks if this vector is collinear with another vector.
     ///
-    /// Two vectors are collinear if they lie on the same line, which means one is a scalar multiple of the other.
+    /// Two vectors are collinear if they point in the same direction, which means one is a scalar
+    /// multiple of the other.
     ///
     /// # Arguments
     ///

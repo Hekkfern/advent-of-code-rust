@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod orthogonal_polygon_2d_tests;
 
-use crate::OrthogonalLine;
+use crate::OrthogonalLine2D;
 use crate::Point;
 use crate::Vector;
 use crate::generic::core::point_coordinate::PointCoordinate;
@@ -150,7 +150,7 @@ impl<T: PointCoordinate> OrthogonalPolygon2D<T> {
                     .take(self.vertices.len()),
             )
             .any(|(a, b)| {
-                let line = OrthogonalLine::from_points(a, b);
+                let line = OrthogonalLine2D::from_points(a, b);
                 line.contains_point(point)
             })
     }

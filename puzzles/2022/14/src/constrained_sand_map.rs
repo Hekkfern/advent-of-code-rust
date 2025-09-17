@@ -1,4 +1,4 @@
-use aoc_geometry::{AxisDirection, BoundingBox, OrthogonalLine, Point, Vector};
+use aoc_geometry::{AxisDirection, BoundingBox, OrthogonalLine2D, Point, Vector};
 use std::collections::HashSet;
 
 pub struct ConstrainedSandMap {
@@ -15,7 +15,7 @@ impl ConstrainedSandMap {
         for vertex_group in rock_vertices {
             bounding_box.update(&vertex_group[0]);
             for window in vertex_group.windows(2) {
-                let line = OrthogonalLine::from_points(&window[0], &window[1]);
+                let line = OrthogonalLine2D::from_points(&window[0], &window[1]);
                 for point in line.iter() {
                     rocks.insert(point);
                 }

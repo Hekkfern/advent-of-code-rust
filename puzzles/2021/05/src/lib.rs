@@ -1,4 +1,4 @@
-use aoc_geometry::OrthogonalLine;
+use aoc_geometry::OrthogonalLine2D;
 use aoc_geometry::Point;
 use itertools::Itertools;
 use std::collections::HashSet;
@@ -24,7 +24,7 @@ pub struct Part1Parameters {
     pub input_data: &'static str,
 }
 
-fn parse_input_for_part_1(input: &str) -> Vec<OrthogonalLine<i32, 2>> {
+fn parse_input_for_part_1(input: &str) -> Vec<OrthogonalLine2D<i32>> {
     input
         .trim()
         .lines()
@@ -38,7 +38,7 @@ fn parse_input_for_part_1(input: &str) -> Vec<OrthogonalLine<i32, 2>> {
                 None
             }
         })
-        .map(|(start_point, end_point)| OrthogonalLine::from_points(&start_point, &end_point))
+        .map(|(start_point, end_point)| OrthogonalLine2D::from_points(&start_point, &end_point))
         .collect()
 }
 
@@ -74,7 +74,7 @@ pub struct Part2Parameters {
     pub input_data: &'static str,
 }
 
-fn parse_input_for_part_2(input: &str) -> Vec<OrthogonalLine<i32, 2>> {
+fn parse_input_for_part_2(input: &str) -> Vec<OrthogonalLine2D<i32>> {
     input
         .trim()
         .lines()
@@ -82,7 +82,7 @@ fn parse_input_for_part_2(input: &str) -> Vec<OrthogonalLine<i32, 2>> {
             let mut parts = line.split(" -> ");
             let start_point = parse_point(parts.next().unwrap());
             let end_point = parse_point(parts.next().unwrap());
-            OrthogonalLine::from_points(&start_point, &end_point)
+            OrthogonalLine2D::from_points(&start_point, &end_point)
         })
         .collect()
 }

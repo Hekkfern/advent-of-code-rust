@@ -294,6 +294,28 @@ fn from_points_z_axis_aligned() {
     assert!(vector.is_axis());
 }
 
+#[test]
+fn from_points_positive_diagonal() {
+    let origin = Point::<i32, DIMENSIONS>::new([1, 0, 1]);
+    let destination = Point::<i32, DIMENSIONS>::new([9, 0, 9]);
+    let vector = Vector::<i32, DIMENSIONS>::from_points(&origin, &destination);
+    assert!(vector.is_some());
+    let vector = vector.unwrap();
+    assert_eq!(vector.get_coordinates(), &[8, 0, 8]);
+    assert!(vector.is_diagonal());
+}
+
+#[test]
+fn from_points_negative_diagonal() {
+    let origin = Point::<i32, DIMENSIONS>::new([7, -1, 0]);
+    let destination = Point::<i32, DIMENSIONS>::new([0, -8, 0]);
+    let vector = Vector::<i32, DIMENSIONS>::from_points(&origin, &destination);
+    assert!(vector.is_some());
+    let vector = vector.unwrap();
+    assert_eq!(vector.get_coordinates(), &[-7, -7, 0]);
+    assert!(vector.is_diagonal());
+}
+
 // Tests for absolute_coordinates
 
 #[test]

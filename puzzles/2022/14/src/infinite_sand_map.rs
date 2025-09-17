@@ -1,4 +1,4 @@
-use aoc_geometry::{OrthogonalLine, Point, Vector};
+use aoc_geometry::{OrthogonalLine2D, Point, Vector};
 use std::collections::HashSet;
 
 pub struct InfiniteSandMap {
@@ -16,7 +16,7 @@ impl InfiniteSandMap {
         for vertex_group in rock_vertices {
             assumed_floor_y = std::cmp::max(assumed_floor_y, vertex_group[0].get(1) + FLOOR_OFFSET);
             for window in vertex_group.windows(2) {
-                let line = OrthogonalLine::from_points(&window[0], &window[1]);
+                let line = OrthogonalLine2D::from_points(&window[0], &window[1]);
                 for point in line.iter() {
                     rocks.insert(point);
                 }
