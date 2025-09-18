@@ -15,7 +15,7 @@ test = false
 
 [dependencies]
 include_dir.workspace = true
-itertools.workspace = true
+ndarray.workspace = true
 aoc-utils = { path = "../../../crates/aoc-utils" }
 aoc-geometry = { path = "../../../crates/aoc-geometry" }
 

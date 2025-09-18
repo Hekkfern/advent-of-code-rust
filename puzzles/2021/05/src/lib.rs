@@ -1,7 +1,6 @@
 use aoc_geometry::OrthogonalLine2D;
 use aoc_geometry::Point;
-use itertools::Itertools;
-use std::collections::HashSet;
+use ndarray::Array2;
 
 // -----------------------------------------------------------
 // ------------------------ Common ---------------------------
@@ -13,6 +12,19 @@ fn parse_point(point_str: &str) -> Point<i32, 2> {
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
     Point::<i32, 2>::new([coords[0], coords[1]])
+}
+
+fn solve(lines: &[OrthogonalLine2D<i32>]) -> u32 {
+    const GRID_SIZE: usize = 1000;
+    let mut grid: Array2<u32> = Array2::zeros((GRID_SIZE, GRID_SIZE));
+    for line in lines {
+        for point in line.iter() {
+            let x = point[0] as usize;
+            let y = point[1] as usize;
+            grid[[y, x]] += 1;
+        }
+    }
+    grid.iter().filter(|&&count| count >= 2).count() as u32
 }
 
 // -----------------------------------------------------------
@@ -53,16 +65,7 @@ fn parse_input_for_part_1(input: &str) -> Vec<OrthogonalLine2D<i32>> {
 /// The solution as a string
 pub fn solve_part1(params: Part1Parameters) -> String {
     let lines = parse_input_for_part_1(params.input_data);
-    let mut points_map = HashSet::<Point<i32, 2>>::new();
-    for line_pair in lines.iter().combinations(2) {
-        let line1 = line_pair[0];
-        let line2 = line_pair[1];
-        let intersection = line1.intersect(line2);
-        if !intersection.is_empty() {
-            points_map.extend(intersection);
-        }
-    }
-    points_map.len().to_string()
+    solve(&lines).to_string()
 }
 
 // -----------------------------------------------------------
@@ -98,14 +101,5 @@ fn parse_input_for_part_2(input: &str) -> Vec<OrthogonalLine2D<i32>> {
 /// The solution as a string
 pub fn solve_part2(params: Part2Parameters) -> String {
     let lines = parse_input_for_part_2(params.input_data);
-    let mut points_map = HashSet::<Point<i32, 2>>::new();
-    for line_pair in lines.iter().combinations(2) {
-        let line1 = line_pair[0];
-        let line2 = line_pair[1];
-        let intersection = line1.intersect(line2);
-        if !intersection.is_empty() {
-            points_map.extend(intersection);
-        }
-    }
-    points_map.len().to_string()
+    solve(&lines).to_string()
 }

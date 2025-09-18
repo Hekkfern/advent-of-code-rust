@@ -174,7 +174,7 @@ dependencies = [
  "aoc-utils",
  "assertables",
  "include_dir",
- "itertools",
+ "ndarray",
  "pretty_assertions",
 ]
 
