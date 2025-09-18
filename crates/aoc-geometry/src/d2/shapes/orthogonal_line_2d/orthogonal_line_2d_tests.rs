@@ -439,6 +439,42 @@ fn intersect_diagonal_consecutive() {
     assert_eq!(intersect2, intersect1);
 }
 
+#[test]
+fn intersect_diagonal_crossing_middle() {
+    let l1 = OrthogonalLine2D::from_points(&p(8, 0), &p(0, 8));
+    let l2 = OrthogonalLine2D::from_points(&p(6, 4), &p(2, 0));
+    assert!(l1.overlaps(&l2));
+    assert!(!l1.is_collinear(&l2));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![p(5, 3)]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
+#[test]
+fn intersect_diagonal_crossing_side() {
+    let l1 = OrthogonalLine2D::from_points(&p(8, 0), &p(0, 8));
+    let l2 = OrthogonalLine2D::from_points(&p(5, 3), &p(2, 0));
+    assert!(l1.overlaps(&l2));
+    assert!(!l1.is_collinear(&l2));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![p(5, 3)]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
+#[test]
+fn intersect_diagonal_crossing_vertexes() {
+    let l1 = OrthogonalLine2D::from_points(&p(8, 0), &p(0, 8));
+    let l2 = OrthogonalLine2D::from_points(&p(8, 0), &p(10, 2));
+    assert!(l1.overlaps(&l2));
+    assert!(!l1.is_collinear(&l2));
+    let intersect1 = l1.intersect(&l2);
+    assert_eq!(intersect1, vec![p(8, 0)]);
+    let intersect2 = l2.intersect(&l1);
+    assert_eq!(intersect2, intersect1);
+}
+
 // Horizontal vs Vertical
 
 #[test]

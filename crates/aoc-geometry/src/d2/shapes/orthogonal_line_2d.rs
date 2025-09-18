@@ -261,14 +261,17 @@ impl<T: PointCoordinate> OrthogonalLine2D<T> {
                 let intersection = Point::<T, DIMENSIONS>::new(coords);
                 self.contains_point(&intersection)
             }
-            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal) => {
+            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal)
+                if self.is_collinear(other) =>
+            {
                 // Check for collinear overlap
                 other
                     .vertices
                     .iter()
                     .any(|point| self.contains_point(point))
             }
-            (OrthogonalLine2DType::Axis(_), OrthogonalLine2DType::Diagonal)
+            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal)
+            | (OrthogonalLine2DType::Axis(_), OrthogonalLine2DType::Diagonal)
             | (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Axis(_)) => {
                 self.iter().any(|p| other.contains_point(&p))
             }
@@ -351,10 +354,9 @@ impl<T: PointCoordinate> OrthogonalLine2D<T> {
                     vec![]
                 }
             }
-            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal) => {
-                if !self.is_collinear(other) {
-                    return vec![];
-                }
+            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal)
+                if self.is_collinear(other) =>
+            {
                 // Find the overlap between the two lines
                 let points_self: Vec<_> = self.iter().collect();
                 let points_other: Vec<_> = other.iter().collect();
@@ -363,7 +365,8 @@ impl<T: PointCoordinate> OrthogonalLine2D<T> {
                     .filter(|p| points_other.contains(p))
                     .collect()
             }
-            (OrthogonalLine2DType::Axis(_), OrthogonalLine2DType::Diagonal)
+            (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Diagonal)
+            | (OrthogonalLine2DType::Axis(_), OrthogonalLine2DType::Diagonal)
             | (OrthogonalLine2DType::Diagonal, OrthogonalLine2DType::Axis(_)) => {
                 if let Some(intersection) = self.iter().find(|p| other.contains_point(p)) {
                     vec![intersection]
